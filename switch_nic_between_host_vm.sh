@@ -1,66 +1,56 @@
 #!/bin/bash
 
 # We switch the control of host network interface card (NIC) from the hypervisor
-# to the VM. We have only experimented  with this script on my desktop machine,
-# d15.
+# to the VM.
 # @author - Kevin Cheng
-# @since  - 06/04/2017
+# @since  - 11/15/2017
 
 # Compute the elapsed time from the start and stop time.
 ComputeElapsedTime() {
   local start=$1
   local end=$2
-  echo ${start}
-  echo ${end}
+  #echo ${start}
+  #echo ${end}
   echo $((end - start))
 }
 
-# ID of Network interface card.
-nic_id="0000:00:1f.6"
+# Check on the input arguments.
+if [[ $# -ne 2 ]]; then
+  echo "Usage: ./$0 <NIC DEVICE ID> <VENDOR ID>" 1>&2
+  exit 1
+fi
 
-# Vendor ID and device type.
-nic_vendor_info="8086 15b7"
+# Process the command line arguments.
+nic_id="0000:$1"
+nic_vendor_id=$(echo $2 | tr ':' ' ')
 
-# Location of drivers on the host.
-pci_driver_location="/sys/bus/pci/drivers"
-
-# Default host ethernet driver.
-default_nic_driver="e1000e"
-
-# VFIO PCI driver for the VM
-vfio="vfio-pci"
-
-# NIC name
-nic_name="enp0s31f6"
+# Get the host NIC driver.
+host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{print $NF}')
 
 # We use the Google public DNS to test the HTTPS connection.
 google_public_dns="8.8.8.8 443"
 
+# Start the microsecond timer.
+start_time=$(date +%s%6N)
+
 # Unbind the host's network interface card from the hypervisor.
-#start_time=$(date +%s%6N)
-date +%s%6N
-echo ${nic_id} > "${pci_driver_location}/${default_nic_driver}/unbind"
+echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/unbind"
 
-# Wait until the network interface is down.
-while ifconfig ${nic_name} &> /dev/null; do :; done;
-#stop_time=$(date +%s%6N)
-#ComputeElapsedTime ${start_time} ${stop_time}
+# Wait until there is an internet connection.
+while ! nc -vz ${google_public_dns}; do :; done
 
-################################################################################
-# WARNING: we need to start the VM without a network connection and communicate
-# with the QEMU monitor through the Unix domain socket.
-################################################################################
+###################################################################
+# WARNING: we have started the VM without a network connection and
+# communicate with the QEMU monitor through the Unix domain socket.
+###################################################################
 
 # Bind the host network interface card to the vfio driver.
-#start_time=$(date +%s%6N)
-echo ${nic_vendor_info} > "${pci_driver_location}/${vfio}/new_id"
-echo ${nic_id} > "${pci_driver_location}/${vfio}/bind"
+echo "${nic_vendor_id}" > "/sys/bus/pci/drivers/vfio-pci/new_id"
+echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/bind"
 
 # Hot plug the network interface card to the VM via the qemu monitor.
-echo '{ "execute": "qmp_capabilities"} {"execute": "device_add", "arguments": {"driver": "vfio-pci", "host": "00:1f.6", "id": "kevin"}}'\
+echo "{ "execute": "qmp_capabilities"} {"execute": "device_add", "arguments": {"driver": "vfio-pci", "host": "${nic_id}", "id": "pnic"}}" \
      | nc -U /tmp/qmp-socket &> /dev/null
-#stop_time=$(date +%s%6N)
-#ComputeElapsedTime ${start_time} ${stop_time}
 
 # Wait for n seconds.
 sleep 1
@@ -69,25 +59,21 @@ sleep 1
 echo '{ "execute": "qmp_capabilities"} {"execute": "device_del", "arguments": {"id": "kevin"}}'\
      | nc -U /tmp/qmp-socket &> /dev/null
 
-# Unbind he host network interface card from the vfio driver.
+# Unbind the host network interface card from the vfio driver.
 #start_time=$(date +%s%6N)
-echo ${nic_id} > "${pci_driver_location}/${vfio}/unbind"
-echo ${nic_vendor_info} > "${pci_driver_location}/${vfio}/remove_id"
-#stop_time=$(date +%s%6N)
-#ComputeElapsedTime ${start_time} ${stop_time}
+echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/unbind"
+echo ${nic_vendor_id} > "/sys/bus/pci/drivers/vfio-pci/remove_id"
 
-## Bind the network interface card to the hypervisor.
-#start_time=$(date +%s%6N)
-echo ${nic_id} > "${pci_driver_location}/${default_nic_driver}/bind"
+# Bind the network interface card to the hypervisor.
+echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
 
-# Wait until the network interface is up.
-while ! ifconfig ${nic_name} &> /dev/null; do :; done;
-date +%s%6N
-#stop_time=$(date +%s%6N)
-#ComputeElapsedTime ${start_time} ${stop_time}
+# Wait until there is an internet connection.
+while ! nc -vz ${google_public_dns}; do :; done
 
-## Wait until there is a HTTPS connection.
-#start_time=$(date +%s%6N)
-#while ! nc -z ${google_public_dns}; do :; done
-#stop_time=$(date +%s%6N)
-#ComputeElapsedTime ${start_time} ${stop_time}
+# Stop the microsecond timer.
+stop_time=$(date +%s%6N)
+
+# Compute the switch time in microseconds.
+elapsed_time=$(ComputeElapsedTime ${start_time} ${stop_time})
+elapsed_time=$((elapsed_time - 1000000));
+echo ${elapsed_time}

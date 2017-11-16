@@ -20,9 +20,7 @@ host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{pr
 
 # Unbind the physical network interface card from vfio-pci
 echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/unbind"
+echo ${nic_vendor_id} > "/sys/bus/pci/drivers/vfio-pci/remove_id"
 
 # Bind the physical network interface card to the host driver.
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
-
-tree "/sys/bus/pci/drivers/vfio-pci"
-tree "/sys/bus/pci/drivers/${host_nic_driver}"
