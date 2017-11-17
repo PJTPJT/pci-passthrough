@@ -14,8 +14,10 @@ ComputeElapsedTime() {
 }
 
 # Check on the input arguments.
-if [[ $# -ne 2 ]]; then
-  echo "Usage: $0 <NIC DEVICE ID> <VENDOR ID>" 1>&2
+# NET INTERFACE is the name of network interface obtained from
+# "ifconfig".
+if [[ $# -ne 3 ]]; then
+  echo "Usage: $0 <NIC DEVICE ID> <VENDOR ID> <NET INTERFACE>" 1>&2
   exit 1
 fi
 
@@ -29,12 +31,13 @@ fi
 # Process the command line arguments.
 nic_id="0000:$1"
 nic_vendor_id=$(echo $2 | tr ':' ' ')
+nic_name=$3
 
 # Get the host NIC driver.
 host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{print $NF}')
 
 # We use the Google public DNS to test the HTTPS connection.
-google_public_dns="8.8.8.8 443"
+#google_public_dns="8.8.8.8 443"
 
 # Start the microsecond timer.
 start_time=$(date +%s%6N)
@@ -43,7 +46,8 @@ start_time=$(date +%s%6N)
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/unbind"
 
 # Wait until there is no internet connection.
-while nc -vz ${google_public_dns} &> /dev/null; do :; done
+#while nc -vz ${google_public_dns} &> /dev/null; do :; done
+while ifconfig ${nic_name} &> /dev/null; do :; done;
 
 ###################################################################
 # WARNING: we have started the VM without a network connection and
@@ -65,7 +69,7 @@ echo "{ "execute": "qmp_capabilities"} {"execute": "device_add", "arguments": {"
 sleep 1
 
 # Hot unplug the network interface card from the VM via the qemu monitor.
-echo '{ "execute": "qmp_capabilities"} {"execute": "device_del", "arguments": {"id": "kevin"}}'\
+echo '{ "execute": "qmp_capabilities"} {"execute": "device_del", "arguments": {"id": "pnic"}}'\
      | nc -U /tmp/qmp-socket &> /dev/null
 
 # Unbind the host network interface card from the vfio driver.
@@ -77,12 +81,14 @@ echo ${nic_vendor_id} > "/sys/bus/pci/drivers/vfio-pci/remove_id"
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
 
 # Wait until there is an internet connection.
-while ! nc -vz ${google_public_dns} &> /dev/null; do :; done
+#while ! nc -vz ${google_public_dns} &> /dev/null; do :; done
+while ! ifconfig ${nic_name} &> /dev/null; do :; done;
 
 # Stop the microsecond timer.
 stop_time=$(date +%s%6N)
 
 # Compute the switch time in microseconds.
 elapsed_time=$(ComputeElapsedTime ${start_time} ${stop_time})
+echo ${elapsed_time}
 elapsed_time=$((elapsed_time - 1000000));
 echo ${elapsed_time}
