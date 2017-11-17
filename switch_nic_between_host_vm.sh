@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# We switch the control of host network interface card (NIC) from the hypervisor
-# to the VM.
+# We switch the control of host network interface card (NIC) from the
+# hypervisor to the VM.
+# Assume the VFIO modules are loaded.
 # @author - Kevin Cheng
 # @since  - 11/15/2017
 
@@ -9,8 +10,6 @@
 ComputeElapsedTime() {
   local start=$1
   local end=$2
-  #echo ${start}
-  #echo ${end}
   echo $((end - start))
 }
 
@@ -18,6 +17,13 @@ ComputeElapsedTime() {
 if [[ $# -ne 2 ]]; then
   echo "Usage: $0 <NIC DEVICE ID> <VENDOR ID>" 1>&2
   exit 1
+fi
+
+# Check if VFIO modules are loaded.
+lsmod | grep -ie 'vfio' > /dev/null
+if [[ ! $! -eq 0 ]]; then
+  echo "ERROR: Please load VFIO modules." 1>&2
+  exit 2
 fi
 
 # Process the command line arguments.
@@ -36,8 +42,8 @@ start_time=$(date +%s%6N)
 # Unbind the host's network interface card from the hypervisor.
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/unbind"
 
-# Wait until there is an internet connection.
-while ! nc -vz ${google_public_dns}; do :; done
+# Wait until there is no internet connection.
+while nc -vz ${google_public_dns} &> /dev/null; do :; done
 
 ###################################################################
 # WARNING: we have started the VM without a network connection and
@@ -46,7 +52,10 @@ while ! nc -vz ${google_public_dns}; do :; done
 
 # Bind the host network interface card to the vfio driver.
 echo "${nic_vendor_id}" > "/sys/bus/pci/drivers/vfio-pci/new_id"
-echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/bind"
+
+# If binding the host NIC to vfio-pci by the NIC vendor is not
+# sufficient, we can try the device ID of NIC.
+#echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/bind"
 
 # Hot plug the network interface card to the VM via the qemu monitor.
 echo "{ "execute": "qmp_capabilities"} {"execute": "device_add", "arguments": {"driver": "vfio-pci", "host": "${nic_id}", "id": "pnic"}}" \
@@ -68,7 +77,7 @@ echo ${nic_vendor_id} > "/sys/bus/pci/drivers/vfio-pci/remove_id"
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
 
 # Wait until there is an internet connection.
-while ! nc -vz ${google_public_dns}; do :; done
+while ! nc -vz ${google_public_dns} &> /dev/null; do :; done
 
 # Stop the microsecond timer.
 stop_time=$(date +%s%6N)
