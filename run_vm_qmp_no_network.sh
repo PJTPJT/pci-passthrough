@@ -15,11 +15,17 @@ fi
 # Process the command line arguments.
 vm_img="$1"
 
-# Boot up the VM without any network.
+# Configure the VM without any network.
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
                    -smp 1 \
                    -m 2048 \
                    -drive file=${vm_img},format=raw \
                    -net none \
-                   -qmp unix:/tmp/qmp-socket,server
+                   -qmp unix:/tmp/qmp-socket,server &
+
+# Trigger to boot up the VM by sending a null message through the unix
+# domain socket.
+cat /dev/null | nc -U /tmp/qmp-socket
+
+# We may have to remove the Unix domain socket manually.
