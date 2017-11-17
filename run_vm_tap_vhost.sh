@@ -15,11 +15,14 @@ fi
 # Process the command line arguments.
 vm_img="$1"
 
+# Load the vhost modules.
+modprobe vhost-net
+
 # Boot up the VM with the host network interface card by VFIO.
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
                    -smp 1 \
                    -m 2048 \
                    -drive file=${vm_img},format=raw \
-                   -netdev tap,id=mytap,ifname=qtap0 \
-                   -device virtio-net,netdev=mytap,vhost=on
+                   -netdev tap,id=mytap,ifname=qtap0,vhost=on \
+                   -device virtio-net,netdev=mytap
