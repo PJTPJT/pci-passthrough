@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Set up vfio-pci
-# The script requires the user to have the root privilege.
+# The script requires the user to have the root privilege. This script
+# should be executed before "restore_from_vfio_pci_nic.sh". After
+# calling this script, it will save the original host NIC driver to a
+# file, "host_nic.txt".
 # @author Kevin Cheng
 # @since  11/15/2017
 
@@ -24,9 +27,16 @@ fi
 # Get the host NIC driver.
 host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{print $NF}')
 
+# Save the host NIC driver name to the file. The content will be used,
+# when we need to switch the control back to the host NIC driver.
+echo -n ${host_nic_driver} > host_nic.txt
+
 # Unbind the network interface card from the host driver.
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/unbind"
 
 # Bind the network interface card to VFIO.
 echo "${nic_vendor_id}" > "/sys/bus/pci/drivers/vfio-pci/new_id"
-echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/bind"
+
+# If binding the NIC to VFIO by the NIC's vendor is not sufficient, we
+# can uncomment the line below.
+#echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/bind"

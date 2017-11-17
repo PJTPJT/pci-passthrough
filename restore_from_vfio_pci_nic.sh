@@ -16,7 +16,7 @@ nic_id="0000:$1"
 nic_vendor_id=$(echo $2 | tr ':' ' ')
 
 # Get the host NIC driver.
-host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{print $NF}')
+host_nic_driver=$(cat "host_nic.txt")
 
 # Unbind the physical network interface card from vfio-pci
 echo "${nic_id}" > "/sys/bus/pci/drivers/vfio-pci/unbind"
