@@ -12,10 +12,10 @@ if [[ $# -ne 2 ]]; then
   exit 1
 fi
 
-if [[ -f "host_nic.txt" ]]; do
-  echo "ERROR: need to run the complementary script, setup_vfio_pci.sh first" 1&>2
+if [[ ! -f "host_nic.txt" ]]; then
+  echo "ERROR: need to run the complementary script, setup_vfio_pci.sh first" 1>&2
   exit 2
-done
+fi
 
 # Process the command line arguments.
 nic_id="0000:$1"

@@ -28,8 +28,7 @@ if [[ $# -ne 3 ]]; then
 fi
 
 # Check if VFIO modules are loaded.
-lsmod | grep -ie 'vfio' > /dev/null
-if [[ ! $! -eq 0 ]]; then
+if [[ ! -d "/sys/bus/pci/drivers/vfio-pci" ]]; then
   echo "ERROR: Please load VFIO modules." 1>&2
   exit 2
 fi
