@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Bind the physical network card back to the host driver.
-# The script requires the user to have the root privilege.
+# The script requires the user to have the root privilege. We may need to call
+# "setup_pci_assign.sh" to obtain the driver name of host NIC.
 # @author Kevin Cheng
 # @since  11/16/2017
 
@@ -16,7 +17,10 @@ nic_id="0000:$1"
 nic_vendor_id=$(echo $2 | tr ':' ' ')
 
 # Get the host NIC driver.
-host_nic_driver=$(ls -l "/sys/bus/pci/devices/${nic_id}/driver" | awk -F'/' '{print $NF}')
+host_nic_driver=$(cat "host_nic.txt")
 
 # Bind the physical network interface card to the host driver.
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
+
+# Clean up.
+rm "host_nic.txt"
