@@ -6,6 +6,12 @@
 # @author - Kevin Cheng
 # @since  - 11/15/2017
 
+###################################################################
+# WARNING: we need to start the VM without a network connection and
+# communicate with the QEMU monitor through the Unix domain socket.
+# Please see "run_vm_qmp_no_network.sh".
+###################################################################
+
 # Compute the elapsed time from the start and stop time.
 ComputeElapsedTime() {
   local start=$1
