@@ -8,7 +8,7 @@
 
 # Check on the input arguments.
 if [[ $# -ne 1 ]]; then
-  echo "Usage: ./$0 <VM IMG>" 1>&2
+  echo "Usage: $0 <VM IMG>" 1>&2
   exit 1
 fi
 

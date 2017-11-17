@@ -7,7 +7,7 @@
 
 # Check on the input arguments.
 if [[ $# -ne 2 ]]; then
-  echo "Usage: ./$0 <NIC DEVICE ID> <VM IMG>" 1>&2
+  echo "Usage: $0 <NIC DEVICE ID> <VM IMG>" 1>&2
   exit 1
 fi
 
