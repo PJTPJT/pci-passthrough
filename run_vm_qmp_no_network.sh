@@ -12,6 +12,9 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
+# Remove the previous Unix domain socket.
+if [[ -S "/tmp/qmp-socket" ]]; then rm "/tmp/qmp-socket"; fi
+
 # Process the command line arguments.
 vm_img="$1"
 
@@ -26,6 +29,5 @@ qemu-system-x86_64 -enable-kvm \
 
 # Trigger to boot up the VM by sending a null message through the unix
 # domain socket.
+while [[ ! -S "/tmp/qmp-socket" ]]; do :; done
 cat /dev/null | nc -U /tmp/qmp-socket
-
-# We may have to remove the Unix domain socket manually.
