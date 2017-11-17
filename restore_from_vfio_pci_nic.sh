@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Bind the physical network card back to the host driver.
-# The script requires the user to have the root privilege.
+# The script requires the user to have the root privilege. Before using this
+# script, we need to run "setup_vfio_pci.sh" first.
 # @author Kevin Cheng
 # @since  11/15/2017
 
@@ -10,6 +11,11 @@ if [[ $# -ne 2 ]]; then
   echo "Usage: $0 <NIC DEVICE ID> <VENDOR ID>" 1>&2
   exit 1
 fi
+
+if [[ -f "host_nic.txt" ]]; do
+  echo "ERROR: need to run the complementary script, setup_vfio_pci.sh first" 1&>2
+  exit 2
+done
 
 # Process the command line arguments.
 nic_id="0000:$1"
@@ -24,3 +30,6 @@ echo ${nic_vendor_id} > "/sys/bus/pci/drivers/vfio-pci/remove_id"
 
 # Bind the physical network interface card to the host driver.
 echo "${nic_id}" > "/sys/bus/pci/drivers/${host_nic_driver}/bind"
+
+# Clean up.
+rm "host_nic.txt"
