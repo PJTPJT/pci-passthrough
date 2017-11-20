@@ -3,7 +3,9 @@
 # Bind the physical network card back to the host driver.
 # The script requires the user to have the root privilege. We may need to call
 # "setup_pci_assign.sh" to obtain the driver name of host NIC.
-# @author Kevin Cheng
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  11/16/2017
 
 # Check on the input arguments.

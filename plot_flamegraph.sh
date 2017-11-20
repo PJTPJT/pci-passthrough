@@ -3,7 +3,9 @@
 # Generate the flamegraph.
 # Special thanks to Brendan Gregg.
 # Here is his GitHub repository: https://github.com/brendangregg/FlameGraph.git
-# @author Kevin Cheng
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  11/15/2017
 
 # Check on the input arguments.

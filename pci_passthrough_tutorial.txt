@@ -1,5 +1,11 @@
 Passthrough of Network Interface Card by the VFIO
 =================================================
+0. Authors
+----------
+Kevin Cheng       (tcheng8@binghamton.edu)
+Spoorti Doddamani (sdoddam1@binghamton.edu)
+Kartik Gopalan    (kartik@binghamton.edu)
+
 1. General Description
 ----------------------
 The passthrough of network interface card (NIC) allows the virtual

@@ -3,7 +3,9 @@
 # Retrieve the device and vendor ID for the network interface card (NIC).
 # We assume that there is only one NIC, which has only one port, in the
 # system.
-# @author Kevin Cheng
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  11/15/2017
 
 # Get the NIC ID.

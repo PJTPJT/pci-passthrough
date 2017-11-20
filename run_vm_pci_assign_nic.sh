@@ -2,7 +2,9 @@
 
 # Boot up the VM with the physical network interface card by pci-assign.
 # We assume the VM disk image is in the raw format.
-# @author Kevin Cheng
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  11/15/2017
 
 # Check on the input arguments.
