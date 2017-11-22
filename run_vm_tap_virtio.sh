@@ -22,6 +22,6 @@ qemu-system-x86_64 -enable-kvm \
                    -cpu host \
                    -smp 1 \
                    -m 2048 \
-                   -drive file=${vm_img},format=raw \
+                   -drive file=${vm_img},format=raw,if=virtio \
                    -netdev tap,id=mytap,ifname=qtap0 \
                    -device virtio-net,netdev=mytap
