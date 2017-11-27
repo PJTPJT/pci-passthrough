@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Compute the CPU utilization in the user mode (usr + nice) from the
+# atopsar output.
+# @author Kevin Cheng
+# @since  11/23/2017
+
+# Check the command line arguments.
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <TIME STAMP> <CPU UTILIZATION>"
+  exit 1
+fi
+
+# Get the time stamps
+timestamps=($(cat $1))
+
+# Get the cpu utilizations over time.
+cpu_utilizations=$2
+
+# Extract the block, containing the experiment data.
+sed -ne "/${timestamps[0]}/, /${timestamps[1]}/p" ${cpu_utilizations} | awk '{sum += $3 + $4} END {print sum/NR}'
