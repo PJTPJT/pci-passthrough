@@ -1,6 +1,9 @@
 /**
  * It has been reported that Process accounting sometimes does not work.
  * source: https://bugzilla.kernel.org/show_bug.cgi?id=190271
+ * @author Kevin Cheng       (tcheng8@binghamton.edu)
+ * @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+ * @author Kartik Gopalan    (kartik@binghamton.edu)
  */
 
 #include <sys/types.h>

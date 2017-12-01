@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Compute the CPU utilization in the guest mode from the atopsar output.
-# @author Kevin Cheng
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  11/24/2017
 
 # Check the command line arguments.
