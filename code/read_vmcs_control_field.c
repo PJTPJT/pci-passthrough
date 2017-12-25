@@ -51,28 +51,40 @@ static int open(struct inode *iobj, struct file *fobj) {
 }
 
 static int read_vmcs_control_field(struct seq_file *seq_file_obj, void *chrptr) {
-  u32 error_code = 0x0;
-  u64 cpu_based_control_field_bitmap = 0x0;
+  u32 error = 0;
+  u64 cpu_based_control_field_bitmap = 0;
   u64 cpu_based_control_field_encoding = 0x4002;
 
-  seq_printf(seq_file_obj, "BEFORE: error field: %08X\n", error_code);
-  seq_printf(seq_file_obj, "BEFORE: CPU based control field: %016llX\n", cpu_based_control_field_bitmap);
+  seq_printf(seq_file_obj, "BEFORE: error field: %08X\n", error);
+  seq_printf(seq_file_obj,"BEFORE: CPU based control field: %016llX\n", cpu_based_control_field_bitmap);
 
   asm("mov    %2,    %%rax      \n"\
       "vmread %%rax, %0         \n"\
       "jc  .carry               \n"\
+      "jz  .zero                \n"\
       "jmp .exit                \n"\
       ".carry:                  \n"\
-      "  movl  $0xffffffff, %1  \n"\
+      "  movl  $1,   %1         \n"\
+      "  jmp .exit              \n"\
+      ".zero:                   \n"\
+      "  movl  $2,   %1         \n"\
+      "  jmp .exit              \n"\
       ".exit:                   \n"\
-      : "=m" (cpu_based_control_field_bitmap), "=m" (error_code)
+      : "=m" (cpu_based_control_field_bitmap), "=m" (error)
       : "r"  (cpu_based_control_field_encoding)
       : "rax"
      );
 
-  seq_printf(seq_file_obj, "AFTER:  CPU based control field: %016llX\n", cpu_based_control_field_bitmap);
-  seq_printf(seq_file_obj, "AFTER:  error field: %08X\n", error_code);
-  seq_printf(seq_file_obj, "----------------------------------------\n");
+  if (error == 1) {
+    seq_printf(seq_file_obj, "ERROR (RFLAGS.CF): no current VMCS.\n");
+  }
+  else if (error == 2) {
+    seq_printf(seq_file_obj, "ERROR (RFLAGS.ZF): VMREAD error.\n");
+  }
+  else {
+    seq_printf(seq_file_obj, "AFTER:  CPU based control field: %016llX\n", cpu_based_control_field_bitmap);
+  }
+
   return 0;
 }
 
@@ -80,6 +92,6 @@ module_init(initialize);
 module_exit(cleanup);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Kevin Cheng");
+MODULE_AUTHOR("Kevin Cheng, Spoorti Doddamani, Kartik Gopalan");
 MODULE_VERSION("0.1");
 MODULE_DESCRIPTION("Read the control field of current active VMCS.");
