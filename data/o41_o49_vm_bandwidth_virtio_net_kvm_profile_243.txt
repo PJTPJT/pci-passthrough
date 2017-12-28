@@ -1,0 +1,1832 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 9K of event 'kvm:kvm_entry'
+# Event count (approx.): 1533864
+#
+# Overhead  Trace output
+# ........  ............
+#
+   100.00%  vcpu 0
+            |
+            ---vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_hypercall'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_hypercall'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 4K of event 'kvm:kvm_pio'
+# Event count (approx.): 244132
+#
+# Overhead  Trace output                                         
+# ........  .....................................................
+#
+    99.08%  pio_write at 0xc050 size 2 count 1 val 0x1 
+            |
+            ---emulator_pio_out_emulated
+               kvm_fast_pio_out
+               handle_io
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.41%  pio_read at 0x376 size 1 count 1 val 0x50 
+     0.09%  pio_read at 0x177 size 1 count 1 val 0x50 
+     0.06%  pio_read at 0x177 size 1 count 1 val 0x58 
+     0.06%  pio_read at 0x173 size 1 count 1 val 0x0 
+     0.04%  pio_write at 0x172 size 1 count 1 val 0x0 
+     0.04%  pio_write at 0x174 size 1 count 1 val 0x8 
+     0.04%  pio_write at 0xc06a size 1 count 1 val 0x4 
+     0.03%  pio_read at 0x170 size 4 count 2 val 0x10040400 (...)
+     0.03%  pio_write at 0x170 size 4 count 1 val 0x14a 
+     0.03%  pio_write at 0x175 size 1 count 1 val 0x0 
+     0.02%  pio_write at 0x176 size 1 count 1 val 0xa0 
+     0.02%  pio_write at 0x173 size 1 count 1 val 0x0 
+     0.01%  pio_read at 0x174 size 1 count 1 val 0x8 
+     0.01%  pio_read at 0x376 size 1 count 1 val 0x58 
+     0.01%  pio_write at 0x170 size 4 count 1 val 0x8 
+     0.01%  pio_read at 0x172 size 1 count 1 val 0x2 
+     0.01%  pio_read at 0xc06a size 1 count 1 val 0x4 
+
+
+# Samples: 0  of event 'kvm:kvm_fast_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_cpuid'
+# Event count (approx.): 595
+#
+# Overhead  Trace output                                       
+# ........  ...................................................
+#
+    99.33%  func 7 rax 0 rbx 283 rcx 0 rdx 0
+            |
+            ---kvm_cpuid
+               kvm_emulate_cpuid
+               handle_cpuid
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.50%  func 0 rax d rbx 756e6547 rcx 6c65746e rdx 49656e69
+            |
+            ---kvm_cpuid
+               kvm_emulate_cpuid
+               handle_cpuid
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.17%  func 1 rax 306e4 rbx 800 rcx ffba2223 rdx f8bfbff
+
+
+# Samples: 0  of event 'kvm:kvm_apic'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_exit'
+# Event count (approx.): 1533686
+#
+# Overhead  Trace output                                                    
+# ........  ................................................................
+#
+    39.69%  reason EXTERNAL_INTERRUPT rip 0xffffffff81064636 info 0 800000a9
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    27.44%  reason EXTERNAL_INTERRUPT rip 0xffffffff81064636 info 0 8000002a
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    14.81%  reason IO_INSTRUCTION rip 0xffffffff81412fe7 info c0500001 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     5.08%  reason EPT_VIOLATION rip 0xffffffff814066d5 info 182 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     3.81%  reason MSR_WRITE rip 0xffffffff81064508 info 0 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     1.28%  reason EXTERNAL_INTERRUPT rip 0xffffffff81064636 info 0 800000ef
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.54%  reason PREEMPTION_TIMER rip 0xffffffff81064636 info 0 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.40%  reason EXTERNAL_INTERRUPT rip 0xffffffff814066d5 info 0 8000002a
+     0.31%  reason EXTERNAL_INTERRUPT rip 0xffffffff814066d5 info 0 800000a9
+     0.23%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842508 info 0 8000002a
+     0.12%  reason EXTERNAL_INTERRUPT rip 0xffffffff81412fe9 info 0 8000002a
+     0.06%  reason EXTERNAL_INTERRUPT rip 0xffffffff81065216 info 0 8000002a
+     0.06%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609d35 info 0 8000002a
+     0.06%  reason EXTERNAL_INTERRUPT rip 0xffffffff810a1b3a info 0 8000002a
+     0.05%  reason EXTERNAL_INTERRUPT rip 0xffffffff8106450a info 0 8000002a
+     0.05%  reason EXTERNAL_INTERRUPT rip 0xffffffff81037ef1 info 0 8000002a
+     0.05%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee729 info 0 8000002a
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff814027bd info 0 8000002a
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff8106450a info 0 800000a9
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b59cd info 0 800000a9
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff818347dd info 0 8000002a
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786783 info 0 8000002a
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff811aea85 info 0 8000002a
+     0.04%  reason PREEMPTION_TIMER rip 0xffffffff814066d5 info 0 0
+     0.04%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb051 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eee45 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee6c5 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194554 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119f675 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774abf info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179159f info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e929a info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d644c info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff810651ee info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff817c917f info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eb8e5 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff814027d3 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d62e5 info 0 8000002a
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177e4cf info 0 800000a9
+     0.03%  reason EXTERNAL_INTERRUPT rip 0xffffffff816d4bab info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810651e1 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81055665 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8184250a info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810de620 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842508 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175cb74 info 0 8000002a
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff814131f8 info 170003b 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81799256 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a430 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8106450a info 0 800000ef
+     0.02%  reason EXTERNAL_INTERRUPT rip 0x7fff65ac5d30 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ae155 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81195ff5 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81064637 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb050 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f4e85 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee3fa info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d62f5 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817362bd info 0 8000002a
+     0.02%  reason PAUSE_INSTRUCTION rip 0xffffffff81406b67 info 0 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810a1b3a info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e6f35 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eef52 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81199656 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817b022f info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817c92d0 info 0 8000002a
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1770008 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085865 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c468a info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810dea15 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178d911 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81039670 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81402870 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737370 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178e990 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178efda info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817925c0 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a43a info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81086113 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c468b info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed828 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8176e8f0 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177e4f1 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f4e85 info 0 8000002a
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info c06a0000 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81172a77 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d62f9 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817390fa info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810dea10 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b544e info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eb8e5 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff389 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737200 info 0 8000002a
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff814132e5 info 1700033 0
+     0.02%  reason EPT_VIOLATION rip 0xffffffff811c00c1 info 181 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8105515c info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8140016c info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ad8e8 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173638d info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dbfa info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810fe1e6 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81777dd0 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e7045 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119f4c6 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d97d6 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774956 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff817b023d info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81038e60 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81031185 info 0 8000002a
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ad8e8 info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ca36e info 0 800000a9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e3245 info 0 800000a9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff810c3fd0 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607785 info 0 800000a9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info 1760000 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810db435 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d62f5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791776 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817746d0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e881f info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178d8c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dc35 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b7a35 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842ba0 info 0 8000002a
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info c06a0008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810642c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff815297e4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81140770 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee41a info 0 8000002a
+     0.01%  reason EPT_VIOLATION rip 0xffffffff813c8c3f info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81347009 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d69f0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e92c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736b80 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788976 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810a1c3a info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119f676 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dbaa info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791970 info 0 800000a9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 3760008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b1da6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ddfd5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e87c0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197f56 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811e3027 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed843 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81346fe5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8140a4e1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81721a01 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817362b6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817362c6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736f41 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792168 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792192 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a20d info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842908 info 0 8000002a
+     0.01%  reason EPT_VIOLATION rip 0xffffffff817bb3c8 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7fff65ac5d31 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81063af0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81063b27 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810642a1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810642b9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810651eb info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81065216 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085145 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b4933 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4844 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810db3cb info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810db435 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ec5b5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811977b0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6502 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8160a09d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81720e86 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172f633 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738566 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788f56 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dbaa info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178ec89 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817915e9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8183e045 info 0 800000a9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81393ec2 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81038e68 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b544e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c468b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810dea16 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810fee47 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81199645 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d60f0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6f1b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8171c130 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81720cfd info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736bb2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736dc3 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817855d2 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178d8b0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a689 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179ac29 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fac0 info 0 8000002a
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81609d35 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff8177db10 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81790266 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0x7fcfe80e1000 info 184 0
+     0.01%  reason EPT_VIOLATION rip 0x7fcfe8bfaf56 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb4d0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f62a2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff945 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196460 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196460 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81199326 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8140a4c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81721190 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81727856 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817388a2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175cb74 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177489a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788fd1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81789480 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dc01 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817905b9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81790f25 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791ce3 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792b3e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792d3c info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81799b5e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81834927 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8184299b info 0 8000002a
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info 1750000 0
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info 1770000 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81778c2b info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81609d3b info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x55c364cb0985 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810598f2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81063b08 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81086015 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810862a9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810a1b30 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b1730 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c47d6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb4d5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810db3cb info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f0000 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8113bf26 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811964bb info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81210170 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81346ff5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81391690 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81407c66 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609ae0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817219c9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81722354 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774999 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81778c2b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177e4cf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81787a40 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788e90 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788efe info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817893cc info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81790eb8 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791970 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817927dd info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a557 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fb01 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fb4f info 0 8000002a
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff810dea15 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81038e40 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81038e60 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81039595 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81064636 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085eda info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ca345 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e7c7a info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e8796 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eee4b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810efaae info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f01aa info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119600b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811dd2b5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed229 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee3a5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81393e85 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff813ffe72 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81407c69 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d703a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609ce8 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81721834 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817367a1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173707e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737345 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817742f5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177db16 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786855 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81789060 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791976 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792b7f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179923c info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fd64 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817c90f7 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8184489f info 0 800000a9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81841e70 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff810653f6 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81842993 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7fcfe8445d40 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81031194 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810651e6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810860a4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b52a5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c39d0 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c47a2 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e9293 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ec50b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ed015 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ef01b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff4a2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194425 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194cb2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194cff info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196000 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196219 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811962d4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811dd2b5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6a3b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607a30 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607b2f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81608e42 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609d35 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8171d1c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738566 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173862f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817745d4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81779aeb info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81779b4b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788d14 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81789364 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791595 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a435 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fad3 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81834843 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff818448a4 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81053078 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c467d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb063 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb065 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e876b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ec5fb info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f679f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196465 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119f67d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81407976 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609168 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8160a0a1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172277f info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817278f4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738560 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8176fb7b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81778b79 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178548f info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786a17 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178d8fc info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791776 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817925d5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792b45 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a4fd info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a552 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8184250a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842a15 info 0 8000002a
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff810ff945 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e9290 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f01a2 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810fe1d5 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194426 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196029 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196465 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811964bf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172f590 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173668b info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817371d9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173885b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738c46 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175debf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8176e913 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177432f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dd35 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179fb46 info 0 8000002a
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff8179a71b info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b5a9c info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4935 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ddfff info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f0246 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f6291 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811aea97 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee407 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81258496 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609ce0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81778bdd info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177a61e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177db66 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178549c info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817869c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788970 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817892bf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792ee1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a394 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8102d490 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085e1e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ae177 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810fe1d5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff046 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811963ab info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197710 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119ec75 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed82d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee729 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff813a0030 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff813fff0d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8171da00 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173668b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774be1 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178669d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81790259 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81799b62 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817a1d50 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81841ccc info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b1d01 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810db3b9 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ec69c info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff815297c0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172f620 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737150 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817383eb info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774950 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179051f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81797300 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a505 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817c92e6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6a04 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8176fb8e info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792b1a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81031193 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810eb8e6 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178551e info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085e11 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8171dc45 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736e60 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817742ba info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81797312 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810de0ab info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f6780 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811e2c04 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed7e5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff813ffeec info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81778c53 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173782b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817b03bf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810862a9 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ac27d info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194ca0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811f14d5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8140016c info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6a13 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8113bf25 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8140c09c info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dc44 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817928dd info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81796ae0 info 0 8000002a
+     0.01%  reason EPT_VIOLATION rip 0x7f1bf1365f8d info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197cbe info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811f14d5 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814066d9 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81407950 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8177a20a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817921ee info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8102d491 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ec667 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee730 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817903bf info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81841a04 info 0 800000a9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff810ef682 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811eb2b6 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774bad info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81785dab info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178988a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8183dac9 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810be475 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173838c info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179298a info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7fcfe844c1d0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81608fca info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81038e5e info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ca363 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607785 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179ad0b info 0 800000ef
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1760008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197704 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811992ac info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81796b80 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d5fc0 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085145 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197f59 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81720e80 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817367c4 info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817c92d0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81055660 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81790274 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810aae78 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dbeb info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786660 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81055150 info 0 800000a9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81196270 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607944 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609d14 info 0 800000a9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff817c90f0 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e881c info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810642a1 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f0b05 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817362b2 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786850 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81799a10 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81721208 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774aa7 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e883f info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81199645 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4935 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81841c25 info 0 800000a9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81412fe9 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810598f2 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810efd66 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed7e5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81407c6b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81719b38 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842508 info 0 800000ef
+     0.01%  reason EPT_VIOLATION rip 0x7f2298ba5658 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff817278ed info 182 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81065214 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e87f5 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f6285 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee6dd info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dac2 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178defb info 0 8000002a
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179f9bf info 0 8000002a
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff810f628b info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81031185 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c39b0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed7eb info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172789d info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81774c5d info 0 800000a9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81391690 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81039595 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810850f0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810de2b0 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737345 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff818448ad info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed82d info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d6dd4 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8108628b info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810de634 info 0 800000a9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738810 info 0 800000a9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1750008 0
+     0.00%  reason EPT_VIOLATION rip 0x557464faf658 info 181 0
+     0.00%  reason EPT_VIOLATION rip 0xffffffff81841ce2 info 183 0
+
+
+# Samples: 5  of event 'kvm:kvm_inj_virq'
+# Event count (approx.): 1297
+#
+# Overhead  Trace output
+# ........  ............
+#
+   100.00%  irq 113
+            |
+            ---vmx_inject_irq
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_inj_exception'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_page_fault'
+# Event count (approx.): 27195
+#
+# Overhead  Trace output                   
+# ........  ...............................
+#
+    97.47%  address 77425044 error_code 181
+            |
+            ---handle_ept_violation
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     2.52%  address 7137c3d8 error_code 181
+            |
+            ---handle_ept_violation
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.01%  address 7d58f010 error_code 184
+     0.00%  address 7d5880e0 error_code 184
+
+
+# Samples: 6  of event 'kvm:kvm_msr'
+# Event count (approx.): 205427
+#
+# Overhead  Trace output                 
+# ........  .............................
+#
+    99.11%  msr_write 6e0 = 0x14bda414f73
+            |
+            ---handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.89%  msr_write 6e0 = 0x149ee12b675
+            |
+            ---handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.00%  msr_write 6e0 = 0x149ee12b771
+     0.00%  msr_write 6e0 = 0x14a459727b9
+
+
+# Samples: 0  of event 'kvm:kvm_cr'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_pic_set_irq'
+# Event count (approx.): 1019
+#
+# Overhead  Trace output              
+# ........  ..........................
+#
+   100.00%  chip 1 pin 7 (edge|masked)
+            |
+            ---kvm_pic_set_irq
+               kvm_set_pic_irq
+               kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_apic_ipi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_apic_accept_irq'
+# Event count (approx.): 660302
+#
+# Overhead  Trace output                 
+# ........  .............................
+#
+    97.69%  apicid 0 vec 113 (Fixed|edge)
+            |
+            ---__apic_accept_irq
+               kvm_irq_delivery_to_apic_fast
+               kvm_irq_delivery_to_apic
+               kvm_set_msi
+               kvm_send_userspace_msi
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+               |          
+                --1.00%--0
+
+     2.27%  apicid 0 vec 239 (Fixed|edge)
+            |
+            ---__apic_accept_irq
+               kvm_apic_local_deliver
+               kvm_inject_apic_timer_irqs
+               kvm_inject_pending_timer_irqs
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.04%  apicid 0 vec 63 (Fixed|edge)
+
+
+# Samples: 0  of event 'kvm:kvm_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pv_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmrun'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_intercepts'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmexit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmexit_inject'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_intr_vmexit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_invlpga'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_skinit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_emulate_insn'
+# Event count (approx.): 9900
+#
+# Overhead  Trace output                  
+# ........  ..............................
+#
+   100.00%  0:ffffffff81412ee5:ec (prot64)
+            |
+            ---x86_emulate_instruction
+               handle_io
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:vcpu_match_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_write_tsc_offset'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_update_master_clock'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_track_tsc'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pml_full'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_ple_window'
+# Event count (approx.): 645414
+#
+# Overhead  Trace output                          
+# ........  ......................................
+#
+    99.95%  vcpu 0: ple_window 4096 (shrink 4096)
+            |
+            ---vmx_sched_in
+               kvm_arch_sched_in
+               kvm_sched_in
+               finish_task_switch
+               __schedule
+               _cond_resched
+               |          
+                --99.93%--kvm_arch_vcpu_ioctl_run
+                          kvm_vcpu_ioctl
+                          do_vfs_ioctl
+                          sys_ioctl
+                          entry_SYSCALL_64
+                          ioctl
+
+     0.02%  vcpu 0: ple_window 8192 (grow 4096)
+     0.01%  vcpu 0: ple_window 4096 (shrink 32768)
+     0.01%  vcpu 0: ple_window 16384 (grow 8192)
+     0.01%  vcpu 0: ple_window 4096 (shrink 16384)
+
+
+# Samples: 0  of event 'kvm:kvm_pvclock_update'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 366  of event 'kvm:kvm_wait_lapic_expire'
+# Event count (approx.): 14015
+#
+# Overhead  Trace output                
+# ........  ............................
+#
+    45.21%  vcpu 0: delta 49411 (late)
+            |
+            ---wait_lapic_expire
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    13.66%  vcpu 0: delta 19379 (late)
+            |
+            ---wait_lapic_expire
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.23%  vcpu 0: delta 4026 (late)
+     0.23%  vcpu 0: delta 4181 (late)
+     0.23%  vcpu 0: delta 4201 (late)
+     0.23%  vcpu 0: delta 4206 (late)
+     0.23%  vcpu 0: delta 4222 (late)
+     0.23%  vcpu 0: delta 4244 (late)
+     0.23%  vcpu 0: delta 4258 (late)
+     0.23%  vcpu 0: delta 4385 (late)
+     0.23%  vcpu 0: delta 4410 (late)
+     0.23%  vcpu 0: delta 4497 (late)
+     0.23%  vcpu 0: delta 4561 (late)
+     0.23%  vcpu 0: delta 4588 (late)
+     0.23%  vcpu 0: delta 4615 (late)
+     0.23%  vcpu 0: delta 4765 (late)
+     0.23%  vcpu 0: delta 5078 (late)
+     0.23%  vcpu 0: delta 5469 (late)
+     0.23%  vcpu 0: delta 5488 (late)
+     0.23%  vcpu 0: delta 5489 (late)
+     0.23%  vcpu 0: delta 5507 (late)
+     0.23%  vcpu 0: delta 5534 (late)
+     0.23%  vcpu 0: delta 5645 (late)
+     0.11%  vcpu 0: delta 10250 (late)
+     0.11%  vcpu 0: delta 10410 (late)
+     0.11%  vcpu 0: delta 10560 (late)
+     0.11%  vcpu 0: delta 10620 (late)
+     0.11%  vcpu 0: delta 10640 (late)
+     0.11%  vcpu 0: delta 10650 (late)
+     0.11%  vcpu 0: delta 10906 (late)
+     0.11%  vcpu 0: delta 11053 (late)
+     0.11%  vcpu 0: delta 11243 (late)
+     0.11%  vcpu 0: delta 11475 (late)
+     0.11%  vcpu 0: delta 11688 (late)
+     0.11%  vcpu 0: delta 11743 (late)
+     0.11%  vcpu 0: delta 12181 (late)
+     0.11%  vcpu 0: delta 12184 (late)
+     0.11%  vcpu 0: delta 12226 (late)
+     0.11%  vcpu 0: delta 12589 (late)
+     0.11%  vcpu 0: delta 12860 (late)
+     0.11%  vcpu 0: delta 13037 (late)
+     0.11%  vcpu 0: delta 13042 (late)
+     0.11%  vcpu 0: delta 13202 (late)
+     0.11%  vcpu 0: delta 13719 (late)
+     0.11%  vcpu 0: delta 13830 (late)
+     0.11%  vcpu 0: delta 14117 (late)
+     0.11%  vcpu 0: delta 14729 (late)
+     0.11%  vcpu 0: delta 15101 (late)
+     0.11%  vcpu 0: delta 15151 (late)
+     0.11%  vcpu 0: delta 15400 (late)
+     0.11%  vcpu 0: delta 15449 (late)
+     0.11%  vcpu 0: delta 17161 (late)
+     0.11%  vcpu 0: delta 17567 (late)
+     0.11%  vcpu 0: delta 18263 (late)
+     0.11%  vcpu 0: delta 19981 (late)
+     0.11%  vcpu 0: delta 20071 (late)
+     0.11%  vcpu 0: delta 20375 (late)
+     0.11%  vcpu 0: delta 21814 (late)
+     0.11%  vcpu 0: delta 21909 (late)
+     0.11%  vcpu 0: delta 228536 (late)
+     0.11%  vcpu 0: delta 24011 (late)
+     0.11%  vcpu 0: delta 24270 (late)
+     0.11%  vcpu 0: delta 24430 (late)
+     0.11%  vcpu 0: delta 25976 (late)
+     0.11%  vcpu 0: delta 26005 (late)
+     0.11%  vcpu 0: delta 30113 (late)
+     0.11%  vcpu 0: delta 30486 (late)
+     0.11%  vcpu 0: delta 30505 (late)
+     0.11%  vcpu 0: delta 30661 (late)
+     0.11%  vcpu 0: delta 30802 (late)
+     0.11%  vcpu 0: delta 31190 (late)
+     0.11%  vcpu 0: delta 31910 (late)
+     0.11%  vcpu 0: delta 32012 (late)
+     0.11%  vcpu 0: delta 3227 (late)
+     0.11%  vcpu 0: delta 32848 (late)
+     0.11%  vcpu 0: delta 32850 (late)
+     0.11%  vcpu 0: delta 32966 (late)
+     0.11%  vcpu 0: delta 33471 (late)
+     0.11%  vcpu 0: delta 33533 (late)
+     0.11%  vcpu 0: delta 33539 (late)
+     0.11%  vcpu 0: delta 34492 (late)
+     0.11%  vcpu 0: delta 34904 (late)
+     0.11%  vcpu 0: delta 35476 (late)
+     0.11%  vcpu 0: delta 35850 (late)
+     0.11%  vcpu 0: delta 36134 (late)
+     0.11%  vcpu 0: delta 36491 (late)
+     0.11%  vcpu 0: delta 36718 (late)
+     0.11%  vcpu 0: delta 37085 (late)
+     0.11%  vcpu 0: delta 37648 (late)
+     0.11%  vcpu 0: delta 3805 (late)
+     0.11%  vcpu 0: delta 3846 (late)
+     0.11%  vcpu 0: delta 38635 (late)
+     0.11%  vcpu 0: delta 38673 (late)
+     0.11%  vcpu 0: delta 38797 (late)
+     0.11%  vcpu 0: delta 39014 (late)
+     0.11%  vcpu 0: delta 39033 (late)
+     0.11%  vcpu 0: delta 3909 (late)
+     0.11%  vcpu 0: delta 3926 (late)
+     0.11%  vcpu 0: delta 39314 (late)
+     0.11%  vcpu 0: delta 39332 (late)
+     0.11%  vcpu 0: delta 39385 (late)
+     0.11%  vcpu 0: delta 3942 (late)
+     0.11%  vcpu 0: delta 39639 (late)
+     0.11%  vcpu 0: delta 39902 (late)
+     0.11%  vcpu 0: delta 40008 (late)
+     0.11%  vcpu 0: delta 4007 (late)
+     0.11%  vcpu 0: delta 4011 (late)
+     0.11%  vcpu 0: delta 4033 (late)
+     0.11%  vcpu 0: delta 4040 (late)
+     0.11%  vcpu 0: delta 4044 (late)
+     0.11%  vcpu 0: delta 4052 (late)
+     0.11%  vcpu 0: delta 4067 (late)
+     0.11%  vcpu 0: delta 4084 (late)
+     0.11%  vcpu 0: delta 4086 (late)
+     0.11%  vcpu 0: delta 4090 (late)
+     0.11%  vcpu 0: delta 4096 (late)
+     0.11%  vcpu 0: delta 4100 (late)
+     0.11%  vcpu 0: delta 4109 (late)
+     0.11%  vcpu 0: delta 4112 (late)
+     0.11%  vcpu 0: delta 4117 (late)
+     0.11%  vcpu 0: delta 4121 (late)
+     0.11%  vcpu 0: delta 4132 (late)
+     0.11%  vcpu 0: delta 4133 (late)
+     0.11%  vcpu 0: delta 4134 (late)
+     0.11%  vcpu 0: delta 4144 (late)
+     0.11%  vcpu 0: delta 41557 (late)
+     0.11%  vcpu 0: delta 4157 (late)
+     0.11%  vcpu 0: delta 4159 (late)
+     0.11%  vcpu 0: delta 4160 (late)
+     0.11%  vcpu 0: delta 4161 (late)
+     0.11%  vcpu 0: delta 4162 (late)
+     0.11%  vcpu 0: delta 4164 (late)
+     0.11%  vcpu 0: delta 4168 (late)
+     0.11%  vcpu 0: delta 4170 (late)
+     0.11%  vcpu 0: delta 4174 (late)
+     0.11%  vcpu 0: delta 4177 (late)
+     0.11%  vcpu 0: delta 4188 (late)
+     0.11%  vcpu 0: delta 4189 (late)
+     0.11%  vcpu 0: delta 4196 (late)
+     0.11%  vcpu 0: delta 4197 (late)
+     0.11%  vcpu 0: delta 4199 (late)
+     0.11%  vcpu 0: delta 4210 (late)
+     0.11%  vcpu 0: delta 4212 (late)
+     0.11%  vcpu 0: delta 4213 (late)
+     0.11%  vcpu 0: delta 4216 (late)
+     0.11%  vcpu 0: delta 4221 (late)
+     0.11%  vcpu 0: delta 42394 (late)
+     0.11%  vcpu 0: delta 4240 (late)
+     0.11%  vcpu 0: delta 4241 (late)
+     0.11%  vcpu 0: delta 4242 (late)
+     0.11%  vcpu 0: delta 4243 (late)
+     0.11%  vcpu 0: delta 4254 (late)
+     0.11%  vcpu 0: delta 4256 (late)
+     0.11%  vcpu 0: delta 4259 (late)
+     0.11%  vcpu 0: delta 4268 (late)
+     0.11%  vcpu 0: delta 4269 (late)
+     0.11%  vcpu 0: delta 4270 (late)
+     0.11%  vcpu 0: delta 4277 (late)
+     0.11%  vcpu 0: delta 4280 (late)
+     0.11%  vcpu 0: delta 4285 (late)
+     0.11%  vcpu 0: delta 4295 (late)
+     0.11%  vcpu 0: delta 4299 (late)
+     0.11%  vcpu 0: delta 4303 (late)
+     0.11%  vcpu 0: delta 4312 (late)
+     0.11%  vcpu 0: delta 43146 (late)
+     0.11%  vcpu 0: delta 4317 (late)
+     0.11%  vcpu 0: delta 4318 (late)
+     0.11%  vcpu 0: delta 43217 (late)
+     0.11%  vcpu 0: delta 43260 (late)
+     0.11%  vcpu 0: delta 43296 (late)
+     0.11%  vcpu 0: delta 4337 (late)
+     0.11%  vcpu 0: delta 4351 (late)
+     0.11%  vcpu 0: delta 4352 (late)
+     0.11%  vcpu 0: delta 4371 (late)
+     0.11%  vcpu 0: delta 4375 (late)
+     0.11%  vcpu 0: delta 4405 (late)
+     0.11%  vcpu 0: delta 4406 (late)
+     0.11%  vcpu 0: delta 4414 (late)
+     0.11%  vcpu 0: delta 4417 (late)
+     0.11%  vcpu 0: delta 4431 (late)
+     0.11%  vcpu 0: delta 4447 (late)
+     0.11%  vcpu 0: delta 4467 (late)
+     0.11%  vcpu 0: delta 4493 (late)
+     0.11%  vcpu 0: delta 44944 (late)
+     0.11%  vcpu 0: delta 44971 (late)
+     0.11%  vcpu 0: delta 4502 (late)
+     0.11%  vcpu 0: delta 4507 (late)
+     0.11%  vcpu 0: delta 4513 (late)
+     0.11%  vcpu 0: delta 4549 (late)
+     0.11%  vcpu 0: delta 4553 (late)
+     0.11%  vcpu 0: delta 4560 (late)
+     0.11%  vcpu 0: delta 4565 (late)
+     0.11%  vcpu 0: delta 4583 (late)
+     0.11%  vcpu 0: delta 46015 (late)
+     0.11%  vcpu 0: delta 4603 (late)
+     0.11%  vcpu 0: delta 4605 (late)
+     0.11%  vcpu 0: delta 4607 (late)
+     0.11%  vcpu 0: delta 4608 (late)
+     0.11%  vcpu 0: delta 4610 (late)
+     0.11%  vcpu 0: delta 4613 (late)
+     0.11%  vcpu 0: delta 4619 (late)
+     0.11%  vcpu 0: delta 4620 (late)
+     0.11%  vcpu 0: delta 4628 (late)
+     0.11%  vcpu 0: delta 4638 (late)
+     0.11%  vcpu 0: delta 46394 (late)
+     0.11%  vcpu 0: delta 4648 (late)
+     0.11%  vcpu 0: delta 4649 (late)
+     0.11%  vcpu 0: delta 4652 (late)
+     0.11%  vcpu 0: delta 4656 (late)
+     0.11%  vcpu 0: delta 4660 (late)
+     0.11%  vcpu 0: delta 4670 (late)
+     0.11%  vcpu 0: delta 4686 (late)
+     0.11%  vcpu 0: delta 4693 (late)
+     0.11%  vcpu 0: delta 4697 (late)
+     0.11%  vcpu 0: delta 4702 (late)
+     0.11%  vcpu 0: delta 4720 (late)
+     0.11%  vcpu 0: delta 4746 (late)
+     0.11%  vcpu 0: delta 4751 (late)
+     0.11%  vcpu 0: delta 4756 (late)
+     0.11%  vcpu 0: delta 4816 (late)
+     0.11%  vcpu 0: delta 4842 (late)
+     0.11%  vcpu 0: delta 48525 (late)
+     0.11%  vcpu 0: delta 4853 (late)
+     0.11%  vcpu 0: delta 4855 (late)
+     0.11%  vcpu 0: delta 4862 (late)
+     0.11%  vcpu 0: delta 48672 (late)
+     0.11%  vcpu 0: delta 4871 (late)
+     0.11%  vcpu 0: delta 4879 (late)
+     0.11%  vcpu 0: delta 4918 (late)
+     0.11%  vcpu 0: delta 4929 (late)
+     0.11%  vcpu 0: delta 4937 (late)
+     0.11%  vcpu 0: delta 4946 (late)
+     0.11%  vcpu 0: delta 4996 (late)
+     0.11%  vcpu 0: delta 5013 (late)
+     0.11%  vcpu 0: delta 5028 (late)
+     0.11%  vcpu 0: delta 5098 (late)
+     0.11%  vcpu 0: delta 51306 (late)
+     0.11%  vcpu 0: delta 5170 (late)
+     0.11%  vcpu 0: delta 51792 (late)
+     0.11%  vcpu 0: delta 5180 (late)
+     0.11%  vcpu 0: delta 5210 (late)
+     0.11%  vcpu 0: delta 52259 (late)
+     0.11%  vcpu 0: delta 5226 (late)
+     0.11%  vcpu 0: delta 5230 (late)
+     0.11%  vcpu 0: delta 5243 (late)
+     0.11%  vcpu 0: delta 5245 (late)
+     0.11%  vcpu 0: delta 52488 (late)
+     0.11%  vcpu 0: delta 52698 (late)
+     0.11%  vcpu 0: delta 5279 (late)
+     0.11%  vcpu 0: delta 5295 (late)
+     0.11%  vcpu 0: delta 5298 (late)
+     0.11%  vcpu 0: delta 5304 (late)
+     0.11%  vcpu 0: delta 5320 (late)
+     0.11%  vcpu 0: delta 5322 (late)
+     0.11%  vcpu 0: delta 5349 (late)
+     0.11%  vcpu 0: delta 53649 (late)
+     0.11%  vcpu 0: delta 53737 (late)
+     0.11%  vcpu 0: delta 5382 (late)
+     0.11%  vcpu 0: delta 5383 (late)
+     0.11%  vcpu 0: delta 5391 (late)
+     0.11%  vcpu 0: delta 5392 (late)
+     0.11%  vcpu 0: delta 53937 (late)
+     0.11%  vcpu 0: delta 5397 (late)
+     0.11%  vcpu 0: delta 5404 (late)
+     0.11%  vcpu 0: delta 5431 (late)
+     0.11%  vcpu 0: delta 5437 (late)
+     0.11%  vcpu 0: delta 5449 (late)
+     0.11%  vcpu 0: delta 54619 (late)
+     0.11%  vcpu 0: delta 5471 (late)
+     0.11%  vcpu 0: delta 5477 (late)
+     0.11%  vcpu 0: delta 5478 (late)
+     0.11%  vcpu 0: delta 5482 (late)
+     0.11%  vcpu 0: delta 5485 (late)
+     0.11%  vcpu 0: delta 5497 (late)
+     0.11%  vcpu 0: delta 5505 (late)
+     0.11%  vcpu 0: delta 5515 (late)
+     0.11%  vcpu 0: delta 5517 (late)
+     0.11%  vcpu 0: delta 5520 (late)
+     0.11%  vcpu 0: delta 5533 (late)
+     0.11%  vcpu 0: delta 5537 (late)
+     0.11%  vcpu 0: delta 55555 (late)
+     0.11%  vcpu 0: delta 5556 (late)
+     0.11%  vcpu 0: delta 5557 (late)
+     0.11%  vcpu 0: delta 5571 (late)
+     0.11%  vcpu 0: delta 5578 (late)
+     0.11%  vcpu 0: delta 5581 (late)
+     0.11%  vcpu 0: delta 5584 (late)
+     0.11%  vcpu 0: delta 5591 (late)
+     0.11%  vcpu 0: delta 5597 (late)
+     0.11%  vcpu 0: delta 56007 (late)
+     0.11%  vcpu 0: delta 5608 (late)
+     0.11%  vcpu 0: delta 5612 (late)
+     0.11%  vcpu 0: delta 5613 (late)
+     0.11%  vcpu 0: delta 5622 (late)
+     0.11%  vcpu 0: delta 56233 (late)
+     0.11%  vcpu 0: delta 5627 (late)
+     0.11%  vcpu 0: delta 5633 (late)
+     0.11%  vcpu 0: delta 56341 (late)
+     0.11%  vcpu 0: delta 5640 (late)
+     0.11%  vcpu 0: delta 5651 (late)
+     0.11%  vcpu 0: delta 5655 (late)
+     0.11%  vcpu 0: delta 5668 (late)
+     0.11%  vcpu 0: delta 5680 (late)
+     0.11%  vcpu 0: delta 5715 (late)
+     0.11%  vcpu 0: delta 57180 (late)
+     0.11%  vcpu 0: delta 5720 (late)
+     0.11%  vcpu 0: delta 5730 (late)
+     0.11%  vcpu 0: delta 5742 (late)
+     0.11%  vcpu 0: delta 5746 (late)
+     0.11%  vcpu 0: delta 5778 (late)
+     0.11%  vcpu 0: delta 5782 (late)
+     0.11%  vcpu 0: delta 5789 (late)
+     0.11%  vcpu 0: delta 5817 (late)
+     0.11%  vcpu 0: delta 58173 (late)
+     0.11%  vcpu 0: delta 58332 (late)
+     0.11%  vcpu 0: delta 5868 (late)
+     0.11%  vcpu 0: delta 60020 (late)
+     0.11%  vcpu 0: delta 6023 (late)
+     0.11%  vcpu 0: delta 60294 (late)
+     0.11%  vcpu 0: delta 60434 (late)
+     0.11%  vcpu 0: delta 61622 (late)
+     0.11%  vcpu 0: delta 6189 (late)
+     0.11%  vcpu 0: delta 63251 (late)
+     0.11%  vcpu 0: delta 65067 (late)
+     0.11%  vcpu 0: delta 6553 (late)
+     0.11%  vcpu 0: delta 65943 (late)
+     0.11%  vcpu 0: delta 65994 (late)
+     0.11%  vcpu 0: delta 66828 (late)
+     0.11%  vcpu 0: delta 67014 (late)
+     0.11%  vcpu 0: delta 7279 (late)
+     0.11%  vcpu 0: delta 7355 (late)
+     0.11%  vcpu 0: delta 75777 (late)
+     0.11%  vcpu 0: delta 76943 (late)
+     0.11%  vcpu 0: delta 8546 (late)
+     0.11%  vcpu 0: delta 86029 (late)
+     0.11%  vcpu 0: delta 86300 (late)
+     0.11%  vcpu 0: delta 8766 (late)
+     0.11%  vcpu 0: delta 9006 (late)
+     0.11%  vcpu 0: delta 9339 (late)
+     0.11%  vcpu 0: delta 9532 (late)
+     0.11%  vcpu 0: delta 9814 (late)
+     0.02%  vcpu 0: delta 1936640 (late)
+     0.01%  vcpu 0: delta 10968 (late)
+
+
+# Samples: 0  of event 'kvm:kvm_enter_smm'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pi_irte_update'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_notify_acked_sint'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_set_irq'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_send_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_set_msr'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_set_config'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_set_count'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_start_periodic'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_start_one_shot'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_callback'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_expiration'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_cleanup'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_avic_incomplete_ipi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_avic_unaccelerated_access'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_hv_timer_state'
+# Event count (approx.): 120399
+#
+# Overhead  Trace output         
+# ........  .....................
+#
+   100.00%  vcpu_id 0 hv_timer 1
+
+            |
+            ---start_hv_timer
+               start_apic_timer
+               kvm_set_lapic_tscdeadline_msr
+               kvm_set_msr_common
+               vmx_set_msr
+               kvm_set_msr
+               handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 7K of event 'kvm:kvm_userspace_exit'
+# Event count (approx.): 244131
+#
+# Overhead  Trace output          
+# ........  ......................
+#
+   100.00%  reason KVM_EXIT_IO (2)
+            |
+            ---kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_vcpu_wakeup'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_set_irq'
+# Event count (approx.): 1032
+#
+# Overhead  Trace output           
+# ........  .......................
+#
+   100.00%  gsi 15 level 0 source 0
+            |
+            ---kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 5  of event 'kvm:kvm_ioapic_set_irq'
+# Event count (approx.): 1003
+#
+# Overhead  Trace output                             
+# ........  .........................................
+#
+   100.00%  pin 15 dst 0 vec 63 (Fixed|physical|edge)
+            |
+            ---ioapic_set_irq
+               kvm_ioapic_set_irq
+               kvm_set_ioapic_irq
+               kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_ioapic_delayed_eoi_inj'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_msi_set_irq'
+# Event count (approx.): 646195
+#
+# Overhead  Trace output                       
+# ........  ...................................
+#
+   100.00%  dst 0 vec 113 (Fixed|physical|edge)
+            |
+            ---kvm_set_msi_irq
+               kvm_set_msi
+               kvm_send_userspace_msi
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+               |          
+                --0.96%--0
+
+
+
+# Samples: 0  of event 'kvm:kvm_ack_irq'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 11K of event 'kvm:kvm_fpu'
+# Event count (approx.): 1778362
+#
+# Overhead  Trace output
+# ........  ............
+#
+    50.78%  load
+            |
+            ---kvm_load_guest_fpu.part.166
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    49.22%  unload
+            |
+            ---kvm_put_guest_fpu.part.167
+               kvm_arch_vcpu_put
+               |          
+               |--35.67%--kvm_sched_out
+               |          __schedule
+               |          _cond_resched
+               |          kvm_arch_vcpu_ioctl_run
+               |          kvm_vcpu_ioctl
+               |          do_vfs_ioctl
+               |          sys_ioctl
+               |          entry_SYSCALL_64
+               |          ioctl
+               |          
+                --13.55%--vcpu_put
+                          kvm_vcpu_ioctl
+                          do_vfs_ioctl
+                          sys_ioctl
+                          entry_SYSCALL_64
+                          ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_age_page'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_try_async_get_page'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_doublefault'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_not_present'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_ready'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_completed'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_halt_poll_ns'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

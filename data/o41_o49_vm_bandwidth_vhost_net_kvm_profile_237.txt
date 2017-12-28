@@ -1,0 +1,1985 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 11K of event 'kvm:kvm_entry'
+# Event count (approx.): 5359484
+#
+# Overhead  Trace output
+# ........  ............
+#
+   100.00%  vcpu 0
+            |
+            ---vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_hypercall'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_hypercall'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_pio'
+# Event count (approx.): 435818
+#
+# Overhead  Trace output                               
+# ........  ...........................................
+#
+    99.55%  pio_write at 0xc050 size 2 count 1 val 0x1 
+            |
+            ---emulator_pio_out_emulated
+               kvm_fast_pio_out
+               handle_io
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.45%  pio_read at 0x376 size 1 count 1 val 0x50 
+     0.00%  pio_read at 0x177 size 1 count 1 val 0x50 
+     0.00%  pio_write at 0x176 size 1 count 1 val 0xa0 
+
+
+# Samples: 0  of event 'kvm:kvm_fast_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_cpuid'
+# Event count (approx.): 1236
+#
+# Overhead  Trace output                                       
+# ........  ...................................................
+#
+    99.68%  func 7 rax 0 rbx 283 rcx 0 rdx 0
+            |
+            ---kvm_cpuid
+               kvm_emulate_cpuid
+               handle_cpuid
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.24%  func 0 rax d rbx 756e6547 rcx 6c65746e rdx 49656e69
+     0.08%  func 1 rax 306e4 rbx 800 rcx ffba2223 rdx f8bfbff
+
+
+# Samples: 0  of event 'kvm:kvm_apic'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_exit'
+# Event count (approx.): 5359328
+#
+# Overhead  Trace output                                                    
+# ........  ................................................................
+#
+    72.09%  reason PAUSE_INSTRUCTION rip 0xffffffff810c4817 info 0 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    11.71%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4819 info 0 80000049
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     8.63%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4819 info 0 800000e9
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     4.15%  reason IO_INSTRUCTION rip 0xffffffff81412fe7 info c0500001 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     1.14%  reason MSR_WRITE rip 0xffffffff81064508 info 0 0
+            |
+            ---vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.34%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4819 info 0 800000ef
+     0.28%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4817 info 0 80000049
+     0.21%  reason PREEMPTION_TIMER rip 0xffffffff810c4819 info 0 0
+     0.20%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4817 info 0 800000e9
+     0.13%  reason EXTERNAL_INTERRUPT rip 0xffffffff814066d5 info 0 800000e9
+     0.06%  reason EXTERNAL_INTERRUPT rip 0xffffffff814066d5 info 0 80000049
+     0.05%  reason EXTERNAL_INTERRUPT rip 0xffffffff81842508 info 0 800000e9
+     0.03%  reason EPT_VIOLATION rip 0xffffffff814066d5 info 182 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175de08 info 0 800000e9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff81412fe9 info 0 800000e9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ed7e5 info 0 800000e9
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff8184297d info 0 800000e9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff814004ea info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736b86 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810be5b1 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811ee6c5 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81529803 info 0 800000e9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81083c4f info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8106524e info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178197f info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81788e4f info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 3760008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c4817 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811afcd9 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817360c6 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179a897 info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1710008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b52ba info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8183e045 info 0 80000049
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff810c482a info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81197710 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8172789d info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81797312 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810aaf37 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817388a2 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81791595 info 0 800000e9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff814066d5 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff81724516 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7f5c282d01d0 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff03f info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81194d81 info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81792168 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81834806 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x557b9ac9fd9d info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81085d53 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c39d0 info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810de634 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f02f9 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff389 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81196485 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81199645 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8160a3d0 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81720ea8 info 0 800000ef
+     0.01%  reason EPT_VIOLATION rip 0x7f4e29e78e10 info 182 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810598f2 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b59cd info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736b38 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817867c0 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7ffe6a9cd9e6 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8102d491 info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810c482a info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81346feb info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81779db6 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81789364 info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info 1770000 0
+     0.01%  reason EPT_VIOLATION rip 0x5614d96dd1c3 info 184 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x5614d96d9563 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f0208 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810f7208 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8120f51f info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8173705f info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178ea7e info 0 800000e9
+     0.01%  reason EPT_VIOLATION rip 0xffffffff810eeffb info 184 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179ac29 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81844855 info 0 800000e9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff817383eb info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810cb050 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810e874e info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81736149 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737072 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175de67 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8179f99d info 0 800000e9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81412fe9 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff810c3fd0 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8102d49a info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8106450a info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81737833 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178e990 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81841c34 info 0 80000049
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81039595 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8119f67d info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8103959e info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81738deb info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811963ed info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81607953 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817889bf info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ae155 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff811b6fd5 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff814d690e info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81721a80 info 0 800000e9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff8173623c info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff8107162f info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81609d35 info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1750008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ef2d6 info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff814131f8 info 170003b 0
+     0.01%  reason EPT_VIOLATION rip 0x5614d96f7095 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8175cb00 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8178dbfa info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff81786671 info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ad8f3 info 0 800000e9
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff81796ae7 info 0 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff817b023d info 0 800000e9
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff8176e90d info 0 800000e9
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1720008 0
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412ee5 info 1770008 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810b59cd info 0 80000049
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff81412fa7 info 1740000 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff810ff38d info 0 800000e9
+
+
+# Samples: 5  of event 'kvm:kvm_inj_virq'
+# Event count (approx.): 1384
+#
+# Overhead  Trace output
+# ........  ............
+#
+   100.00%  irq 113
+            |
+            ---vmx_inject_irq
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_inj_exception'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_page_fault'
+# Event count (approx.): 172908
+#
+# Overhead  Trace output                   
+# ........  ...............................
+#
+    98.93%  address 1e27c20 error_code 181
+            |
+            ---handle_ept_violation
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     1.07%  address 7a66120a error_code 181
+            |
+            ---handle_ept_violation
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.00%  address 7cab3f18 error_code 181
+     0.00%  address 7f499860 error_code 181
+
+
+# Samples: 865  of event 'kvm:kvm_msr'
+# Event count (approx.): 62991
+#
+# Overhead  Trace output                
+# ........  ............................
+#
+    74.28%  msr_write 6e0 = 0x1a7342e15c
+            |
+            ---handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     3.56%  msr_write 6e0 = 0x17de53a289
+            |
+            ---handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.03%  msr_write 6e0 = 0x461ff38d55
+     0.03%  msr_write 6e0 = 0x50b9b29d6b
+     0.03%  msr_write 6e0 = 0x50d905ddee
+     0.03%  msr_write 6e0 = 0x528c07daec
+     0.03%  msr_write 6e0 = 0x528d3c5e42
+     0.03%  msr_write 6e0 = 0x46433f2e8c
+     0.03%  msr_write 6e0 = 0x4644acc607
+     0.03%  msr_write 6e0 = 0x464a2ed333
+     0.03%  msr_write 6e0 = 0x464e974d16
+     0.03%  msr_write 6e0 = 0x4652f7d973
+     0.03%  msr_write 6e0 = 0x46c55ac78a
+     0.03%  msr_write 6e0 = 0x46ca252654
+     0.03%  msr_write 6e0 = 0x46d80431a5
+     0.03%  msr_write 6e0 = 0x46df93fadf
+     0.03%  msr_write 6e0 = 0x46e8e74a79
+     0.03%  msr_write 6e0 = 0x46e8e76492
+     0.03%  msr_write 6e0 = 0x46eb685a22
+     0.03%  msr_write 6e0 = 0x46ef968c9c
+     0.03%  msr_write 6e0 = 0x46effa1fa3
+     0.03%  msr_write 6e0 = 0x46fa6db672
+     0.03%  msr_write 6e0 = 0x470b73c968
+     0.03%  msr_write 6e0 = 0x470eeacbbe
+     0.03%  msr_write 6e0 = 0x471af938f6
+     0.03%  msr_write 6e0 = 0x471ca6f0be
+     0.03%  msr_write 6e0 = 0x476ce730b2
+     0.03%  msr_write 6e0 = 0x476ce73e1e
+     0.03%  msr_write 6e0 = 0x4793e1b71a
+     0.03%  msr_write 6e0 = 0x4797aa5b28
+     0.03%  msr_write 6e0 = 0x47a8abb6a9
+     0.03%  msr_write 6e0 = 0x47ab8e81b0
+     0.03%  msr_write 6e0 = 0x47b222537e
+     0.03%  msr_write 6e0 = 0x47bc32b66e
+     0.03%  msr_write 6e0 = 0x47bd332307
+     0.03%  msr_write 6e0 = 0x47c1418e93
+     0.03%  msr_write 6e0 = 0x47c5360100
+     0.03%  msr_write 6e0 = 0x47cae2261f
+     0.03%  msr_write 6e0 = 0x47d93d17cd
+     0.03%  msr_write 6e0 = 0x48084de77c
+     0.03%  msr_write 6e0 = 0x480989d2e9
+     0.03%  msr_write 6e0 = 0x4881790cfd
+     0.03%  msr_write 6e0 = 0x4886d462d1
+     0.03%  msr_write 6e0 = 0x488b109741
+     0.03%  msr_write 6e0 = 0x488e7db0d0
+     0.03%  msr_write 6e0 = 0x489a309483
+     0.03%  msr_write 6e0 = 0x48a447d0cd
+     0.03%  msr_write 6e0 = 0x48a627ffec
+     0.03%  msr_write 6e0 = 0x48ba0d306f
+     0.03%  msr_write 6e0 = 0x48bec163b0
+     0.03%  msr_write 6e0 = 0x490327343f
+     0.03%  msr_write 6e0 = 0x490422d85c
+     0.03%  msr_write 6e0 = 0x491162154c
+     0.03%  msr_write 6e0 = 0x4938ba4497
+     0.03%  msr_write 6e0 = 0x4940bd1d2b
+     0.03%  msr_write 6e0 = 0x4942c9fbf7
+     0.03%  msr_write 6e0 = 0x49621d415d
+     0.03%  msr_write 6e0 = 0x49b26587c0
+     0.03%  msr_write 6e0 = 0x49b723c24f
+     0.03%  msr_write 6e0 = 0x49bee9efec
+     0.03%  msr_write 6e0 = 0x4a3513faea
+     0.03%  msr_write 6e0 = 0x4a3a49480e
+     0.03%  msr_write 6e0 = 0x4a3c96a693
+     0.03%  msr_write 6e0 = 0x4a41183f66
+     0.03%  msr_write 6e0 = 0x4a84ac122a
+     0.03%  msr_write 6e0 = 0x4a88b1b05b
+     0.03%  msr_write 6e0 = 0x4a8cb31c69
+     0.03%  msr_write 6e0 = 0x4a9146a386
+     0.03%  msr_write 6e0 = 0x4a96527255
+     0.03%  msr_write 6e0 = 0x4a9fb9d274
+     0.03%  msr_write 6e0 = 0x4ac27e76db
+     0.03%  msr_write 6e0 = 0x4ac789e4c9
+     0.03%  msr_write 6e0 = 0x4aca48fc43
+     0.03%  msr_write 6e0 = 0x4acf1a83cd
+     0.03%  msr_write 6e0 = 0x4ad1cba74c
+     0.03%  msr_write 6e0 = 0x4ada051b38
+     0.03%  msr_write 6e0 = 0x4ada4eacea
+     0.03%  msr_write 6e0 = 0x4ae347a6f2
+     0.03%  msr_write 6e0 = 0x4ae5d2c4bb
+     0.03%  msr_write 6e0 = 0x4af958bf07
+     0.03%  msr_write 6e0 = 0x4b4f78168e
+     0.03%  msr_write 6e0 = 0x4b9d13d023
+     0.03%  msr_write 6e0 = 0x4ba1ac6d70
+     0.03%  msr_write 6e0 = 0x4bb0cea906
+     0.03%  msr_write 6e0 = 0x4bb39bcf54
+     0.03%  msr_write 6e0 = 0x4bb85e36ff
+     0.03%  msr_write 6e0 = 0x4bfbb5635c
+     0.03%  msr_write 6e0 = 0x4bff084e3f
+     0.03%  msr_write 6e0 = 0x4c03380e71
+     0.03%  msr_write 6e0 = 0x4c1343dbc4
+     0.03%  msr_write 6e0 = 0x4c66db642a
+     0.03%  msr_write 6e0 = 0x4c8164cce0
+     0.03%  msr_write 6e0 = 0x4c85eb134c
+     0.03%  msr_write 6e0 = 0x4c89b3f8b7
+     0.03%  msr_write 6e0 = 0x4c8c68b529
+     0.03%  msr_write 6e0 = 0x4c90ea4daa
+     0.03%  msr_write 6e0 = 0x4c950b0d6a
+     0.03%  msr_write 6e0 = 0x4d279fb941
+     0.03%  msr_write 6e0 = 0x4d2d35ffe2
+     0.03%  msr_write 6e0 = 0x4d2d361967
+     0.03%  msr_write 6e0 = 0x4d302c865d
+     0.03%  msr_write 6e0 = 0x4d33f49b01
+     0.03%  msr_write 6e0 = 0x4d37a5672a
+     0.03%  msr_write 6e0 = 0x4d4429c9f2
+     0.03%  msr_write 6e0 = 0x4d4c8b4763
+     0.03%  msr_write 6e0 = 0x4d80e0c869
+     0.03%  msr_write 6e0 = 0x4d8af64496
+     0.03%  msr_write 6e0 = 0x4d8b3313a5
+     0.03%  msr_write 6e0 = 0x4d8ebdcca4
+     0.03%  msr_write 6e0 = 0x4ddf69367c
+     0.03%  msr_write 6e0 = 0x4de562f33c
+     0.03%  msr_write 6e0 = 0x4df25b7dcb
+     0.03%  msr_write 6e0 = 0x4df367da30
+     0.03%  msr_write 6e0 = 0x4df4e08fed
+     0.03%  msr_write 6e0 = 0x4df5381f6e
+     0.03%  msr_write 6e0 = 0x4dfceb476a
+     0.03%  msr_write 6e0 = 0x4dff6c1987
+     0.03%  msr_write 6e0 = 0x4e01ed0d62
+     0.03%  msr_write 6e0 = 0x4e0685ac7d
+     0.03%  msr_write 6e0 = 0x4e0a4d3d2e
+     0.03%  msr_write 6e0 = 0x4e27d5bbff
+     0.03%  msr_write 6e0 = 0x4e528998fe
+     0.03%  msr_write 6e0 = 0x4e573badaa
+     0.03%  msr_write 6e0 = 0x4e5f0e072e
+     0.03%  msr_write 6e0 = 0x4e618ed948
+     0.03%  msr_write 6e0 = 0x4e7800a4f8
+     0.03%  msr_write 6e0 = 0x4e97850273
+     0.03%  msr_write 6e0 = 0x4eae35bbcf
+     0.03%  msr_write 6e0 = 0x4eb52c82cc
+     0.03%  msr_write 6e0 = 0x4eb997b99d
+     0.03%  msr_write 6e0 = 0x4ebd5f558b
+     0.03%  msr_write 6e0 = 0x4ec26a0446
+     0.03%  msr_write 6e0 = 0x4ec4784992
+     0.03%  msr_write 6e0 = 0x4ecab4217c
+     0.03%  msr_write 6e0 = 0x4ee3cbbe1d
+     0.03%  msr_write 6e0 = 0x4f22d34efb
+     0.03%  msr_write 6e0 = 0x4f2740251b
+     0.03%  msr_write 6e0 = 0x4f2b5651eb
+     0.03%  msr_write 6e0 = 0x4f32d8fb2b
+     0.03%  msr_write 6e0 = 0x4f41c770ba
+     0.03%  msr_write 6e0 = 0x4f56658d56
+     0.03%  msr_write 6e0 = 0x4f5ae72662
+     0.03%  msr_write 6e0 = 0x4f611b29f4
+     0.03%  msr_write 6e0 = 0x4f6cc345cb
+     0.03%  msr_write 6e0 = 0x4f9fc1f770
+     0.03%  msr_write 6e0 = 0x4fa684ed54
+     0.03%  msr_write 6e0 = 0x4fa684f907
+     0.03%  msr_write 6e0 = 0x4fdb8bebd3
+     0.03%  msr_write 6e0 = 0x4fde69a038
+     0.03%  msr_write 6e0 = 0x4fdf15e58f
+     0.03%  msr_write 6e0 = 0x4fe819133a
+     0.03%  msr_write 6e0 = 0x4fe9f19c48
+     0.03%  msr_write 6e0 = 0x4fee9b629d
+     0.03%  msr_write 6e0 = 0x4ff19c6116
+     0.03%  msr_write 6e0 = 0x5011c2a096
+     0.03%  msr_write 6e0 = 0x501952f7eb
+     0.03%  msr_write 6e0 = 0x501a2abdf0
+     0.03%  msr_write 6e0 = 0x501d2bd97b
+     0.03%  msr_write 6e0 = 0x50493ce136
+     0.03%  msr_write 6e0 = 0x504c3c68c5
+     0.03%  msr_write 6e0 = 0x504c3c7c1f
+     0.03%  msr_write 6e0 = 0x5050ce6890
+     0.03%  msr_write 6e0 = 0x5059a3cf28
+     0.03%  msr_write 6e0 = 0x505bb7c273
+     0.03%  msr_write 6e0 = 0x506143ebd2
+     0.03%  msr_write 6e0 = 0x5065c582ef
+     0.03%  msr_write 6e0 = 0x50671fe84b
+     0.03%  msr_write 6e0 = 0x506cc7fd8e
+     0.03%  msr_write 6e0 = 0x507249efba
+     0.03%  msr_write 6e0 = 0x5077e6ef37
+     0.03%  msr_write 6e0 = 0x507b4d2009
+     0.03%  msr_write 6e0 = 0x507ece5c08
+     0.03%  msr_write 6e0 = 0x50b2e0c411
+     0.03%  msr_write 6e0 = 0x50b9b285dd
+     0.03%  msr_write 6e0 = 0x50e873b1b0
+     0.03%  msr_write 6e0 = 0x50ecf54a6c
+     0.03%  msr_write 6e0 = 0x50fd8fafa6
+     0.03%  msr_write 6e0 = 0x51007c2f3e
+     0.03%  msr_write 6e0 = 0x5105211330
+     0.03%  msr_write 6e0 = 0x5107a6afb6
+     0.03%  msr_write 6e0 = 0x511483303d
+     0.03%  msr_write 6e0 = 0x5114834329
+     0.03%  msr_write 6e0 = 0x5117a6f152
+     0.03%  msr_write 6e0 = 0x5175a1f881
+     0.03%  msr_write 6e0 = 0x517926d11c
+     0.03%  msr_write 6e0 = 0x51bbf0d7ba
+     0.03%  msr_write 6e0 = 0x51bf3f93b8
+     0.03%  msr_write 6e0 = 0x51cd99ebb2
+     0.03%  msr_write 6e0 = 0x51d1c61e1d
+     0.03%  msr_write 6e0 = 0x51d39c670e
+     0.03%  msr_write 6e0 = 0x51d39c7431
+     0.03%  msr_write 6e0 = 0x51deab6775
+     0.03%  msr_write 6e0 = 0x51e58e4661
+     0.03%  msr_write 6e0 = 0x51ea9a8eb5
+     0.03%  msr_write 6e0 = 0x51efa60df8
+     0.03%  msr_write 6e0 = 0x51f351f70c
+     0.03%  msr_write 6e0 = 0x51f9bce82a
+     0.03%  msr_write 6e0 = 0x51fdd5ac54
+     0.03%  msr_write 6e0 = 0x521244c8b6
+     0.03%  msr_write 6e0 = 0x52235844be
+     0.03%  msr_write 6e0 = 0x522663ee73
+     0.03%  msr_write 6e0 = 0x5285ab34f4
+     0.03%  msr_write 6e0 = 0x529189d30d
+     0.03%  msr_write 6e0 = 0x5299d98524
+     0.03%  msr_write 6e0 = 0x529d0dd264
+     0.03%  msr_write 6e0 = 0x529e0e3cad
+     0.03%  msr_write 6e0 = 0x52a590e4c7
+     0.03%  msr_write 6e0 = 0x52aee379ca
+     0.03%  msr_write 6e0 = 0x53013a7e0a
+     0.03%  msr_write 6e0 = 0x5304b27759
+     0.03%  msr_write 6e0 = 0x462782c1f1
+     0.03%  msr_write 6e0 = 0x462c8ed87b
+     0.03%  msr_write 6e0 = 0x4630572d38
+     0.03%  msr_write 6e0 = 0x4633a4229a
+     0.03%  msr_write 6e0 = 0x46341eb930
+     0.03%  msr_write 6e0 = 0x4637e63bdd
+     0.03%  msr_write 6e0 = 0x463bae7560
+     0.03%  msr_write 6e0 = 0x4652b1dce0
+     0.03%  msr_write 6e0 = 0x46562889a6
+     0.03%  msr_write 6e0 = 0x465bb513fc
+     0.03%  msr_write 6e0 = 0x465f3654ca
+     0.03%  msr_write 6e0 = 0x4666b9035a
+     0.03%  msr_write 6e0 = 0x466bbaae84
+     0.03%  msr_write 6e0 = 0x466bbac936
+     0.03%  msr_write 6e0 = 0x466f5f6bfc
+     0.03%  msr_write 6e0 = 0x4676bebb76
+     0.03%  msr_write 6e0 = 0x4677bf0837
+     0.03%  msr_write 6e0 = 0x467ac02a3e
+     0.03%  msr_write 6e0 = 0x467ec19815
+     0.03%  msr_write 6e0 = 0x468248d5b7
+     0.03%  msr_write 6e0 = 0x4684cecf77
+     0.03%  msr_write 6e0 = 0x4688c52ab1
+     0.03%  msr_write 6e0 = 0x468da0be66
+     0.03%  msr_write 6e0 = 0x4691c861e2
+     0.03%  msr_write 6e0 = 0x469549a223
+     0.03%  msr_write 6e0 = 0x46994b0f48
+     0.03%  msr_write 6e0 = 0x469dcca856
+     0.03%  msr_write 6e0 = 0x46a9d0f3d6
+     0.03%  msr_write 6e0 = 0x46aed2bd4d
+     0.03%  msr_write 6e0 = 0x46b0f2dc32
+     0.03%  msr_write 6e0 = 0x46b0f2ed18
+     0.03%  msr_write 6e0 = 0x46c1d9643d
+     0.03%  msr_write 6e0 = 0x46c1d9713d
+     0.03%  msr_write 6e0 = 0x46c1d97e5a
+     0.03%  msr_write 6e0 = 0x46c294c3f2
+     0.03%  msr_write 6e0 = 0x46ccdd75c0
+     0.03%  msr_write 6e0 = 0x46cfde86e6
+     0.03%  msr_write 6e0 = 0x46d042a1d5
+     0.03%  msr_write 6e0 = 0x46d2f9f45d
+     0.03%  msr_write 6e0 = 0x46f4ebbd21
+     0.03%  msr_write 6e0 = 0x4701f03ddc
+     0.03%  msr_write 6e0 = 0x4701f06510
+     0.03%  msr_write 6e0 = 0x470eeaacfb
+     0.03%  msr_write 6e0 = 0x471b797f33
+     0.03%  msr_write 6e0 = 0x471ca70a88
+     0.03%  msr_write 6e0 = 0x471fe4c315
+     0.03%  msr_write 6e0 = 0x472b7f20ec
+     0.03%  msr_write 6e0 = 0x472e3e8cb4
+     0.03%  msr_write 6e0 = 0x472e3e9dc5
+     0.03%  msr_write 6e0 = 0x473080fefb
+     0.03%  msr_write 6e0 = 0x4734023e8a
+     0.03%  msr_write 6e0 = 0x4737035062
+     0.03%  msr_write 6e0 = 0x473b04bec0
+     0.03%  msr_write 6e0 = 0x473e85fe1f
+     0.03%  msr_write 6e0 = 0x4741ee1bbc
+     0.03%  msr_write 6e0 = 0x4745b66139
+     0.03%  msr_write 6e0 = 0x474d8b5979
+     0.03%  msr_write 6e0 = 0x474d923412
+     0.03%  msr_write 6e0 = 0x47510e550e
+     0.03%  msr_write 6e0 = 0x4754d60447
+     0.03%  msr_write 6e0 = 0x47589ea2a5
+     0.03%  msr_write 6e0 = 0x475eecb559
+     0.03%  msr_write 6e0 = 0x476b961071
+     0.03%  msr_write 6e0 = 0x476ce71702
+     0.03%  msr_write 6e0 = 0x47721859a3
+     0.03%  msr_write 6e0 = 0x47745de1de
+     0.03%  msr_write 6e0 = 0x4778258792
+     0.03%  msr_write 6e0 = 0x477fb6a8ef
+     0.03%  msr_write 6e0 = 0x47837f0672
+     0.03%  msr_write 6e0 = 0x478889d1bd
+     0.03%  msr_write 6e0 = 0x478c3abf0f
+     0.03%  msr_write 6e0 = 0x478c52149f
+     0.03%  msr_write 6e0 = 0x478f22bcdc
+     0.03%  msr_write 6e0 = 0x47a6ca0010
+     0.03%  msr_write 6e0 = 0x47ab8e9f25
+     0.03%  msr_write 6e0 = 0x47ab8eb924
+     0.03%  msr_write 6e0 = 0x47ad2d7071
+     0.03%  msr_write 6e0 = 0x47ca1456ca
+     0.03%  msr_write 6e0 = 0x47d062852f
+     0.03%  msr_write 6e0 = 0x47d33aea5f
+     0.03%  msr_write 6e0 = 0x47ddbebf1a
+     0.03%  msr_write 6e0 = 0x47e13fe8b2
+     0.03%  msr_write 6e0 = 0x47e13ffd36
+     0.03%  msr_write 6e0 = 0x47e4410fb8
+     0.03%  msr_write 6e0 = 0x47e8c2ab0c
+     0.03%  msr_write 6e0 = 0x47ec43eb33
+     0.03%  msr_write 6e0 = 0x47f04557de
+     0.03%  msr_write 6e0 = 0x47f7c80526
+     0.03%  msr_write 6e0 = 0x47fc4984f3
+     0.03%  msr_write 6e0 = 0x47fc499e45
+     0.03%  msr_write 6e0 = 0x4805cceed9
+     0.03%  msr_write 6e0 = 0x480cf52931
+     0.03%  msr_write 6e0 = 0x4810bcaa94
+     0.03%  msr_write 6e0 = 0x481704f760
+     0.03%  msr_write 6e0 = 0x481d58ac2d
+     0.03%  msr_write 6e0 = 0x482156d24c
+     0.03%  msr_write 6e0 = 0x48262d121e
+     0.03%  msr_write 6e0 = 0x4828dd4e4d
+     0.03%  msr_write 6e0 = 0x4829f597d6
+     0.03%  msr_write 6e0 = 0x482cdaebb5
+     0.03%  msr_write 6e0 = 0x4831dcb448
+     0.03%  msr_write 6e0 = 0x48355df4ae
+     0.03%  msr_write 6e0 = 0x48395f6119
+     0.03%  msr_write 6e0 = 0x483d60cd89
+     0.03%  msr_write 6e0 = 0x484061e0fd
+     0.03%  msr_write 6e0 = 0x48476456f0
+     0.03%  msr_write 6e0 = 0x48482d358b
+     0.03%  msr_write 6e0 = 0x484c04a898
+     0.03%  msr_write 6e0 = 0x48506793da
+     0.03%  msr_write 6e0 = 0x485469024d
+     0.03%  msr_write 6e0 = 0x485bebaf78
+     0.03%  msr_write 6e0 = 0x485f6cd948
+     0.03%  msr_write 6e0 = 0x485f6ced79
+     0.03%  msr_write 6e0 = 0x4863f8df4c
+     0.03%  msr_write 6e0 = 0x486c718737
+     0.03%  msr_write 6e0 = 0x486c718f02
+     0.03%  msr_write 6e0 = 0x486ff2d135
+     0.03%  msr_write 6e0 = 0x4873740fd9
+     0.03%  msr_write 6e0 = 0x4877757e59
+     0.03%  msr_write 6e0 = 0x487e7330c1
+     0.03%  msr_write 6e0 = 0x4886d43e1f
+     0.03%  msr_write 6e0 = 0x4892a0ca49
+     0.03%  msr_write 6e0 = 0x48947fd4ac
+     0.03%  msr_write 6e0 = 0x48a810ed6d
+     0.03%  msr_write 6e0 = 0x48ab880590
+     0.03%  msr_write 6e0 = 0x48af0944f1
+     0.03%  msr_write 6e0 = 0x48b28a8409
+     0.03%  msr_write 6e0 = 0x48b730fecf
+     0.03%  msr_write 6e0 = 0x48c490e986
+     0.03%  msr_write 6e0 = 0x48c57baeaa
+     0.03%  msr_write 6e0 = 0x48c8d8be8a
+     0.03%  msr_write 6e0 = 0x48cca04de2
+     0.03%  msr_write 6e0 = 0x48d067de19
+     0.03%  msr_write 6e0 = 0x48d430073e
+     0.03%  msr_write 6e0 = 0x48d7f83924
+     0.03%  msr_write 6e0 = 0x48de9a32bf
+     0.03%  msr_write 6e0 = 0x48e3511c60
+     0.03%  msr_write 6e0 = 0x48e4cf32ee
+     0.03%  msr_write 6e0 = 0x48e71d3b34
+     0.03%  msr_write 6e0 = 0x48ea9e7a73
+     0.03%  msr_write 6e0 = 0x48ed9f8c62
+     0.03%  msr_write 6e0 = 0x48f1a0f7ca
+     0.03%  msr_write 6e0 = 0x48f6a2bc8f
+     0.03%  msr_write 6e0 = 0x48f8a376c7
+     0.03%  msr_write 6e0 = 0x490aa9e1e9
+     0.03%  msr_write 6e0 = 0x4911622d68
+     0.03%  msr_write 6e0 = 0x49133923c2
+     0.03%  msr_write 6e0 = 0x491c0b370f
+     0.03%  msr_write 6e0 = 0x492376582b
+     0.03%  msr_write 6e0 = 0x492376744a
+     0.03%  msr_write 6e0 = 0x4928a809c2
+     0.03%  msr_write 6e0 = 0x492b3574e2
+     0.03%  msr_write 6e0 = 0x492fb70f4c
+     0.03%  msr_write 6e0 = 0x4933384cff
+     0.03%  msr_write 6e0 = 0x4941bd5192
+     0.03%  msr_write 6e0 = 0x4942c9ab71
+     0.03%  msr_write 6e0 = 0x49483fc951
+     0.03%  msr_write 6e0 = 0x494c413553
+     0.03%  msr_write 6e0 = 0x494fc27555
+     0.03%  msr_write 6e0 = 0x495893fcb9
+     0.03%  msr_write 6e0 = 0x495b191bbd
+     0.03%  msr_write 6e0 = 0x496024eb9a
+     0.03%  msr_write 6e0 = 0x49621d71a4
+     0.03%  msr_write 6e0 = 0x4962c93999
+     0.03%  msr_write 6e0 = 0x4967b65e8b
+     0.03%  msr_write 6e0 = 0x496b7e7ff4
+     0.03%  msr_write 6e0 = 0x497450e0a0
+     0.03%  msr_write 6e0 = 0x49795c8b66
+     0.03%  msr_write 6e0 = 0x497c524f8c
+     0.03%  msr_write 6e0 = 0x4980ec3593
+     0.03%  msr_write 6e0 = 0x4981719df0
+     0.03%  msr_write 6e0 = 0x498171b1fc
+     0.03%  msr_write 6e0 = 0x498dd88920
+     0.03%  msr_write 6e0 = 0x498e91fcbd
+     0.03%  msr_write 6e0 = 0x498e9208b1
+     0.03%  msr_write 6e0 = 0x498e9214ab
+     0.03%  msr_write 6e0 = 0x49925a2305
+     0.03%  msr_write 6e0 = 0x49979cda92
+     0.03%  msr_write 6e0 = 0x499b661611
+     0.03%  msr_write 6e0 = 0x49a070a9c3
+     0.03%  msr_write 6e0 = 0x49a7619e66
+     0.03%  msr_write 6e0 = 0x49aae2dc0b
+     0.03%  msr_write 6e0 = 0x49beb3b29a
+     0.03%  msr_write 6e0 = 0x49c0197881
+     0.03%  msr_write 6e0 = 0x49c0199c3e
+     0.03%  msr_write 6e0 = 0x49c16ae030
+     0.03%  msr_write 6e0 = 0x49c66ca71f
+     0.03%  msr_write 6e0 = 0x49cb6e6efd
+     0.03%  msr_write 6e0 = 0x49d0598402
+     0.03%  msr_write 6e0 = 0x49d421de66
+     0.03%  msr_write 6e0 = 0x49d7f2e323
+     0.03%  msr_write 6e0 = 0x49df6d670c
+     0.03%  msr_write 6e0 = 0x49e0bf1a6f
+     0.03%  msr_write 6e0 = 0x49e487a532
+     0.03%  msr_write 6e0 = 0x49e850bbe9
+     0.03%  msr_write 6e0 = 0x49ec193978
+     0.03%  msr_write 6e0 = 0x49f0fbc250
+     0.03%  msr_write 6e0 = 0x49f3ab4470
+     0.03%  msr_write 6e0 = 0x49fec0f501
+     0.03%  msr_write 6e0 = 0x49fec104a9
+     0.03%  msr_write 6e0 = 0x4a0047c099
+     0.03%  msr_write 6e0 = 0x4a0410d28b
+     0.03%  msr_write 6e0 = 0x4a07da01c9
+     0.03%  msr_write 6e0 = 0x4a0a84dbb2
+     0.03%  msr_write 6e0 = 0x4a0f6976de
+     0.03%  msr_write 6e0 = 0x4a13320571
+     0.03%  msr_write 6e0 = 0x4a17897c69
+     0.03%  msr_write 6e0 = 0x4a1c8b42e5
+     0.03%  msr_write 6e0 = 0x4a1fce61d0
+     0.03%  msr_write 6e0 = 0x4a275f384a
+     0.03%  msr_write 6e0 = 0x4a2b27db1e
+     0.03%  msr_write 6e0 = 0x4a2e91aab6
+     0.03%  msr_write 6e0 = 0x4a3d67e4a6
+     0.03%  msr_write 6e0 = 0x4a3d680f6e
+     0.03%  msr_write 6e0 = 0x4a45a2c15c
+     0.03%  msr_write 6e0 = 0x4a496aec69
+     0.03%  msr_write 6e0 = 0x4a4d32adab
+     0.03%  msr_write 6e0 = 0x4a559f8b64
+     0.03%  msr_write 6e0 = 0x4a59cde6d4
+     0.03%  msr_write 6e0 = 0x4a5cbc5c45
+     0.03%  msr_write 6e0 = 0x4a615e07dc
+     0.03%  msr_write 6e0 = 0x4a6526d0ad
+     0.03%  msr_write 6e0 = 0x4a68ef04aa
+     0.03%  msr_write 6e0 = 0x4a6cb7ca70
+     0.03%  msr_write 6e0 = 0x4a707fe4b3
+     0.03%  msr_write 6e0 = 0x4a758af59f
+     0.03%  msr_write 6e0 = 0x4a7952b517
+     0.03%  msr_write 6e0 = 0x4a7c0fddc6
+     0.03%  msr_write 6e0 = 0x4a802ea252
+     0.03%  msr_write 6e0 = 0x4a80e2ee9a
+     0.03%  msr_write 6e0 = 0x4a9f25cab0
+     0.03%  msr_write 6e0 = 0x4aa2ee2008
+     0.03%  msr_write 6e0 = 0x4aa6b640bc
+     0.03%  msr_write 6e0 = 0x4ab20d79be
+     0.03%  msr_write 6e0 = 0x4abab15a80
+     0.03%  msr_write 6e0 = 0x4abab16235
+     0.03%  msr_write 6e0 = 0x4abab17955
+     0.03%  msr_write 6e0 = 0x4abab184d0
+     0.03%  msr_write 6e0 = 0x4abaecb7b8
+     0.03%  msr_write 6e0 = 0x4ada04d58f
+     0.03%  msr_write 6e0 = 0x4aead8a949
+     0.03%  msr_write 6e0 = 0x4aeed5f7a2
+     0.03%  msr_write 6e0 = 0x4af3ac1600
+     0.03%  msr_write 6e0 = 0x4af8b75413
+     0.03%  msr_write 6e0 = 0x4aff5bd4cc
+     0.03%  msr_write 6e0 = 0x4b045d81e7
+     0.03%  msr_write 6e0 = 0x4b045d98af
+     0.03%  msr_write 6e0 = 0x4b06972d28
+     0.03%  msr_write 6e0 = 0x4b095f6303
+     0.03%  msr_write 6e0 = 0x4b0e612a42
+     0.03%  msr_write 6e0 = 0x4b13311dbe
+     0.03%  msr_write 6e0 = 0x4b17e48bc3
+     0.03%  msr_write 6e0 = 0x4b1ae59c2a
+     0.03%  msr_write 6e0 = 0x4b1e66da3e
+     0.03%  msr_write 6e0 = 0x4b22e8743d
+     0.03%  msr_write 6e0 = 0x4b2669b24d
+     0.03%  msr_write 6e0 = 0x4b296ac263
+     0.03%  msr_write 6e0 = 0x4b2c6bd531
+     0.03%  msr_write 6e0 = 0x4b3176a9d3
+     0.03%  msr_write 6e0 = 0x4b3800ba2c
+     0.03%  msr_write 6e0 = 0x4b3800c59f
+     0.03%  msr_write 6e0 = 0x4b3b712a27
+     0.03%  msr_write 6e0 = 0x4b431ecc54
+     0.03%  msr_write 6e0 = 0x4b46e82724
+     0.03%  msr_write 6e0 = 0x4b5384a0df
+     0.03%  msr_write 6e0 = 0x4b575435db
+     0.03%  msr_write 6e0 = 0x4b5754413c
+     0.03%  msr_write 6e0 = 0x4b5b7c7eae
+     0.03%  msr_write 6e0 = 0x4b5b7c8a19
+     0.03%  msr_write 6e0 = 0x4b5e7d9c3e
+     0.03%  msr_write 6e0 = 0x4b688118db
+     0.03%  msr_write 6e0 = 0x4b68812425
+     0.03%  msr_write 6e0 = 0x4b69015731
+     0.03%  msr_write 6e0 = 0x4b6dfdbc4e
+     0.03%  msr_write 6e0 = 0x4b72048936
+     0.03%  msr_write 6e0 = 0x4b76a16f2a
+     0.03%  msr_write 6e0 = 0x4b798733b0
+     0.03%  msr_write 6e0 = 0x4b7d889f52
+     0.03%  msr_write 6e0 = 0x4b818a0a83
+     0.03%  msr_write 6e0 = 0x4b84ad5d5a
+     0.03%  msr_write 6e0 = 0x4b8875cf3c
+     0.03%  msr_write 6e0 = 0x4b8d0e211c
+     0.03%  msr_write 6e0 = 0x4b95f51e01
+     0.03%  msr_write 6e0 = 0x4b9653da5a
+     0.03%  msr_write 6e0 = 0x4b9a1b7398
+     0.03%  msr_write 6e0 = 0x4ba4967a93
+     0.03%  msr_write 6e0 = 0x4ba7fb8881
+     0.03%  msr_write 6e0 = 0x4babc357d0
+     0.03%  msr_write 6e0 = 0x4bbc268eb4
+     0.03%  msr_write 6e0 = 0x4bc02040ae
+     0.03%  msr_write 6e0 = 0x4bc4f94338
+     0.03%  msr_write 6e0 = 0x4bc8c0efe0
+     0.03%  msr_write 6e0 = 0x4bd49c5e6e
+     0.03%  msr_write 6e0 = 0x4bd49c6a12
+     0.03%  msr_write 6e0 = 0x4bd55d36bf
+     0.03%  msr_write 6e0 = 0x4bd92686b0
+     0.03%  msr_write 6e0 = 0x4be2ac83f1
+     0.03%  msr_write 6e0 = 0x4beb2f8747
+     0.03%  msr_write 6e0 = 0x4bf0314e3c
+     0.03%  msr_write 6e0 = 0x4bf3efdc7d
+     0.03%  msr_write 6e0 = 0x4bf3efe7a4
+     0.03%  msr_write 6e0 = 0x4bf3effde3
+     0.03%  msr_write 6e0 = 0x4bf3f02381
+     0.03%  msr_write 6e0 = 0x4bfeb660d1
+     0.03%  msr_write 6e0 = 0x4c0ce6ff13
+     0.03%  msr_write 6e0 = 0x4c11f22219
+     0.03%  msr_write 6e0 = 0x4c14be4509
+     0.03%  msr_write 6e0 = 0x4c1d4a6dda
+     0.03%  msr_write 6e0 = 0x4c211210d0
+     0.03%  msr_write 6e0 = 0x4c24da3550
+     0.03%  msr_write 6e0 = 0x4c28a1c263
+     0.03%  msr_write 6e0 = 0x4c2c699149
+     0.03%  msr_write 6e0 = 0x4c30319c22
+     0.03%  msr_write 6e0 = 0x4c32974a86
+     0.03%  msr_write 6e0 = 0x4c32c8ed55
+     0.03%  msr_write 6e0 = 0x4c37c105b8
+     0.03%  msr_write 6e0 = 0x4c3bcc1f19
+     0.03%  msr_write 6e0 = 0x4c434ec936
+     0.03%  msr_write 6e0 = 0x4c49d0fab0
+     0.03%  msr_write 6e0 = 0x4c49d110ce
+     0.03%  msr_write 6e0 = 0x4c4b51a11f
+     0.03%  msr_write 6e0 = 0x4c50f95633
+     0.03%  msr_write 6e0 = 0x4c54c168bf
+     0.03%  msr_write 6e0 = 0x4c5889f549
+     0.03%  msr_write 6e0 = 0x4c5f58bb4a
+     0.03%  msr_write 6e0 = 0x4c62d9f954
+     0.03%  msr_write 6e0 = 0x4c6b5cfecf
+     0.03%  msr_write 6e0 = 0x4c713f8ac7
+     0.03%  msr_write 6e0 = 0x4c713fc5b2
+     0.03%  msr_write 6e0 = 0x4c7302f9b5
+     0.03%  msr_write 6e0 = 0x4c7660e5ca
+     0.03%  msr_write 6e0 = 0x4c7be2d6dc
+     0.03%  msr_write 6e0 = 0x4c7e5b5ffe
+     0.03%  msr_write 6e0 = 0x4c97ecc9fa
+     0.03%  msr_write 6e0 = 0x4c9fef9532
+     0.03%  msr_write 6e0 = 0x4c9fefa017
+     0.03%  msr_write 6e0 = 0x4ca1702965
+     0.03%  msr_write 6e0 = 0x4ca57195ff
+     0.03%  msr_write 6e0 = 0x4cadf48d32
+     0.03%  msr_write 6e0 = 0x4cadf497a3
+     0.03%  msr_write 6e0 = 0x4cb0caa53a
+     0.03%  msr_write 6e0 = 0x4cb4931cc1
+     0.03%  msr_write 6e0 = 0x4cbc264dfd
+     0.03%  msr_write 6e0 = 0x4cc3b601ce
+     0.03%  msr_write 6e0 = 0x4cc77ed82d
+     0.03%  msr_write 6e0 = 0x4cca7eb729
+     0.03%  msr_write 6e0 = 0x4ccf10e91a
+     0.03%  msr_write 6e0 = 0x4ccf3ae6aa
+     0.03%  msr_write 6e0 = 0x4ccf3afc9b
+     0.03%  msr_write 6e0 = 0x4cd2d9947a
+     0.03%  msr_write 6e0 = 0x4cda043903
+     0.03%  msr_write 6e0 = 0x4cdd856407
+     0.03%  msr_write 6e0 = 0x4ce00655d5
+     0.03%  msr_write 6e0 = 0x4ce106b493
+     0.03%  msr_write 6e0 = 0x4ce6087af0
+     0.03%  msr_write 6e0 = 0x4ce98d42c9
+     0.03%  msr_write 6e0 = 0x4cee8eb848
+     0.03%  msr_write 6e0 = 0x4cf18c8f25
+     0.03%  msr_write 6e0 = 0x4cf58dfba9
+     0.03%  msr_write 6e0 = 0x4cf90f38ab
+     0.03%  msr_write 6e0 = 0x4cfdbc070d
+     0.03%  msr_write 6e0 = 0x4d01923dc3
+     0.03%  msr_write 6e0 = 0x4d068e137e
+     0.03%  msr_write 6e0 = 0x4d0b98c935
+     0.03%  msr_write 6e0 = 0x4d15995740
+     0.03%  msr_write 6e0 = 0x4d191a93e8
+     0.03%  msr_write 6e0 = 0x4d1d1bfd15
+     0.03%  msr_write 6e0 = 0x4d2d35c65f
+     0.03%  msr_write 6e0 = 0x4d2d35cda6
+     0.03%  msr_write 6e0 = 0x4d2d35f50a
+     0.03%  msr_write 6e0 = 0x4d4459f2fa
+     0.03%  msr_write 6e0 = 0x4d46dfdc1e
+     0.03%  msr_write 6e0 = 0x4d4c8b7690
+     0.03%  msr_write 6e0 = 0x4d502e18a1
+     0.03%  msr_write 6e0 = 0x4d537c86fc
+     0.03%  msr_write 6e0 = 0x4d5b0b9bdf
+     0.03%  msr_write 6e0 = 0x4d5ed3da4e
+     0.03%  msr_write 6e0 = 0x4d666404a0
+     0.03%  msr_write 6e0 = 0x4d6b6e8d4c
+     0.03%  msr_write 6e0 = 0x4d6bdf47a5
+     0.03%  msr_write 6e0 = 0x4d6bdf64a4
+     0.03%  msr_write 6e0 = 0x4d6eb8eb6a
+     0.03%  msr_write 6e0 = 0x4d723a27f6
+     0.03%  msr_write 6e0 = 0x4d75bb66a0
+     0.03%  msr_write 6e0 = 0x4d794e4c88
+     0.03%  msr_write 6e0 = 0x4d7d17b736
+     0.03%  msr_write 6e0 = 0x4d92871700
+     0.03%  msr_write 6e0 = 0x4d964f0041
+     0.03%  msr_write 6e0 = 0x4d9a17ad21
+     0.03%  msr_write 6e0 = 0x4da3d92199
+     0.03%  msr_write 6e0 = 0x4da3d92cd1
+     0.03%  msr_write 6e0 = 0x4da6b1d65c
+     0.03%  msr_write 6e0 = 0x4daa7b609a
+     0.03%  msr_write 6e0 = 0x4dae430340
+     0.03%  msr_write 6e0 = 0x4db1d23b1b
+     0.03%  msr_write 6e0 = 0x4db4d1bf48
+     0.03%  msr_write 6e0 = 0x4db8d32a7f
+     0.03%  msr_write 6e0 = 0x4dbc546886
+     0.03%  msr_write 6e0 = 0x4dc055d423
+     0.03%  msr_write 6e0 = 0x4dc4f2f874
+     0.03%  msr_write 6e0 = 0x4dc8ba8185
+     0.03%  msr_write 6e0 = 0x4dd04a43f9
+     0.03%  msr_write 6e0 = 0x4dd7da246b
+     0.03%  msr_write 6e0 = 0x4de261d14c
+     0.03%  msr_write 6e0 = 0x4de92d77cd
+     0.03%  msr_write 6e0 = 0x4de92d8d07
+     0.03%  msr_write 6e0 = 0x4e11f2bac2
+     0.03%  msr_write 6e0 = 0x4e15f4252a
+     0.03%  msr_write 6e0 = 0x4e18750820
+     0.03%  msr_write 6e0 = 0x4e1d37ea83
+     0.03%  msr_write 6e0 = 0x4e2101efe4
+     0.03%  msr_write 6e0 = 0x4e24c9ce03
+     0.03%  msr_write 6e0 = 0x4e27d60237
+     0.03%  msr_write 6e0 = 0x4e2e7ccd01
+     0.03%  msr_write 6e0 = 0x4e2efd02e2
+     0.03%  msr_write 6e0 = 0x4e36ffd896
+     0.03%  msr_write 6e0 = 0x4e3a81164c
+     0.03%  msr_write 6e0 = 0x4e3e8261ee
+     0.03%  msr_write 6e0 = 0x4e3f82dc43
+     0.03%  msr_write 6e0 = 0x4e4451cdf2
+     0.03%  msr_write 6e0 = 0x4e48195aaa
+     0.03%  msr_write 6e0 = 0x4e4a9f9814
+     0.03%  msr_write 6e0 = 0x4e4e080034
+     0.03%  msr_write 6e0 = 0x4e667d44e3
+     0.03%  msr_write 6e0 = 0x4e68df60ac
+     0.03%  msr_write 6e0 = 0x4e70701c37
+     0.03%  msr_write 6e0 = 0x4e726689fa
+     0.03%  msr_write 6e0 = 0x4e7b98224c
+     0.03%  msr_write 6e0 = 0x4e7f195eb2
+     0.03%  msr_write 6e0 = 0x4e8358fc08
+     0.03%  msr_write 6e0 = 0x4e85d0a28b
+     0.03%  msr_write 6e0 = 0x4e869c0783
+     0.03%  msr_write 6e0 = 0x4e899d178c
+     0.03%  msr_write 6e0 = 0x4e8d9e82c9
+     0.03%  msr_write 6e0 = 0x4e94a0f578
+     0.03%  msr_write 6e0 = 0x4e94fff080
+     0.03%  msr_write 6e0 = 0x4e9ba37879
+     0.03%  msr_write 6e0 = 0x4e9f24b6e6
+     0.03%  msr_write 6e0 = 0x4ea2a5f32d
+     0.03%  msr_write 6e0 = 0x4ea6a65a65
+     0.03%  msr_write 6e0 = 0x4eaa6e2645
+     0.03%  msr_write 6e0 = 0x4ecf04a417
+     0.03%  msr_write 6e0 = 0x4ed2ccad68
+     0.03%  msr_write 6e0 = 0x4ed551b11f
+     0.03%  msr_write 6e0 = 0x4ede3b0ae6
+     0.03%  msr_write 6e0 = 0x4ee32ebf7c
+     0.03%  msr_write 6e0 = 0x4ee3cbf20a
+     0.03%  msr_write 6e0 = 0x4ee6f6ddbd
+     0.03%  msr_write 6e0 = 0x4eedc08782
+     0.03%  msr_write 6e0 = 0x4eef94f5ae
+     0.03%  msr_write 6e0 = 0x4ef2513c35
+     0.03%  msr_write 6e0 = 0x4ef5c35dfb
+     0.03%  msr_write 6e0 = 0x4efb238461
+     0.03%  msr_write 6e0 = 0x4efec68ec0
+     0.03%  msr_write 6e0 = 0x4f03482669
+     0.03%  msr_write 6e0 = 0x4f064936e2
+     0.03%  msr_write 6e0 = 0x4f0a42bbae
+     0.03%  msr_write 6e0 = 0x4f11d27b34
+     0.03%  msr_write 6e0 = 0x4f1457ef0c
+     0.03%  msr_write 6e0 = 0x4f1962a2d5
+     0.03%  msr_write 6e0 = 0x4f1faffe74
+     0.03%  msr_write 6e0 = 0x4f22738967
+     0.03%  msr_write 6e0 = 0x4f2273aeb7
+     0.03%  msr_write 6e0 = 0x4f38db1522
+     0.03%  msr_write 6e0 = 0x4f3adbcfc5
+     0.03%  msr_write 6e0 = 0x4f3f5d685a
+     0.03%  msr_write 6e0 = 0x4f443ef214
+     0.03%  msr_write 6e0 = 0x4f521efe11
+     0.03%  msr_write 6e0 = 0x4f611ae5fe
+     0.03%  msr_write 6e0 = 0x4f611af036
+     0.03%  msr_write 6e0 = 0x4f611afa6f
+     0.03%  msr_write 6e0 = 0x4f6aecc8d1
+     0.03%  msr_write 6e0 = 0x4f6cc35a71
+     0.03%  msr_write 6e0 = 0x4f75695df6
+     0.03%  msr_write 6e0 = 0x4f7971f33d
+     0.03%  msr_write 6e0 = 0x4f7e3b9e38
+     0.03%  msr_write 6e0 = 0x4f806e8072
+     0.03%  msr_write 6e0 = 0x4f80f49b66
+     0.03%  msr_write 6e0 = 0x4f83757e4a
+     0.03%  msr_write 6e0 = 0x4f8ef986cb
+     0.03%  msr_write 6e0 = 0x4f8ef99087
+     0.03%  msr_write 6e0 = 0x4f967c3997
+     0.03%  msr_write 6e0 = 0x4f9cfe6af8
+     0.03%  msr_write 6e0 = 0x4f9fc229c2
+     0.03%  msr_write 6e0 = 0x4f9fc23454
+     0.03%  msr_write 6e0 = 0x4fab9f47bf
+     0.03%  msr_write 6e0 = 0x4fb32f30ee
+     0.03%  msr_write 6e0 = 0x4fb68801bb
+     0.03%  msr_write 6e0 = 0x4fbf1596e8
+     0.03%  msr_write 6e0 = 0x4fbf15b903
+     0.03%  msr_write 6e0 = 0x4fbfcb825a
+     0.03%  msr_write 6e0 = 0x4fc20ba07f
+     0.03%  msr_write 6e0 = 0x4fc61a5a4e
+     0.03%  msr_write 6e0 = 0x4fceeddae5
+     0.03%  msr_write 6e0 = 0x4fd1911e33
+     0.03%  msr_write 6e0 = 0x4fde697e66
+     0.03%  msr_write 6e0 = 0x4ff29ccdda
+     0.03%  msr_write 6e0 = 0x4ff79e91e5
+     0.03%  msr_write 6e0 = 0x4ffc5485cb
+     0.03%  msr_write 6e0 = 0x5000a1c106
+     0.03%  msr_write 6e0 = 0x5003e53ec1
+     0.03%  msr_write 6e0 = 0x5007ad534c
+     0.03%  msr_write 6e0 = 0x500b74ed4f
+     0.03%  msr_write 6e0 = 0x500e2689fd
+     0.03%  msr_write 6e0 = 0x50222d9f31
+     0.03%  msr_write 6e0 = 0x502afa61ba
+     0.03%  msr_write 6e0 = 0x50328abf24
+     0.03%  msr_write 6e0 = 0x5035104cdb
+     0.03%  msr_write 6e0 = 0x503a1ab9fa
+     0.03%  msr_write 6e0 = 0x503c6416b3
+     0.03%  msr_write 6e0 = 0x503c642a94
+     0.03%  msr_write 6e0 = 0x504c3c5eb7
+     0.03%  msr_write 6e0 = 0x505bb783ac
+     0.03%  msr_write 6e0 = 0x507b0b479a
+     0.03%  msr_write 6e0 = 0x5082cfc670
+     0.03%  msr_write 6e0 = 0x5089520eb2
+     0.03%  msr_write 6e0 = 0x5089d240d5
+     0.03%  msr_write 6e0 = 0x508dd3aaa3
+     0.03%  msr_write 6e0 = 0x5095d68044
+     0.03%  msr_write 6e0 = 0x509756f8df
+     0.03%  msr_write 6e0 = 0x509a5f143c
+     0.03%  msr_write 6e0 = 0x509cd8fa01
+     0.03%  msr_write 6e0 = 0x50a05a37da
+     0.03%  msr_write 6e0 = 0x50a45ba1a1
+     0.03%  msr_write 6e0 = 0x50a7dcdf89
+     0.03%  msr_write 6e0 = 0x50ab5e1c0d
+     0.03%  msr_write 6e0 = 0x50bfe55dd9
+     0.03%  msr_write 6e0 = 0x50c4d36b22
+     0.03%  msr_write 6e0 = 0x50c89b3119
+     0.03%  msr_write 6e0 = 0x50d02ca2f5
+     0.03%  msr_write 6e0 = 0x50d2ec06f9
+     0.03%  msr_write 6e0 = 0x50d53838cf
+     0.03%  msr_write 6e0 = 0x50d8ee3715
+     0.03%  msr_write 6e0 = 0x50dc6f7312
+     0.03%  msr_write 6e0 = 0x50e2718ec9
+     0.03%  msr_write 6e0 = 0x50e3f21ac2
+     0.03%  msr_write 6e0 = 0x50f236419f
+     0.03%  msr_write 6e0 = 0x50f678a550
+     0.03%  msr_write 6e0 = 0x50f979b62f
+     0.03%  msr_write 6e0 = 0x51180a06be
+     0.03%  msr_write 6e0 = 0x511b0590f1
+     0.03%  msr_write 6e0 = 0x511f9c6cad
+     0.03%  msr_write 6e0 = 0x51286fc20c
+     0.03%  msr_write 6e0 = 0x512f0ca42c
+     0.03%  msr_write 6e0 = 0x5133c74eab
+     0.03%  msr_write 6e0 = 0x5136fa773f
+     0.03%  msr_write 6e0 = 0x5136fa8a9e
+     0.03%  msr_write 6e0 = 0x513f213503
+     0.03%  msr_write 6e0 = 0x5146b08a3e
+     0.03%  msr_write 6e0 = 0x514996032a
+     0.03%  msr_write 6e0 = 0x514e179acb
+     0.03%  msr_write 6e0 = 0x51564e03c5
+     0.03%  msr_write 6e0 = 0x51564e0a51
+     0.03%  msr_write 6e0 = 0x51564e1d8e
+     0.03%  msr_write 6e0 = 0x51564e4b2f
+     0.03%  msr_write 6e0 = 0x515e9d71cb
+     0.03%  msr_write 6e0 = 0x515f9db6e5
+     0.03%  msr_write 6e0 = 0x515f9dc091
+     0.03%  msr_write 6e0 = 0x51626d46d1
+     0.03%  msr_write 6e0 = 0x5169a1550b
+     0.03%  msr_write 6e0 = 0x5170238644
+     0.03%  msr_write 6e0 = 0x5170239cae
+     0.03%  msr_write 6e0 = 0x5175a1ebb6
+     0.03%  msr_write 6e0 = 0x517da867bf
+     0.03%  msr_write 6e0 = 0x518129a458
+     0.03%  msr_write 6e0 = 0x51882c1f41
+     0.03%  msr_write 6e0 = 0x518faec6c5
+     0.03%  msr_write 6e0 = 0x5191af6db8
+     0.03%  msr_write 6e0 = 0x519399264c
+     0.03%  msr_write 6e0 = 0x5194f55518
+     0.03%  msr_write 6e0 = 0x519b36f8cf
+     0.03%  msr_write 6e0 = 0x519c3331f1
+     0.03%  msr_write 6e0 = 0x51a1775c4f
+     0.03%  msr_write 6e0 = 0x51a5409f90
+     0.03%  msr_write 6e0 = 0x51a9083c94
+     0.03%  msr_write 6e0 = 0x51b0986941
+     0.03%  msr_write 6e0 = 0x51b448ff7e
+     0.03%  msr_write 6e0 = 0x51b8289edf
+     0.03%  msr_write 6e0 = 0x51d39c4090
+     0.03%  msr_write 6e0 = 0x51d948c574
+     0.03%  msr_write 6e0 = 0x51ddfd8da4
+     0.03%  msr_write 6e0 = 0x51e74da7dc
+     0.03%  msr_write 6e0 = 0x51f5f4a877
+     0.03%  msr_write 6e0 = 0x520457f938
+     0.03%  msr_write 6e0 = 0x520edbad8b
+     0.03%  msr_write 6e0 = 0x521244d89a
+     0.03%  msr_write 6e0 = 0x521244e214
+     0.03%  msr_write 6e0 = 0x52135d4622
+     0.03%  msr_write 6e0 = 0x521b601b4b
+     0.03%  msr_write 6e0 = 0x521ee14744
+     0.03%  msr_write 6e0 = 0x522720a228
+     0.03%  msr_write 6e0 = 0x522ae89f6e
+     0.03%  msr_write 6e0 = 0x522ff2c7b7
+     0.03%  msr_write 6e0 = 0x5233e8c1ec
+     0.03%  msr_write 6e0 = 0x5237828e39
+     0.03%  msr_write 6e0 = 0x5241984d2d
+     0.03%  msr_write 6e0 = 0x52456ef508
+     0.03%  msr_write 6e0 = 0x524bacfbbc
+     0.03%  msr_write 6e0 = 0x5250ed9c3a
+     0.03%  msr_write 6e0 = 0x5250eda5bd
+     0.03%  msr_write 6e0 = 0x5250edd222
+     0.03%  msr_write 6e0 = 0x52547f3410
+     0.03%  msr_write 6e0 = 0x525bd9b455
+     0.03%  msr_write 6e0 = 0x525bf6e8c9
+     0.03%  msr_write 6e0 = 0x52611a62ee
+     0.03%  msr_write 6e0 = 0x5267fb2774
+     0.03%  msr_write 6e0 = 0x526b7c53d2
+     0.03%  msr_write 6e0 = 0x526db62d09
+     0.03%  msr_write 6e0 = 0x52717f6bbb
+     0.03%  msr_write 6e0 = 0x5279012999
+     0.03%  msr_write 6e0 = 0x527c023945
+     0.03%  msr_write 6e0 = 0x527e02d8bb
+     0.03%  msr_write 6e0 = 0x527f5c80b2
+     0.03%  msr_write 6e0 = 0x528324cafe
+     0.03%  msr_write 6e0 = 0x52aee39054
+     0.03%  msr_write 6e0 = 0x52af47d857
+     0.03%  msr_write 6e0 = 0x52b3115e51
+     0.03%  msr_write 6e0 = 0x52b6d99332
+     0.03%  msr_write 6e0 = 0x52baa24c86
+     0.03%  msr_write 6e0 = 0x52c51c05ea
+     0.03%  msr_write 6e0 = 0x52cb053033
+     0.03%  msr_write 6e0 = 0x52ce3711ce
+     0.03%  msr_write 6e0 = 0x52ce371b0e
+     0.03%  msr_write 6e0 = 0x52d294c532
+     0.03%  msr_write 6e0 = 0x52d907fee2
+     0.03%  msr_write 6e0 = 0x52d9081182
+     0.03%  msr_write 6e0 = 0x52d92317e0
+     0.03%  msr_write 6e0 = 0x52ddee2e4b
+     0.03%  msr_write 6e0 = 0x52e1b69fef
+     0.03%  msr_write 6e0 = 0x52e5a78287
+     0.03%  msr_write 6e0 = 0x52ea88c524
+     0.03%  msr_write 6e0 = 0x52eeaab02c
+     0.03%  msr_write 6e0 = 0x52f5ad2996
+     0.03%  msr_write 6e0 = 0x52f8ae2a00
+     0.03%  msr_write 6e0 = 0x52f9ae9426
+     0.03%  msr_write 6e0 = 0x52fd722007
+     0.03%  msr_write 6e0 = 0x5308cae384
+     0.03%  msr_write 6e0 = 0x530cb54a89
+     0.03%  msr_write 6e0 = 0x5323bd6b32
+     0.03%  msr_write 6e0 = 0x53284e6ab0
+     0.03%  msr_write 6e0 = 0x532c324f5f
+     0.03%  msr_write 6e0 = 0x532c325894
+     0.03%  msr_write 6e0 = 0x532c326219
+     0.03%  msr_write 6e0 = 0x532c326b36
+     0.03%  msr_write 6e0 = 0x532c32748a
+     0.03%  msr_write 6e0 = 0x532cc099b8
+     0.03%  msr_write 6e0 = 0x533041d567
+     0.03%  msr_write 6e0 = 0x534acb3b01
+     0.03%  msr_write 6e0 = 0x538a2e26a2
+     0.03%  msr_write 6e0 = 0x538a2e627f
+     0.03%  msr_write 6e0 = 0x53a981ab6e
+     0.00%  msr_write 6e0 = 0x17ddd376c8
+     0.00%  msr_write 6e0 = 0x17f0ab1642
+
+
+# Samples: 0  of event 'kvm:kvm_cr'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_pic_set_irq'
+# Event count (approx.): 2177
+#
+# Overhead  Trace output              
+# ........  ..........................
+#
+   100.00%  chip 1 pin 7 (edge|masked)
+            |
+            ---kvm_pic_set_irq
+               kvm_set_pic_irq
+               kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_apic_ipi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_apic_accept_irq'
+# Event count (approx.): 707833
+#
+# Overhead  Trace output                 
+# ........  .............................
+#
+    97.73%  apicid 0 vec 113 (Fixed|edge)
+            |
+            ---__apic_accept_irq
+               kvm_irq_delivery_to_apic_fast
+               kvm_arch_set_irq_inatomic
+               irqfd_wakeup
+               __wake_up_common
+               __wake_up_locked_key
+               eventfd_signal
+               vhost_signal
+               vhost_add_used_and_signal_n
+               handle_rx
+               handle_rx_net
+               vhost_worker
+               kthread
+               ret_from_fork
+               0
+
+     2.24%  apicid 0 vec 239 (Fixed|edge)
+            |
+            ---__apic_accept_irq
+               kvm_apic_local_deliver
+               kvm_inject_apic_timer_irqs
+               kvm_inject_pending_timer_irqs
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.03%  apicid 0 vec 63 (Fixed|edge)
+
+
+# Samples: 0  of event 'kvm:kvm_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pv_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmrun'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_intercepts'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmexit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_vmexit_inject'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_nested_intr_vmexit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_invlpga'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_skinit'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_emulate_insn'
+# Event count (approx.): 35342
+#
+# Overhead  Trace output                  
+# ........  ..............................
+#
+   100.00%  0:ffffffff81412ee5:ec (prot64)
+            |
+            ---x86_emulate_instruction
+               handle_io
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:vcpu_match_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_write_tsc_offset'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_update_master_clock'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_track_tsc'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pml_full'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 11K of event 'kvm:kvm_ple_window'
+# Event count (approx.): 4681281
+#
+# Overhead  Trace output                            
+# ........  ........................................
+#
+    16.28%  vcpu 0: ple_window 8192 (grow 4096)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    14.39%  vcpu 0: ple_window 32768 (grow 16384)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    14.14%  vcpu 0: ple_window 16384 (grow 8192)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    13.34%  vcpu 0: ple_window 65536 (grow 32768)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+    12.83%  vcpu 0: ple_window 131072 (grow 65536)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     9.56%  vcpu 0: ple_window 262144 (grow 131072)
+            |
+            ---handle_pause
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     9.36%  vcpu 0: ple_window 4096 (shrink 262144)
+            |
+            ---vmx_sched_in
+               kvm_arch_sched_in
+               kvm_sched_in
+               finish_task_switch
+               __schedule
+               _cond_resched
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     5.42%  vcpu 0: ple_window 4096 (shrink 4096)
+            |
+            ---vmx_sched_in
+               kvm_arch_sched_in
+               kvm_sched_in
+               finish_task_switch
+               __schedule
+               _cond_resched
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     3.10%  vcpu 0: ple_window 4096 (shrink 131072)
+            |
+            ---vmx_sched_in
+               kvm_arch_sched_in
+               kvm_sched_in
+               finish_task_switch
+               __schedule
+               _cond_resched
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     1.06%  vcpu 0: ple_window 4096 (shrink 32768)
+            |
+            ---vmx_sched_in
+               kvm_arch_sched_in
+               kvm_sched_in
+               finish_task_switch
+               __schedule
+               _cond_resched
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.30%  vcpu 0: ple_window 4096 (shrink 16384)
+     0.21%  vcpu 0: ple_window 4096 (shrink 65536)
+     0.01%  vcpu 0: ple_window 4096 (shrink 2097152)
+     0.00%  vcpu 0: ple_window 4096 (shrink 4194304)
+
+
+# Samples: 0  of event 'kvm:kvm_pvclock_update'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 6  of event 'kvm:kvm_wait_lapic_expire'
+# Event count (approx.): 38095
+#
+# Overhead  Trace output              
+# ........  ..........................
+#
+    94.32%  vcpu 0: delta 2750 (late)
+            |
+            ---wait_lapic_expire
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     5.66%  vcpu 0: delta 9334 (late)
+            |
+            ---wait_lapic_expire
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+     0.01%  vcpu 0: delta 14782 (late)
+     0.00%  vcpu 0: delta 5481 (late)
+
+
+# Samples: 0  of event 'kvm:kvm_enter_smm'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_pi_irte_update'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_notify_acked_sint'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_set_irq'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_send_eoi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_synic_set_msr'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_set_config'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_set_count'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_start_periodic'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_start_one_shot'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_callback'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_expiration'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_hv_stimer_cleanup'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_avic_incomplete_ipi'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_avic_unaccelerated_access'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 1K of event 'kvm:kvm_hv_timer_state'
+# Event count (approx.): 62987
+#
+# Overhead  Trace output         
+# ........  .....................
+#
+   100.00%  vcpu_id 0 hv_timer 1
+
+            |
+            ---start_hv_timer
+               start_apic_timer
+               kvm_set_lapic_tscdeadline_msr
+               kvm_set_msr_common
+               vmx_set_msr
+               kvm_set_msr
+               handle_wrmsr
+               vmx_handle_exit
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 5  of event 'kvm:kvm_userspace_exit'
+# Event count (approx.): 2517
+#
+# Overhead  Trace output          
+# ........  ......................
+#
+   100.00%  reason KVM_EXIT_IO (2)
+            |
+            ---kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_vcpu_wakeup'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 5  of event 'kvm:kvm_set_irq'
+# Event count (approx.): 2162
+#
+# Overhead  Trace output           
+# ........  .......................
+#
+   100.00%  gsi 15 level 0 source 0
+            |
+            ---kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 5  of event 'kvm:kvm_ioapic_set_irq'
+# Event count (approx.): 2141
+#
+# Overhead  Trace output                             
+# ........  .........................................
+#
+   100.00%  pin 15 dst 0 vec 63 (Fixed|physical|edge)
+            |
+            ---ioapic_set_irq
+               kvm_ioapic_set_irq
+               kvm_set_ioapic_irq
+               kvm_set_irq
+               kvm_vm_ioctl_irq_line
+               kvm_vm_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_ioapic_delayed_eoi_inj'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 10K of event 'kvm:kvm_msi_set_irq'
+# Event count (approx.): 693003
+#
+# Overhead  Trace output                       
+# ........  ...................................
+#
+   100.00%  dst 0 vec 113 (Fixed|physical|edge)
+            |
+            ---kvm_set_msi_irq
+               kvm_arch_set_irq_inatomic
+               irqfd_wakeup
+               __wake_up_common
+               __wake_up_locked_key
+               eventfd_signal
+               vhost_signal
+               vhost_add_used_and_signal_n
+               handle_rx
+               handle_rx_net
+               vhost_worker
+               kthread
+               ret_from_fork
+               0
+
+
+
+# Samples: 0  of event 'kvm:kvm_ack_irq'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_mmio'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 11K of event 'kvm:kvm_fpu'
+# Event count (approx.): 1898196
+#
+# Overhead  Trace output
+# ........  ............
+#
+    50.15%  unload
+            |
+            ---kvm_put_guest_fpu.part.167
+               kvm_arch_vcpu_put
+               |          
+                --50.04%--kvm_sched_out
+                          __schedule
+                          _cond_resched
+                          kvm_arch_vcpu_ioctl_run
+                          kvm_vcpu_ioctl
+                          do_vfs_ioctl
+                          sys_ioctl
+                          entry_SYSCALL_64
+                          ioctl
+
+    49.85%  load
+            |
+            ---kvm_load_guest_fpu.part.166
+               vcpu_enter_guest
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64
+               ioctl
+
+
+
+# Samples: 0  of event 'kvm:kvm_age_page'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_try_async_get_page'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_doublefault'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_not_present'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_ready'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_async_pf_completed'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+# Samples: 0  of event 'kvm:kvm_halt_poll_ns'
+# Event count (approx.): 0
+#
+# Overhead  Trace output
+# ........  ............
+#
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
