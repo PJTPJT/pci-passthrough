@@ -1,7 +1,7 @@
-#obj-m += vmxmsrs.o                  \
-#         read_basic_msr.o           \
-#         enable_vmx_operations.o    \
-#         read_vmcs_control_field.o
+# @author Kevin Cheng       (tcheng8@binghamton.edu)
+# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
+# @author Kartik Gopalan    (kartik@binghamton.edu)
+# @since  12/22/2017
 
 obj-m += read_vmcs_control_field.o write_vmcs_control_field.o
 
