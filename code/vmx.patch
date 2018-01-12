@@ -1,0 +1,27 @@
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index a236dec..b4e6343 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -3595,7 +3595,21 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf)
+ 	u32 _vmexit_control = 0;
+ 	u32 _vmentry_control = 0;
+ 
+-	min = CPU_BASED_HLT_EXITING |
++  /* For the purpose of our project, we would like to let VM
++   * to stay on its CPU, even when it is in idle. First , we
++   * would like to eliminate the VM exits due to the HLT
++   * instructions.
++   *
++   * Disable the HLT exiting. Every VM is initialized without
++   * the HLT exiting. When the VM is in idle, it issues the
++   * HLT instruction to bring the CPU core to the HALT state.
++   * Since HLT is the privilege instruction, it will trigger
++   * the VM exit. Then, the control is handed over to the
++   * hypervisor, which may or may not emulate the behavior of
++   * HALT state.
++   */
++	//min = CPU_BASED_HLT_EXITING |
++	min = 0 |
+ #ifdef CONFIG_X86_64
+ 	      CPU_BASED_CR8_LOAD_EXITING |
+ 	      CPU_BASED_CR8_STORE_EXITING |
