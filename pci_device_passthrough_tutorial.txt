@@ -8,13 +8,14 @@ Kartik Gopalan    (kartik@binghamton.edu)
 
 1. General Description
 ----------------------
-The passthrough of network interface card (NIC) allows the virtual
-machine to gain the control of NIC and acquire the near native bandwidth
-performance. Our prototype based on the hardware-assisted virtualization
-through Kernel Virtual Machine (KVM) hypervisor, Quick Emulator (QEMU)
-and Virtual Function I/O framework. The KVM, QEMU and VFIO were left
-unmodified in our prototype. The document provides the following
-information.
+The passthrough of network interface card (NIC) allows the
+virtual machine to gain the control of NIC and acquire the
+near native bandwidth performance. Our prototype based on the
+hardware-assisted virtualization through Kernel Virtual
+Machine (KVM) hypervisor, Quick Emulator (QEMU) and Virtual
+Function I/O framework. The KVM, QEMU and VFIO were left
+unmodified in our prototype. The document provides the
+following information.
   - Host Machine.
   - Virtual Machine.
   - Virtual Function I/O and Host Network Interface Card.
@@ -25,31 +26,33 @@ information.
 
 2. Host Machine
 ---------------
-Our host machine was equipped with the Intel Virtualization Technology
-(VT) for the hardware virtualization (VT-x) and directed I/O (VT-d), and
-Intel I/O Memory Management Unit (IOMMU). The VT-x and VT-d needed to be
-enabled through the Basic Input/Output System (BIOS). IOMMU was
-recognized by the kernel through the kernel boot parameter,
-"intel_iommu=on".
+Our host machine was equipped with the Intel Virtualization
+Technology (VT) for the hardware virtualization (VT-x) and
+directed I/O (VT-d), and Intel I/O Memory Management Unit
+(IOMMU). The VT-x and VT-d needed to be enabled through the
+Basic Input/Output System (BIOS). IOMMU was recognized by the
+kernel through the kernel boot parameter, "intel_iommu=on".
 
-The host operating system (OS) was the Ubuntu 16.04.3 LTS. The kernel
-was 4.10.0. The bootloader was GNU GRand Unified Bootloader (GRUB). The
-KVM, QEMU and VFIO framework were pre-installed with the Ubuntu 16.04.3
-LTS. The QEMU version was 2.5.0. For the VFIO framework, it had two
-kernel modules: vfio and vfio-pci. The vfio version was 0.3, whereas the
+The host operating system (OS) was the Ubuntu 16.04.3 LTS. The
+kernel was 4.10.0. The bootloader was GNU GRand Unified
+Bootloader (GRUB). The KVM, QEMU and VFIO framework were
+pre-installed with the Ubuntu 16.04.3 LTS. The QEMU version
+was 2.5.0. For the VFIO framework, it had two kernel modules:
+vfio and vfio-pci. The vfio version was 0.3, whereas the
 vfio-pci version was 0.2.
 
-To measure the bandwidth performance and CPU utilization and profile the
-kernel, iperf, atopsar and perf were chosen to serve such purposes
-respectively. Since it was required to have the kernel symbols to label
-stack trace of kernel function calls, the kernel debug symbols was
-installed.
+To measure the bandwidth performance and CPU utilization and
+profile the kernel, iperf, atopsar and perf were chosen to
+serve such purposes respectively. Since it was required to
+have the kernel symbols to label stack trace of kernel
+function calls, the kernel debug symbols was installed.
 
 Enable Intel IOMMU at the runtime.
 From the GRUB menu:
   1. Choose the target kernel.
   2. Press 'e' to edit the bootloader list.
-  3. Locate the line starting "linux" and go to the end of line.
+  3. Locate the line starting "linux" and go to the end of
+     line.
   4. Add intel_iommu=on.
   5. Press Ctrl+x or F10 to restart.
 
@@ -101,10 +104,10 @@ $ sudo apt-get install linux-image-$(uname -r)-dbgsym
 
 3. Virtual Machine
 ------------------
-To create a KVM virtual machine, QEMU was used to allocate a disk image
-with 10 GB of size. The Ubuntu 16.04.3 LTS with the 4.4.0 kernel was
-installed on the disk image. The VM was brought online. perf was
-installed.
+To create a KVM virtual machine, QEMU was used to allocate a
+disk image with 10 GB of size. The Ubuntu 16.04.3 LTS with the
+4.4.0 kernel was installed on the disk image. The VM was
+brought online. perf was installed.
 
 Download a Ubuntu image.
 $ wget http://releases.ubuntu.com/16.04.3/ubuntu-16.04.3-server-amd64.iso
@@ -121,15 +124,15 @@ sudo qemu-system-x86_64 -enable-kvm \
                         -drive file=u16p04p3.img,format=raw \
                         -boot d
 
-Install iperf in the VM, assuming the VM's network was properly
-configured.
+Install iperf in the VM, assuming the VM's network was
+properly configured.
 $ sudo apt-get install iperf
 
 
 4. Virtual Function I/O and Host Network Interface Card
 -------------------------------------------------------
-We assigned the VM with the physical network interface card (pNIC) by
-following the steps below.
+We assigned the VM with the physical network interface card
+(pNIC) by following the steps below.
   1. Load vfio-pci.
   2. Find the vendor and device ID of pNIC.
   3. Find the host driver for the pNIC.
@@ -143,9 +146,10 @@ $ sudo modprobe vfio-pci
 Find the vendor and device ID of pNIC.
 $ lspci -nn
 
-For the following sub-sections, it would be much more clear to use the
-lspci output to demonstrate the VFIO pNIC passthrough, performance
-measurements and system profiling. The output is shown below.
+For the following sub-sections, it would be much more clear to
+use the lspci output to demonstrate the VFIO pNIC passthrough,
+performance measurements and system profiling. The output is
+shown below.
 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection (2) I219-LM [8086:15b7] (rev 31)
   - Device ID: 0000:00:1f.6
   - Vendor ID: 8086 15b7
@@ -175,11 +179,12 @@ $ qemu-system-x86_64 -enable-kvm \
 
 5. Bandwidth Performance of Virtual Machine
 -------------------------------------------
-We assumed the remote iperf server was on the same network as the host.
-The VM was booted up with the physical network card through vfio-pci.
-The network of VM was properly configured, so it would appear as the
-node on the same network of iperf server. The VM sent the TCP packets to
-the iperf server for 60 seconds.
+We assumed the remote iperf server was on the same network as
+the host. The VM was booted up with the physical network card
+through vfio-pci. The network of VM was properly configured,
+so it would appear as the node on the same network of iperf
+server. The VM sent the TCP packets to the iperf server for 60
+seconds.
 
 On the iperf server, whose IP was 10.128.0.49:
 $ iperf -s -i 1
@@ -190,25 +195,47 @@ $ iperf -c 10.128.0.49 -i 1 -t 60 > vm_bandwidth.txt
 
 6. CPU Utilization of Virtual Machine
 -------------------------------------
-We would like to measure the CPU utilization on the host, when VM was
-streaming TCP packets to the iperf server.
+We would like to measure the CPU utilization on the host, when
+VM was streaming TCP packets to the iperf server.
 
 Start to measure the CPU utilization for every 1 second.
 $ atopsar -c 1 > cpu_utilization.txt
 
-VM started to send TCP packets to the iperf server for 60 seconds. When
-the VM was done with the TCP streaming, atopsar was terminated by
-pressing "Ctrl+c".
+VM started to send TCP packets to the iperf server for 60
+seconds. When the VM was done with the TCP streaming, atopsar
+was terminated by pressing "Ctrl+c".
 
 
 7. Host System Profiling
 ------------------------
-We would like to profile the host kernel, when the VM was streaming TCP
-packets to the iperf server.
+We would like to profile the host kernel, when the VM was
+streaming TCP packets to the iperf server.
 
-Start to profile the host kernel with the rate of 99 samples/second.
+Start to profile the host kernel with the rate of 99
+samples/second.
 $ sudo perf record -F 99 -a -g -o perf.data
 
-VM started to send TCP packets to the iperf server for 60 seconds. When
-the VM was done with the TCP streaming, perf was terminated by pressing
-"Ctrl+c".
+VM started to send TCP packets to the iperf server for 60
+seconds. When the VM was done with the TCP streaming, perf was
+terminated by pressing "Ctrl+c".
+
+
+8. Posted Interrupt
+-------------------
+We would like to enable the VT-d posted interrupts to reduce
+the number of VM exits due to the external interrupts. The
+following steps would help us to enable VT-d posted
+interrupts.
+- Enable Intel VT for Direct I/O (VT-d) in BIOS.
+- Enable the Intel IOMMU through the Linux kernel boot
+  parameter.
+  GRUB_CMDLINE_LINUX_DEFAULT="intel_iommu=on"
+- Check if the processors support the interrupt delivery
+  mechanism through the xAPIC architecture.
+  $ cat /proc/cpuinfo | grep -ie 'x2apic'
+- Enable the posted interrupt from the "kvm_intel" module. On
+  our machine, it is enabled by default. If it is not enabled
+  by default, we can enable it by the following instruction.
+  $ rmmod kvm_intel
+  $ modprobe kvm_intel enable_apicv=1
+  $ cat /sys/module/kvm_intel/parameters/enable_apicv
