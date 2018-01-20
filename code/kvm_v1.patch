@@ -1,0 +1,303 @@
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index a236dec..eec649f 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -59,6 +59,15 @@
+ MODULE_AUTHOR("Qumranet");
+ MODULE_LICENSE("GPL");
+ 
++/* OSNET
++ * We would like to enable or disable HLT exiting, when
++ * initializing kvm_intel.ko. By default, the HLT exiting is
++ * disabled.
++ */
++static bool __read_mostly enable_hlt_exiting = 0;
++module_param_named(enable_hlt_exiting, enable_hlt_exiting, bool, 0444);
++MODULE_PARM_DESC(enable_hlt_exiting, "By default, HLT exiting is disabled.");
++
+ static const struct x86_cpu_id vmx_cpu_id[] = {
+ 	X86_FEATURE_MATCH(X86_FEATURE_VMX),
+ 	{}
+@@ -3585,6 +3594,20 @@ static __init bool allow_1_setting(u32 msr, u32 ctl)
+ 	return vmx_msr_high & ctl;
+ }
+ 
++/* OSNET
++ * For the purpose of our project, we would like to let VM to
++ * stay on its CPU, even when it is in idle. First , we would
++ * like to eliminate the VM exits due to the HLT instructions.
++ *
++ * Disable the HLT exiting. Every VM is initialized without
++ * the HLT exiting. When the VM is in idle, it issues the HLT
++ * instruction to bring the CPU core to the HALT state. Since
++ * HLT is the privilege instruction, it will trigger the VM
++ * exit. Then, the control is handed over to the hypervisor,
++ * which may or may not emulate the behavior of HALT state.
++ *
++ * By default, we would like to disable the HLT exiting.
++ */
+ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf)
+ {
+ 	u32 vmx_msr_low, vmx_msr_high;
+@@ -3595,7 +3618,10 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf)
+ 	u32 _vmexit_control = 0;
+ 	u32 _vmentry_control = 0;
+ 
+-	min = CPU_BASED_HLT_EXITING |
++  /* OSNET */
++  if (!enable_hlt_exiting) {min = 0;}
++  else {min = CPU_BASED_HLT_EXITING;}
++  min = min |
+ #ifdef CONFIG_X86_64
+ 	      CPU_BASED_CR8_LOAD_EXITING |
+ 	      CPU_BASED_CR8_STORE_EXITING |
+@@ -10267,7 +10293,7 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 	/* vmcs12's VM_ENTRY_LOAD_IA32_EFER and VM_ENTRY_IA32E_MODE are
+ 	 * emulated by vmx_set_efer(), below.
+ 	 */
+-	vm_entry_controls_init(vmx, 
++	vm_entry_controls_init(vmx,
+ 		(vmcs12->vm_entry_controls & ~VM_ENTRY_LOAD_IA32_EFER &
+ 			~VM_ENTRY_IA32E_MODE) |
+ 		(vmcs_config.vmentry_ctrl & ~VM_ENTRY_IA32E_MODE));
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index e52c908..42a969a 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -69,6 +69,35 @@
+ #define CREATE_TRACE_POINTS
+ #include "trace.h"
+ 
++/* OSNET
++ * Turn on the capability to tune the time of handling VM
++ * exits. kvm_intel.ko relies on kvm.ko to initialize the
++ * variables and data arrays. We need to make sure if the
++ * switch is turned on for the * necessary variables and data
++ * arrays in kvm.c. The switch here is to control the timing
++ * capability. By default, we disable the timing capability;
++ * otherwise, it will impact the KVM performance.
++ *
++ * If CREATE_VM_EXIT_HANDLING_TIME is 0, the capability is
++ * turned off.
++ * If CREATE_VM_EXIT_HANDLING_TIME is 1, the capability is
++ * turned on.
++ */
++#define CREATE_VM_EXIT_HANDLING_TIME 0
++
++/* OSNET
++ * Expose the sampling parameters.
++ */
++#if CREATE_VM_EXIT_HANDLING_TIME
++static int __read_mostly sample_size = 20000;
++module_param_named(sample_size, sample_size, int , 0644);
++MODULE_PARM_DESC(sample_size, "Default sample size is 20000.");
++
++static int __read_mostly sample_counter = 100;
++module_param_named(sample_counter, sample_counter, int , 0644);
++MODULE_PARM_DESC(sample_counter, "Default sample counter is 100.");
++#endif
++
+ #define MAX_IO_MSRS 256
+ #define KVM_MAX_MCE_BANKS 32
+ u64 __read_mostly kvm_mce_cap_supported = MCG_CTL_P | MCG_SER_P;
+@@ -6063,6 +6092,10 @@ void kvm_arch_exit(void)
+ 	free_percpu(shared_msrs);
+ }
+ 
++/* OSNET
++ * For VIRTIO/VFIO, vCPU exit_reason is not set to
++ * KVM_EXIT_HLT. WHY? Instead, set the MP state to HALT.
++ */
+ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+ {
+ 	++vcpu->stat.halt_exits;
+@@ -6613,6 +6646,21 @@ void kvm_arch_mmu_notifier_invalidate_page(struct kvm *kvm,
+ 		kvm_make_all_cpus_request(kvm, KVM_REQ_APIC_PAGE_RELOAD);
+ }
+ 
++/* OSNET
++ * Measure the time of handling a VM exit: after the exit -->
++ * before the guest runs.
++ */
++#if CREATE_VM_EXIT_HANDLING_TIME
++extern __kernel_time_t *timestamps;
++extern u64 *handled_time;
++extern ktime_t before_vm_run;
++extern ktime_t after_vm_exit;
++extern u64 handle_exit_ns;
++extern int halted_vcpu_counter;
++extern int kitem;
++extern struct timespec curr_time;
++#endif
++
+ /*
+  * Returns 1 to let vcpu_run() continue the guest execution loop without
+  * exiting to the userspace.  Otherwise, the value will be returned to the
+@@ -6822,8 +6870,26 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 		vcpu->arch.switch_db_regs &= ~KVM_DEBUGREG_RELOAD;
+ 	}
+ 
++  /* OSNET: before the guest runs. */
++#if CREATE_VM_EXIT_HANDLING_TIME
++  before_vm_run = ktime_get();
++  if(halted_vcpu_counter % sample_counter == 0 && kitem < sample_size) {
++    getnstimeofday(&curr_time);
++    timestamps[kitem] = curr_time.tv_sec;
++    handled_time[kitem] = ktime_to_ns(before_vm_run) -
++                          ktime_to_ns(after_vm_exit);
++    kitem++;
++  }
++  halted_vcpu_counter++;
++#endif
++
+ 	kvm_x86_ops->run(vcpu);
+ 
++  /* OSNET: after the vm exits. */
++#if CREATE_VM_EXIT_HANDLING_TIME
++  after_vm_exit = ktime_get();
++#endif
++
+ 	/*
+ 	 * Do this here before restoring debug registers on the host.  And
+ 	 * since we do this before handling the vmexit, a DR access vmexit
+@@ -6881,6 +6947,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	if (vcpu->arch.apic_attention)
+ 		kvm_lapic_sync_from_vapic(vcpu);
+ 
++
+ 	r = kvm_x86_ops->handle_exit(vcpu);
+ 	return r;
+ 
+@@ -6931,9 +6998,13 @@ static inline bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
+ 		!vcpu->arch.apf.halted);
+ }
+ 
++/* OSNET
++ * This is the life span of a guest starting from the running
++ * to its termination.
++ */
+ static int vcpu_run(struct kvm_vcpu *vcpu)
+ {
+-	int r;
++  int r;
+ 	struct kvm *kvm = vcpu->kvm;
+ 
+ 	vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 482612b..a0516d1 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -69,6 +69,29 @@
+ MODULE_AUTHOR("Qumranet");
+ MODULE_LICENSE("GPL");
+ 
++/* OSNET
++ * Turn on the capability to measure the time of handling VM
++ * exits. kvm_intel.ko relies on kvm.ko to initialize the
++ * variables and data arrays. The switch here is to control
++ * such an initialization. By default, we disable the timing
++ * capability; otherwise, it will impact the KVM performance.
++ *
++ * If CREATE_VM_EXIT_HANDLING_TIME is 0, the capability is
++ * turned off.
++ * If CREATE_VM_EXIT_HANDLING_TIME is 1, the capability is
++ * turned on.
++ */
++#define CREATE_VM_EXIT_HANDLING_TIME 0
++
++/* OSNET
++ * Expose the sampling parameters.
++ */
++#if CREATE_VM_EXIT_HANDLING_TIME
++static int __read_mostly time_array_size = 20000;
++module_param_named(time_array_size, time_array_size, int , 0444);
++MODULE_PARM_DESC(time_array_size, "Default size of time array is 20000.");
++#endif
++
+ /* Architectures should define their poll value according to the halt latency */
+ unsigned int halt_poll_ns = KVM_HALT_POLL_NS_DEFAULT;
+ module_param(halt_poll_ns, uint, S_IRUGO | S_IWUSR);
+@@ -1495,7 +1518,7 @@ static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+ 	 * Whoever called remap_pfn_range is also going to call e.g.
+ 	 * unmap_mapping_range before the underlying pages are freed,
+ 	 * causing a call to our MMU notifier.
+-	 */ 
++	 */
+ 	kvm_get_pfn(pfn);
+ 
+ 	*p_pfn = pfn;
+@@ -3906,6 +3929,35 @@ static void kvm_sched_out(struct preempt_notifier *pn,
+ 	kvm_arch_vcpu_put(vcpu);
+ }
+ 
++/* OSNET
++ * We would like to time time the handling of VM exits due to
++ * the HLT instructions and external interrupts. The data
++ * arrays are initialized in kvm_init(). When the KVM module
++ * is unloaded, it will dump the data. After the diagnosis,
++ * the code related to the data arrays should be commented out
++ * or removed.
++ *
++ * vmx_init() calls kvm_init().
++ */
++#if CREATE_VM_EXIT_HANDLING_TIME
++__kernel_time_t *timestamps;
++u64 *handled_time;
++ktime_t before_vm_run = 0;
++ktime_t after_vm_exit = 0;
++u64 handle_exit_ns = 0;
++int halted_vcpu_counter = 0;
++int kitem = 0;
++struct timespec curr_time;
++EXPORT_SYMBOL(timestamps);
++EXPORT_SYMBOL(handled_time);
++EXPORT_SYMBOL(before_vm_run);
++EXPORT_SYMBOL(after_vm_exit);
++EXPORT_SYMBOL(handle_exit_ns);
++EXPORT_SYMBOL(halted_vcpu_counter);
++EXPORT_SYMBOL(kitem);
++EXPORT_SYMBOL(curr_time);
++#endif
++
+ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 		  struct module *module)
+ {
+@@ -3916,6 +3968,16 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 	if (r)
+ 		goto out_fail;
+ 
++  /* OSNET: initialize the data arrays. */
++#if CREATE_VM_EXIT_HANDLING_TIME
++  timestamps = (__kernel_time_t *) kcalloc(time_array_size,
++                                           sizeof(__kernel_time_t),
++                                           GFP_KERNEL);
++  handled_time= (u64 *) kcalloc(time_array_size,
++                                sizeof(u64),
++                                GFP_KERNEL);
++#endif
++
+ 	/*
+ 	 * kvm_arch_init makes sure there's at most one caller
+ 	 * for architectures that support multiple implementations,
+@@ -4016,6 +4078,21 @@ EXPORT_SYMBOL_GPL(kvm_init);
+ 
+ void kvm_exit(void)
+ {
++  /* OSNET
++   * Dump the data to /var/log/syslog SLOWLY! Otherwise, the
++   * data will be truncated, because printk overruns the
++   * buffer.
++   */
++#if CREATE_VM_EXIT_HANDLING_TIME
++  int i;
++  for (i = 0; i < time_array_size; i++) {
++    printk(KERN_INFO "time:%ld:%llu\n", timestamps[i], handled_time[i]);
++    schedule();
++  }
++  kfree(timestamps);
++  kfree(handled_time);
++#endif
++
+ 	debugfs_remove_recursive(kvm_debugfs_dir);
+ 	misc_deregister(&kvm_dev);
+ 	kmem_cache_destroy(kvm_vcpu_cache);
