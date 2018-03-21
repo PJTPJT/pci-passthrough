@@ -239,3 +239,23 @@ interrupts.
   $ rmmod kvm_intel
   $ modprobe kvm_intel enable_apicv=1
   $ cat /sys/module/kvm_intel/parameters/enable_apicv
+
+9. Dedicated CPUs
+-----------------
+We would like to have dedicated cores for the guest virtual
+machine. One way to achieve this is to use the kernel boot
+paramete, "isolcpus", on the host. It isolates the cores from
+the general SMP balancing and scheduling algorithm. We can pin
+a thread or a process to the isolated core via "taskset".
+- To specify the dedicated CPUs, we can use the following
+  syntax, where "CPU NUMBER" starting from 0.
+  isolcpus=<CPU NUMBER>[,<CPU NUMBER>,...]
+
+10. IRQ Affinity
+----------------
+Sometimes we can partition IRQs, so some of the cores are
+dedicates to service some of the device interrupts.
+- Find the IRQ number:
+  $ cat /proc/interrupts
+- Change the IRQ affinity:
+  $ echo <CPU BITMASK> > /proc/irq/<IRQ NUMBER>/smp_affinity
