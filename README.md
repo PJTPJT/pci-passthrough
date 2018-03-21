@@ -8,5 +8,5 @@ under the VFIO framework.
 - Kartik Gopalan    (kartik@binghamton.edu)
 
 # Major Revision
-1. December 09, 2017
-2. March 21, 2017
+- December 09, 2017
+- March 21, 2018
