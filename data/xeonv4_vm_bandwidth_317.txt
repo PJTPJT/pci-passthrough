@@ -1,0 +1,7 @@
+------------------------------------------------------------
+Client connecting to 128.226.119.27, TCP port 5001
+TCP window size: 85.0 KByte (default)
+------------------------------------------------------------
+[  3] local 128.226.119.111 port 53824 connected with 128.226.119.27 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-120.0 sec  13.1 GBytes   935 Mbits/sec

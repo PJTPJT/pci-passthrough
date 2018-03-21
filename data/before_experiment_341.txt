@@ -1,0 +1,30 @@
+           CPU0       CPU1       
+  0:         27          0  IR-IO-APIC   2-edge      timer
+  8:          1          0  IR-IO-APIC   8-edge      rtc0
+  9:          0          0  IR-IO-APIC   9-fasteoi   acpi
+ 18:         62          0  IR-IO-APIC  18-fasteoi   ehci_hcd:usb1, ehci_hcd:usb2
+ 27:         87        169  IR-PCI-MSI 327680-edge      xhci_hcd
+ 28:        133        192  IR-PCI-MSI 286720-edge      ahci[0000:00:11.4]
+ 29:       8959       3075  IR-PCI-MSI 512000-edge      ahci[0000:00:1f.2]
+ 30:        186       1424  IR-PCI-MSI 2097152-edge      vfio-msix[0](0000:04:00.0)
+ 31:        166     265498  IR-PCI-MSI 2097153-edge      vfio-msix[1](0000:04:00.0)
+ 48:          0          0  DMAR-MSI   0-edge      dmar0
+ 49:          0          0  DMAR-MSI   1-edge      dmar1
+NMI:          3         13   Non-maskable interrupts
+LOC:      11191      30623   Local timer interrupts
+SPU:          0          0   Spurious interrupts
+PMI:          3         13   Performance monitoring interrupts
+IWI:          0          0   IRQ work interrupts
+RTR:          0          0   APIC ICR read retries
+RES:        793       1479   Rescheduling interrupts
+CAL:       1481       1507   Function call interrupts
+TLB:         90         43   TLB shootdowns
+TRM:          0          0   Thermal event interrupts
+THR:          0          0   Threshold APIC interrupts
+DFR:          0          0   Deferred Error APIC interrupts
+MCE:          0          0   Machine check exceptions
+MCP:          4          5   Machine check polls
+ERR:          0
+MIS:          0
+PIN:          0          0   Posted-interrupt notification event
+PIW:          0          0   Posted-interrupt wakeup event

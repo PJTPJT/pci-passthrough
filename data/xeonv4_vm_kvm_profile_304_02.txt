@@ -1,0 +1,17 @@
+
+
+Analyze events for all VMs, all VCPUs:
+
+             VM-EXIT    Samples  Samples%     Time%    Min Time    Max Time         Avg time 
+
+           MSR_WRITE     273314    83.19%    55.19%      0.56us    685.39us      1.22us ( +-   0.75% )
+  EXTERNAL_INTERRUPT      30445     9.27%    37.28%      0.48us   1334.74us      7.40us ( +-   3.47% )
+    PREEMPTION_TIMER      22339     6.80%     5.88%      0.61us    650.49us      1.59us ( +-   1.83% )
+      IO_INSTRUCTION       2185     0.67%     1.60%      1.12us     95.96us      4.44us ( +-   1.62% )
+   PAUSE_INSTRUCTION        177     0.05%     0.02%      0.51us      1.59us      0.76us ( +-   2.72% )
+               CPUID         54     0.02%     0.01%      0.54us      4.17us      1.17us ( +-   9.39% )
+       EXCEPTION_NMI         31     0.01%     0.01%      0.64us      1.65us      1.14us ( +-   3.37% )
+            MSR_READ         12     0.00%     0.00%      0.51us      1.41us      0.68us ( +-  12.26% )
+
+Total Samples:328557, Total events handled time:604376.01us.
+
