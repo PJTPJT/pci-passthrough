@@ -1,0 +1,18 @@
+random_read: (g=0): rw=randread, bs=4K-4K/4K-4K/4K-4K, ioengine=libaio, iodepth=64
+fio-2.2.10
+Starting 1 process
+
+random_read: (groupid=0, jobs=1): err= 0: pid=2155: Thu Mar 22 23:10:35 2018
+  read : io=5120.0MB, bw=1601.6MB/s, iops=409984, runt=  3197msec
+  cpu          : usr=22.78%, sys=76.85%, ctx=430, majf=0, minf=71
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, >=64=0.0%
+     issued    : total=r=1310720/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: io=5120.0MB, aggrb=1601.6MB/s, minb=1601.6MB/s, maxb=1601.6MB/s, mint=3197msec, maxt=3197msec
+
+Disk stats (read/write):
+  sdb: ios=40969/3, merge=2/2, ticks=42304/8, in_queue=42300, util=87.80%

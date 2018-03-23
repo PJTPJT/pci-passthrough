@@ -1,0 +1,294 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 8K of event 'kvm:kvm_exit'
+# Event count (approx.): 132728
+#
+# Overhead  Trace output                                                    
+# ........  ................................................................
+#
+    56.02%  reason MSR_WRITE rip 0xffffffff98667ca4 info 0 0
+            |
+            ---vmx_handle_exit
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64_fastpath
+               ioctl
+
+    30.45%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eadd56 info 0 8000008d
+            |
+            ---vmx_handle_exit
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64_fastpath
+               ioctl
+
+     4.95%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eadd56 info 0 800000ef
+            |
+            ---vmx_handle_exit
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64_fastpath
+               ioctl
+
+     2.52%  reason PREEMPTION_TIMER rip 0xffffffff98eadd56 info 0 0
+            |
+            ---vmx_handle_exit
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64_fastpath
+               ioctl
+
+     2.29%  reason EPT_VIOLATION rip 0xffffffff98a389d5 info 181 0
+            |
+            ---vmx_handle_exit
+               kvm_arch_vcpu_ioctl_run
+               kvm_vcpu_ioctl
+               do_vfs_ioctl
+               sys_ioctl
+               entry_SYSCALL_64_fastpath
+               ioctl
+
+     0.35%  reason PREEMPTION_TIMER rip 0xffffffff98a389d5 info 0 0
+     0.20%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a389d5 info 0 800000ef
+     0.12%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info 3760008 0
+     0.07%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eadd56 info 0 800000ad
+     0.07%  reason EPT_VIOLATION rip 0xffffffff98a386f7 info 182 0
+     0.06%  reason PREEMPTION_TIMER rip 0xffffffff98894b26 info 0 0
+     0.06%  reason IO_INSTRUCTION rip 0xffffffff98a47d25 info 1700033 0
+     0.05%  reason MSR_READ rip 0xffffffff98667bd7 info 0 0
+     0.05%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info 1770008 0
+     0.04%  reason PREEMPTION_TIMER rip 0xffffffff98667ca6 info 0 0
+     0.03%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info 1730008 0
+     0.03%  reason PREEMPTION_TIMER rip 0xffffffff98a30d55 info 0 0
+     0.03%  reason IO_INSTRUCTION rip 0xffffffff98a47967 info 1760000 0
+     0.03%  reason PREEMPTION_TIMER rip 0xffffffff987aefe0 info 0 0
+     0.03%  reason PREEMPTION_TIMER rip 0xffffffff987c1359 info 0 0
+     0.03%  reason PREEMPTION_TIMER rip 0xffffffff987c18d3 info 0 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffffc037d04a info 0 800000ef
+     0.02%  reason PREEMPTION_TIMER rip 0xffffffff98c14dfc info 0 0
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff98a47967 info 1730000 0
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff98a47967 info 1750000 0
+     0.02%  reason PREEMPTION_TIMER rip 0xffffffff9882f9fd info 0 0
+     0.02%  reason PREEMPTION_TIMER rip 0xffffffff9891edea info 0 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a30d51 info 0 800000ef
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff98a47c38 info 170003b 0
+     0.02%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eae4dc info 0 800000ef
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info 1750008 0
+     0.02%  reason IO_INSTRUCTION rip 0xffffffff98a47967 info c04a0000 0
+     0.02%  reason PREEMPTION_TIMER rip 0x457bdc info 0 0
+     0.02%  reason PREEMPTION_TIMER rip 0x40f347 info 0 0
+     0.02%  reason EPT_VIOLATION rip 0xffffffff98a2faba info 181 0
+     0.02%  reason EPT_VIOLATION rip 0x7f03842ea85b info 181 0
+     0.01%  reason EPT_VIOLATION rip 0x563e7a339dd2 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0x7f61ca9ff501 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff987aefdc info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff987b71e5 info 182 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff98ac35b1 info 182 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98668435 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff986b3896 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffffc037eefd info 0 800000ef
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9882d0c7 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9882e096 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a57c60 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff98a2f8f4 info 182 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff98eae0a5 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x44d3ef info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x7f61ca9c9a42 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98668420 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98675f56 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9870b649 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987ad979 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987b7228 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987e2650 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98819d03 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9882d0c7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98843bb5 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98853274 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98862718 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff988c9794 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff988d2900 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff988d8f30 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff989edeac info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a14eb7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a21f62 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a302e1 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a308b7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a308c8 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a30d12 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98e05a64 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eacc76 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eae3c0 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eae8d8 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eb0180 info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffffc037ee86 info 0 800000ef
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info 1740008 0
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff98a478a5 info c04a0008 0
+     0.01%  reason IO_INSTRUCTION rip 0xffffffff98a47967 info 1710000 0
+     0.01%  reason PREEMPTION_TIMER rip 0x7f61caf5917f info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9862c4f1 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98674e3c info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff986cc0f6 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff986cd210 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b13b4 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b14b1 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b1687 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b71e9 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b8ef8 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987bfe21 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987c0de1 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987d5c89 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98832685 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9883439e info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98841fc6 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98842019 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9885f8d0 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98888421 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98888430 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989194d3 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989fd512 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989fd597 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989fd5c9 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989fda10 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a14e60 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a1d72b info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a22937 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a2f677 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a39e16 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a3da20 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98c16a96 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98ea8684 info 0 0
+     0.01%  reason CPUID rip 0x7fa8bfa55592 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0x562c9e4d44e4 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff986bda3f info 81 0
+     0.01%  reason CPUID rip 0x7f06e5750b08 info 0 0
+     0.01%  reason CPUID rip 0x7f61c995ac74 info 0 0
+     0.01%  reason CPUID rip 0x7fdc274c5358 info 0 0
+     0.01%  reason CPUID rip 0x7fe6bd3f1715 info 0 0
+     0.01%  reason CPUID rip 0x7ff257196358 info 0 0
+     0.01%  reason EPT_VIOLATION rip 0x478d81 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0x4b4141 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0x7f5be4e0aa02 info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff986685ed info 181 0
+     0.01%  reason EPT_VIOLATION rip 0xffffffff9885f605 info 181 0
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x40ee17 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x40f302 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x43143d info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x43178f info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x4317d7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x433201 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x433509 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x4339b3 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x433d37 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x434f39 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x44af04 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x44df6e info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x44e64e info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x4502b9 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x4502c7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x457bdc info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x465ee3 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x465f9f info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0x46655f info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff986683f8 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff986bdb9f info 0 8000008d
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987aefed info 0 800000ad
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987b16e1 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987b7c1a info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987c18d3 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987c19b3 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987cfbab info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987d3ea7 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987d3eab info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff987d3f09 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98819ca6 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9881a5dc info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9882dba1 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9882fa19 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9883e159 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff9886140c info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98894bda info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff988951e0 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff988e5df9 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff989c60a0 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a30d55 info 0 800000ad
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a30d55 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a31abd info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98a3a1c9 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eaa88d info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eadd56 info 0 800000bd
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eae501 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eae541 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eaf970 info 0 800000ef
+     0.01%  reason EXTERNAL_INTERRUPT rip 0xffffffffc042608a info 0 800000bd
+     0.01%  reason PAUSE_INSTRUCTION rip 0xffffffff98a38ee7 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x40dbe4 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x40ef34 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x424806 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x4302ee info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x431330 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x43143d info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x4318f3 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x431cde info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x433509 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x434f39 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x457583 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x46600d info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x7f61cb689697 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x7ffe2618f9f0 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0x7ffe2618fb0b info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98674df6 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98674e3f info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff986d5434 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b098c info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b198a info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987b28aa info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987c13c7 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987d31b0 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987d3ee5 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987d3f0e info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff987e2890 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9882cd10 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff988326a4 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff988343aa info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9883e12b info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9883e257 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9883e262 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98894532 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98894aab info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98894b3a info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98894dff info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98894ede info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98895278 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff988953b7 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98895689 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff9889570d info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98895c22 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98895d65 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff989c5fb3 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a30d40 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a30d5b info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a30e0b info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a386f7 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a39013 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a3a1c9 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98a3a495 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98eaa540 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98eae0a5 info 0 0
+     0.01%  reason PREEMPTION_TIMER rip 0xffffffff98eae598 info 0 0
+     0.00%  reason EXTERNAL_INTERRUPT rip 0xffffffff98eadd56 info 0 800000fb
+
+
+#
+# (Tip: Use parent filter to see specific call path: perf report -p <regex>)
+#

@@ -1,0 +1,54 @@
+            CPU0       CPU1       
+   0:         31          0  IR-IO-APIC    2-edge      timer
+   8:          1          0  IR-IO-APIC    8-edge      rtc0
+   9:          0          0  IR-IO-APIC    9-fasteoi   acpi
+  16:       2512          0  IR-IO-APIC   16-fasteoi   ehci_hcd:usb1
+  23:      25009          0  IR-IO-APIC   23-fasteoi   ehci_hcd:usb2
+  25:          0          0  IR-PCI-MSI 16384-edge      PCIe PME
+  26:          0          0  IR-PCI-MSI 18432-edge      PCIe PME
+  28:          0          0  IR-PCI-MSI 32768-edge      PCIe PME
+  30:          0          0  IR-PCI-MSI 49152-edge      PCIe PME
+  31:          0          0  IR-PCI-MSI 278528-edge      PCIe PME
+  33:          0          0  IR-PCI-MSI 67108864-edge      PCIe PME
+  34:          1          0  IR-PCI-MSI 1048576-edge      isci-msix
+  35:          0          0  IR-PCI-MSI 1048577-edge      isci-msix
+  36:       6571    1394909  IR-PCI-MSI 512000-edge      ahci[0000:00:1f.2]
+  38:          1          0  IR-PCI-MSI 3672064-edge      vfio-msix[0](0000:07:00.1)
+  39:        134       1171  IR-PCI-MSI 3672065-edge      vfio-msix[1](0000:07:00.1)
+  40:        153        955  IR-PCI-MSI 3672066-edge      vfio-msix[2](0000:07:00.1)
+  72:          0          0  DMAR-MSI    0-edge      dmar0
+  73:          0          0  DMAR-MSI    1-edge      dmar1
+  79:          2          0  IR-PCI-MSI 65536-edge      ioat-msix
+  81:          2          0  IR-PCI-MSI 67584-edge      ioat-msix
+  82:          2          0  IR-PCI-MSI 69632-edge      ioat-msix
+  83:          2          0  IR-PCI-MSI 71680-edge      ioat-msix
+  84:          2          0  IR-PCI-MSI 73728-edge      ioat-msix
+  85:          2          0  IR-PCI-MSI 75776-edge      ioat-msix
+  86:          2          0  IR-PCI-MSI 77824-edge      ioat-msix
+  87:          2          0  IR-PCI-MSI 79872-edge      ioat-msix
+  89:          0          0  IR-PCI-MSI 67174400-edge      ioat-msix
+  91:          0          0  IR-PCI-MSI 67176448-edge      ioat-msix
+  92:          0          0  IR-PCI-MSI 67178496-edge      ioat-msix
+  93:          0          0  IR-PCI-MSI 67180544-edge      ioat-msix
+  94:          0          0  IR-PCI-MSI 67182592-edge      ioat-msix
+  95:          0          0  IR-PCI-MSI 67184640-edge      ioat-msix
+  96:          0          0  IR-PCI-MSI 67186688-edge      ioat-msix
+  97:          0          0  IR-PCI-MSI 67188736-edge      ioat-msix
+ NMI:          8         13   Non-maskable interrupts
+ LOC:      99592     201523   Local timer interrupts
+ SPU:          0          0   Spurious interrupts
+ PMI:          8         13   Performance monitoring interrupts
+ IWI:         14          0   IRQ work interrupts
+ RTR:          0          0   APIC ICR read retries
+ RES:      33444        142   Rescheduling interrupts
+ CAL:       1517       1879   Function call interrupts
+ TLB:          0         27   TLB shootdowns
+ TRM:          0          0   Thermal event interrupts
+ THR:          0          0   Threshold APIC interrupts
+ DFR:          0          0   Deferred Error APIC interrupts
+ MCE:          0          0   Machine check exceptions
+ MCP:          5          5   Machine check polls
+ ERR:          0
+ MIS:          0
+ PIN:          2          2   Posted-interrupt notification event
+ PIW:          0          0   Posted-interrupt wakeup event
