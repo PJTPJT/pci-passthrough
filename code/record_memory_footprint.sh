@@ -15,11 +15,11 @@
 # @since  01/08/2018
 
 # Start to record the memory usage in the background.
-atopsar -m 1 > memory_utilization.txt &
-atopsar_pid=$!
+free -c 300 -s 1 > memory_utilization.txt &
+free_pid=$!
 
 # Wait until the system is (hypothetically) idle.
-sleep 30
+#sleep 30
 
 # Record the memory usage of idle system.
 clock_in=$(date +%H:%M:%S)
@@ -31,22 +31,22 @@ echo "${clock_in} ${clock_out}" > timestamp.txt
 sleep 10
 
 # Record the memory usage of KVM hypervisor.
-clock_in=$(date +%H:%M:%S)
-modprobe kvm
-modprobe kvm_intel
-sleep 60
-clock_out=$(date +%H:%M:%S)
-echo "${clock_in} ${clock_out}" >> timestamp.txt
+#clock_in=$(date +%H:%M:%S)
+#modprobe kvm
+#modprobe kvm_intel
+#sleep 60
+#clock_out=$(date +%H:%M:%S)
+#echo "${clock_in} ${clock_out}" >> timestamp.txt
  
 # Let the system idle.
-sleep 10
+#sleep 10
 
 # Record the memory usage of KVM hypervisor and guest.
 clock_in=$(date +%H:%M:%S)
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
                    -smp 1 \
-                   -m 2048 \
+                   -m 1024 \
                    -hda ubuntu_server_16p04p3.qcow2 \
                    -net none \
                    -serial none \
@@ -63,8 +63,8 @@ echo "${clock_in} ${clock_out}" >> timestamp.txt
 sleep 60
 
 # Stop recording to memory usage.
-kill -SIGKILL ${atopsar_pid}
+kill -SIGKILL ${free_pid}
 
 # Unloading the KVM modules.
-rmmod kvm_intel
-rmmod kvm
+#rmmod kvm_intel
+#rmmod kvm
