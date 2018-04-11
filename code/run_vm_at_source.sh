@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Boot up the VM with the tap device at the source.
 # @author Kevin Cheng       (tcheng8@binghamton.edu)
@@ -24,8 +24,8 @@ qemu-system-x86_64 -enable-kvm \
                    -device virtio-blk,iothread=iothread0,drive=drive0 \
                    -netdev tap,ifname=qtap0,id=mytap,vhost=on \
                    -device virtio-net,netdev=mytap \
-                   -qmp unix:/tmp/qmp-socket,server,nowait \
                    -display none \
-                   -serial none \
+                   -monitor none \
                    -parallel none \
-                   -monitor none
+                   -qmp unix:/tmp/qmp-socket,server,nowait \
+                   -serial telnet:127.0.0.1:8888,server,nowait
