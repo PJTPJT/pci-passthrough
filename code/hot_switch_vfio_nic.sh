@@ -1,11 +1,6 @@
 #!/bin/bash
 
 # Hot plug/unplug the passthrough NIC.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Aprameya Bhat     (abhat3@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  04/02/2018
 
 # Display the usage message.
 if [[ $# != 1 ]]; then

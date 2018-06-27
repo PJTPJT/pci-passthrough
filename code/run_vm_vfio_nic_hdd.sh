@@ -1,10 +1,6 @@
 #!/bin/bash -x
 
 # Boot up the VM with the assigned NIC and SSD.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  03/05/2018
 
 # Configuration for the batch mode.
 # https://linux.m2osw.com/qemu-tricks-and-reference

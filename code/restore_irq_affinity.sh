@@ -4,10 +4,6 @@
 # Need to define the default IRQ affinities first.
 
 # Restore the IRQ affinities.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  01/28/2018
 
 # IRQ is assigned to every possible core.
 default="3ff"

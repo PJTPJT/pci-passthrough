@@ -9,10 +9,6 @@
 # - Wait for 10 seconds to let the system idle.
 # - Boot up a VM.
 # - Record the memory usage of KVM hypervisor and VM for 1 min.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  01/08/2018
 
 # Start to record the memory usage in the background.
 free -c 300 -s 1 > memory_utilization.txt &

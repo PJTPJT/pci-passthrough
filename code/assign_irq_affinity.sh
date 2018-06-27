@@ -6,10 +6,6 @@
 # 0, while the guest was running on the core 1.
 
 # Assign the IRQs to physical cores.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  01/28/2018
 
 # The default IRQ affinity 
 echo 001 > /proc/irq/default_smp_affinity

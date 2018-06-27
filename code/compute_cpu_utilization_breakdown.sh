@@ -11,10 +11,6 @@
 # - guest.
 # - wait.
 # - idle.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  12/01/2017
 
 
 # Check the command line arguments.

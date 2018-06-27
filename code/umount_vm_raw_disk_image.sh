@@ -3,11 +3,6 @@
 # Unmount the VM raw disk image through the loop device.
 # Here the mounting point is created in the current directory
 # and has a name, vm-disk.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Aprameya Bhat     (abhat3@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  04/04/2018
 
 # Command line arguments.
 if [[ $# != 1 ]]; then

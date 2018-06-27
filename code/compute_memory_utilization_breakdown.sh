@@ -10,10 +10,6 @@
 # - slabmem     Main memory used at this moment for dynamically allocated memory by the kernel (snapshot).
 # - swptotal    Total swap space size at this moment (snapshot).
 # - swpfree     Available swap space at this moment (snapshot).
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  01/09/2018
 
 # Check the command line arguments.
 if [ $# -ne 2 ]; then

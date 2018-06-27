@@ -2,11 +2,6 @@
 
 # Boot up the VM with the tap device at the destination and
 # wait on the incoming memory pages.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Aprameya Bhat     (abhat3@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  04/03/2018
 
 # Input parameters.
 if [[ $# != 3 ]]; then

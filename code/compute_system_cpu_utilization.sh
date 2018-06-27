@@ -1,10 +1,6 @@
 #!/bin/bash
 
 # Compute the CPU utilization used by the system from the atopsar output.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  11/23/2017
 
 # Check the command line arguments.
 if [ $# -ne 2 ]; then

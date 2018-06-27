@@ -1,11 +1,6 @@
 #!/bin/bash
 
 # Boot up the VM with the assigned NIC and tap device.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Aprameya Bhat     (abhat3@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  04/01/2018
 
 # Input parameters.
 if [[ $# != 3 ]]; then

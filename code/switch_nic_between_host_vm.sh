@@ -3,10 +3,6 @@
 # We switch the control of host network interface card (NIC) from the
 # hypervisor to the VM.
 # Assume the VFIO modules are loaded.
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  11/15/2017
 
 ###################################################################
 # WARNING: we need to start the VM without a network connection and

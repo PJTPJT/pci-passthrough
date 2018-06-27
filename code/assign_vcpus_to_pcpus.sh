@@ -9,10 +9,6 @@
 # Assign the vCPU thread to its dedicated core, while the rest
 # of QEMU threads are assigned to another core.
 # 
-# @author Kevin Cheng       (tcheng8@binghamton.edu)
-# @author Spoorti Doddamani (sdoddam1@binghamton.edu)
-# @author Kartik Gopalan    (kartik@binghamton.edu)
-# @since  01/28/2018
 
 # Get the QEMU PID.
 qemu_pid=$(pgrep qemu)
