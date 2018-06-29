@@ -1,14 +1,17 @@
-# PCI Device Passthrough
+Project
+-------
 The git repository had the contents related to the lightweight
 hypervisor.
 
-# Authors
+Authors
+-------
 - Kevin Cheng       (tcheng8@binghamton.edu)
 - Spoorti Doddamani (sdoddam1@binghamton.edu)
 - Aprameya Bhat     (abhat3@binghamton.edu)
 - Kartik Gopalan    (kartik@binghamton.edu)
 
-# Major Revision
+Major Revision
+--------------
 - December 09, 2017
 - March 21, 2018
-- June 27, 2018
+- June 29, 2018
