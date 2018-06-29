@@ -1,4 +1,5 @@
-### Steps for Live Migration Automation:
+Steps for Live Migration Automation
+-----------------------------------
 1. Run vm migration agent in /etc/rc.local
    + cd /
    + mkdir migration-agent
