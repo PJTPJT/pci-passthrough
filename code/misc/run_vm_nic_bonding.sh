@@ -2,7 +2,7 @@
 
 # Boot up the VM with the assigned NIC and tap device.
 
-# Input parameters.
+# Get the command line arguments.
 if [[ $# != 3 ]]; then
   echo "Usage: $0 <VCPU> <MEMORY> <VM IMAGE>"
   exit 1
@@ -10,6 +10,8 @@ fi
 vcpu=$1
 memory=$2
 vm_image=$3
+
+# Boot up the guest.
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
                    -smp "${vcpu}" \

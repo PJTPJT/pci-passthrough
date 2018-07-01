@@ -1,14 +1,6 @@
 #!/bin/bash
 
 # Measure the memory footprint of KVM hypervisor.
-# - Boot up a physical machine.
-# - Record the memory usage of idle system for 2 min.
-# - Wait for 10 seconds to let the system idle.
-# - Insert the KVM modules: kvm and kvm_intel.
-# - Record the memory usage of KVM hypervisor for 1 min.
-# - Wait for 10 seconds to let the system idle.
-# - Boot up a VM.
-# - Record the memory usage of KVM hypervisor and VM for 1 min.
 
 # Start to record the memory usage in the background.
 free -c 300 -s 1 > memory_utilization.txt &

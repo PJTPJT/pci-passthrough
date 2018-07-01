@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO
-# Need to define the default IRQ affinities first.
-
 # Restore the IRQ affinities.
 
 # IRQ is assigned to every possible core.

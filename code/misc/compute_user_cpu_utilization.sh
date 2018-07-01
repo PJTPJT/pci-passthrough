@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Compute the CPU utilization in the guest mode from the atopsar output.
+# Compute the CPU utilization in the user mode (usr + nice).
 
 # Check the command line arguments.
 if [ $# -ne 2 ]; then
@@ -15,4 +15,4 @@ timestamps=($(cat $1))
 cpu_utilizations=$2
 
 # Extract the block, containing the experiment data.
-sed -ne "/${timestamps[0]}/, /${timestamps[1]}/p" ${cpu_utilizations} | awk '{sum += $9} END {print sum/NR}'
+sed -ne "/${timestamps[0]}/, /${timestamps[1]}/p" ${cpu_utilizations} | awk '{sum += $3 + $4} END {print sum/NR}'

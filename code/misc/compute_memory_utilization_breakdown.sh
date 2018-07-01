@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Compute the mean memory utilization for the following fields based on the
-# descriptions of atopsar manpage.
+# Compute the mean memory utilization for the following
+# fields.
 # - memtotal    Total usable main memory size.
 # - memfree     Available main memory size at this moment (snapshot).
 # - buffers     Main memory used at this moment to cache metadata-blocks (snapshot).

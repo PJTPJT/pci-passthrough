@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Compute the percentage of VM exits for each reason.
+# For each VM-exit reason, compute its percentage.
 
 # Check the command line arguments.
 if [ $# -ne 1 ]; then

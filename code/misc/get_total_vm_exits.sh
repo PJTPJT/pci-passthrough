@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Get the total number of VM exit events from the KVM profile.
+# Get the total number of VM exits.
 
 # Check the command line arguments.
 if [ $# -ne 1 ]; then

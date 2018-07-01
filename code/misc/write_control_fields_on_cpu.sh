@@ -9,4 +9,3 @@ fi
 pcpu=$1
 taskset -c ${pcpu} cat /proc/write_vmcs_control_fields
 echo "VMCS control fields are updated."
-#echo "-------------------------------------------------"

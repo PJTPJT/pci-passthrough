@@ -1,14 +1,8 @@
 #!/bin/bash
 
-# TODO
-# Need to generalize the script for assigning multiple vCPUs
-# to multiple physical cores. Now, we assign the vCPU thread
-# to the physical core 1 and the rest of QEMU threads to the
+# Assume the VM has only one vCPU.
+# Assign the vCPU thread to core 1 and the QEMU threads to
 # core 0.
-
-# Assign the vCPU thread to its dedicated core, while the rest
-# of QEMU threads are assigned to another core.
-# 
 
 # Get the QEMU PID.
 qemu_pid=$(pgrep qemu)

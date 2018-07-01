@@ -1,8 +1,8 @@
 #!/bin/bash
 
+# Assume the VFIO modules are loaded.
 # We switch the control of host network interface card (NIC) from the
 # hypervisor to the VM.
-# Assume the VFIO modules are loaded.
 
 ###################################################################
 # WARNING: we need to start the VM without a network connection and

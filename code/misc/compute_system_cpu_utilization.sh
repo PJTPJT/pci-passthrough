@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Compute the CPU utilization used by the system from the atopsar output.
+# Compute the CPU utilization used in the system mode.
 
 # Check the command line arguments.
 if [ $# -ne 2 ]; then

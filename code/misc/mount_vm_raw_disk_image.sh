@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Mount the VM raw disk image through the loop device.
-# Here the mounting point is created in the current directory and has a
-# name, vm-disk.
 
 # Command line arguments.
 if [[ $# -ne 1 ]]; then

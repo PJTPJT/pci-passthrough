@@ -1,23 +1,27 @@
 #!/bin/bash
 
-# Boot up the VM with the physical network interface card by vfio-pci.
-# We assume the VM disk image is in the raw format.
+# Boot up the VM with the VFIO NIC.
 
-# Check on the input arguments.
-if [[ $# -ne 2 ]]; then
-  echo "Usage: $0 <NIC DEVICE ID> <VM IMG>" 1>&2
+# Get the input arguments.
+if [[ $# != 4 ]]; then
+  echo "Usage: $0 <VCPU> <MEMORY> <VM IMAGE> <NIC BDF>"
   exit 1
 fi
+vcpu=$1
+memory=$2
+vm_image=$3
+bdf=$4
 
-# Process the command line arguments.
-nic_id="$1"
-vm_img="$2"
-
-# Boot up the VM with the host network interface card by VFIO.
+# Boot up the VM.
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
-                   -smp 1 \
-                   -m 2048 \
-                   -drive file=${vm_img},format=raw,if=virtio \
+                   -smp ${vcpu} \
+                   -m   ${memory} \
+                   -hda ${vm_image} \
                    -net none \
-                   -device vfio-pci,host=${nic_id},id=vfio_pci_nic
+                   -device vfio-pci,host=${bdf},id=vfio_pci_nic \
+                   -nographic \
+                   -monitor none \
+                   -parallel none \
+                   -serial none \
+                   -qmp unix:/tmp/qmp-socket,server,nowait

@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Unmount the VM raw disk image through the loop device.
-# Here the mounting point is created in the current directory
-# and has a name, vm-disk.
+# Unmount the VM raw disk image.
 
-# Command line arguments.
+# Get the command line arguments.
 if [[ $# != 1 ]]; then
   echo "Usage: $0 <VM DIR>"
   exit 1
@@ -15,7 +13,6 @@ vm_dir=$1
 umount ${vm_dir}
 
 # Get the used loop device.
-# TODO: We assume the loop device is only used by the VM disk image.
 loop_device=$(losetup | tail -1 | awk '{print $1}')
 
 # Unmount the VM raw image to the loop device.

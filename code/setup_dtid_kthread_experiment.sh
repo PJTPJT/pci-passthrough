@@ -1,20 +1,15 @@
 #!/bin/bash
 
-# Set up the experiment environment on the OSNET machine.
+# Set up the DTID A environment. DTID A uses the kernel thread
+# to set the PIR and ON bit.
 
 # Display the usage message.
 usage() {
-  echo "Usage: $0 [-k <enable|disable>] [-c <int>] [-l <int>]" 1>&2
+  echo "Usage: $0 [-k <enable|disable>] [-c <int>] [-l <int>]"
   echo '-k: KVM is enabled or disabled.'
   echo '-c: Number of online CPUs.'
   echo '-l: Last core.'
 }
-
-# Check the command line arguments.
-#if [[ $# != 4 ]]; then
-#  usage
-#  exit 1
-#fi
 
 # Set the default values.
 kvm='enable'
@@ -59,6 +54,7 @@ lsmod | grep -i 'kvm'
 lsmod | grep -i 'vfio'
 dmesg | grep -i 'dmar'
 cat /proc/interrupts
+
 echo "/***** kvm *****/"
 echo -n 'halt_poll_ns = '; cat /sys/module/kvm/parameters/halt_poll_ns
 echo -n 'osnet_create_dtid_thread = '; cat /sys/module/kvm/parameters/osnet_create_dtid_thread

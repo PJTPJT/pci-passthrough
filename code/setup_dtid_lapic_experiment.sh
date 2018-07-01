@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Set up the experiment environment on the OSNET machine.
+# Set up the DTID B environment. DTID B uses the timer
+# interrupt handler to set the PIR and ON bit.
 
 # Display the usage message.
 usage() {
@@ -9,12 +10,6 @@ usage() {
   echo '-c: Number of online CPUs.'
   echo '-l: Last core.'
 }
-
-# Check the command line arguments.
-#if [[ $# != 4 ]]; then
-#  usage
-#  exit 1
-#fi
 
 # Set the default values.
 kvm='enable'
