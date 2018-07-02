@@ -4,7 +4,7 @@
 # is the VFIO SSD.
 
 # Get the input arguments.
-if [[ $# != 5 ]]; then
+if [[ $# != 4 ]]; then
   echo "Usage: $0 <VCPU> <MEMORY> <NIC BDF> <HD BDF>"
   exit 1
 fi

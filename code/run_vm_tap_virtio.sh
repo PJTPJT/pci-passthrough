@@ -9,7 +9,6 @@ vcpu=$1
 memory=$2
 vm_image=$3
 
-
 # Boot up the VM.
 qemu-system-x86_64 -enable-kvm \
                    -cpu host \
