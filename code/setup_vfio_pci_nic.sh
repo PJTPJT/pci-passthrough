@@ -24,4 +24,4 @@ echo "${bdf}" > "/sys/bus/pci/drivers/${nic_driver}/unbind"
 
 # Bind the network interface card to VFIO.
 echo "${vendor}" > "/sys/bus/pci/drivers/vfio-pci/new_id"
-echo "${bdf}" > "/sys/bus/pci/drivers/vfio-pci/bind"
+#echo "${bdf}" > "/sys/bus/pci/drivers/vfio-pci/bind"
