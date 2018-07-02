@@ -13,5 +13,5 @@ seconds=$1
 # Get the cpu clock rate.
 for i in $(seq 1 ${seconds}); do
   grep -ie 'mhz' /proc/cpuinfo
-  sleep ${seconds}
+  sleep 1
 done
