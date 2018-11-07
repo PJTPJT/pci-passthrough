@@ -21,4 +21,4 @@ mac_address=$4
 echo $number_of_virtual_functions > /sys/class/net/$interface/device/sriov_numvfs
 
 # Setup MAC address for the virtual function
-ip link set $interface vf $virtual_function_index mac $mac_address
+#ip link set $interface vf $virtual_function_index mac $mac_address

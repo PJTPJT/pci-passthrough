@@ -68,40 +68,40 @@ int main(int argc, char **argv) {
 	}
 
 	/* Convert IPv4 address from text to binary. */
-	//memset(&address1, '0', sizeof(struct sockaddr_in));
-	//address1.sin_family = AF_INET;
-	//address1.sin_port = htons(PORT1);
-	//if(inet_pton(AF_INET, argv[1], &address1.sin_addr) < 0) {
-	//	perror("inet_pton");
-	//	exit(EXIT_FAILURE);
-	//}
+	memset(&address1, '0', sizeof(struct sockaddr_in));
+	address1.sin_family = AF_INET;
+	address1.sin_port = htons(PORT1);
+	if(inet_pton(AF_INET, argv[1], &address1.sin_addr) < 0) {
+		perror("inet_pton");
+		exit(EXIT_FAILURE);
+	}
 
 	/* Connect to server. */
 	/* Connect to guest machine.
 	 */
-	//do {
-	//	is_connected = connect(socket_fd1, (struct sockaddr*)&address1, sizeof(address1));
-	//} while(is_connected < 0);
+	do {
+		is_connected = connect(socket_fd1, (struct sockaddr*)&address1, sizeof(address1));
+	} while(is_connected < 0);
 
 	/* Once connected, 
 	 * Send message "prepare" to setup migration 
 	 * enviroment in guest
 	 */
-	//send(socket_fd1, argv[3], strlen(argv[3]), 0);
+	send(socket_fd1, argv[3], strlen(argv[3]), 0);
 
 	/* Read from the socket*/
 	/* Read "prepared" message from guest machine 
 	 */
-	//memset(buffer, '\0', SIZE);
-	//bytes_read = read(socket_fd1, buffer, SIZE);
-	//if (bytes_read < 0)
-	//{   
-	//	perror("read");
-	//	exit(EXIT_FAILURE);
-	//}   
+	memset(buffer, '\0', SIZE);
+	bytes_read = read(socket_fd1, buffer, SIZE);
+	if (bytes_read < 0)
+	{   
+		perror("read");
+		exit(EXIT_FAILURE);
+	}   
 
-	//if (strcmp("prepared", buffer) == 0)
-	//{
+	if (strcmp("prepared", buffer) == 0)
+	{
 
 		/*Convert IPv4 address from text to binary. */
 		memset(&address3, '0', sizeof(struct sockaddr_in));
@@ -187,9 +187,9 @@ int main(int argc, char **argv) {
 			//system(command3);
 
 		}while(true);
-	//}
+	}
 	close(socket_fd3);
 	close(socket_fd2);
-	//close(socket_fd1);
+	close(socket_fd1);
 	return 0;
 }
