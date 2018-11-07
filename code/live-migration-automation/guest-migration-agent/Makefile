@@ -1,3 +1,5 @@
+
+.PHONY: all 
 all: guest_migration_agent
 
 guest_migration_agent: guest_migration_agent.c

@@ -7,5 +7,6 @@
 # @author Kartik Gopalan    (kartik@binghamton.edu)
 # @since  06/29/2018
 
-echo "-ens5" >"/sys/class/net/bond0/bonding/slaves"; 
-ifconfig bond0 hw ether 52:54:00:12:34:56
+sudo ifenslave -c bond0 ens3
+echo "-ens4" >"/sys/class/net/bond0/bonding/slaves"; 
+ifconfig ens4 down

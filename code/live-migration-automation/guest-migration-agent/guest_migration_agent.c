@@ -105,6 +105,7 @@ int main(int argc, char **argv) {
 
 		if (strcmp("prepare", buffer) == 0)
 		{
+			//printf("Received prepare message\n");
 			command1 = "bash remove_vfio_interface.sh" ;
 			system(command1);
 
@@ -157,6 +158,7 @@ int main(int argc, char **argv) {
 				 */
 				memset(buffer2, '\0', SIZE);
 				bytes_read = read(socket2, buffer2, SIZE);
+				//printf("buffer2 %s\n",buffer2);
 				if (bytes_read < 0)
 				{
 					perror("read");
