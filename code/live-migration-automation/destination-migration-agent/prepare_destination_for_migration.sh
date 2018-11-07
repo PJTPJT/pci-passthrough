@@ -22,10 +22,11 @@ virtual_function_index=$6
 mac_address=$7
 
 # Create virtual functions
-bash setup_virtual_function.sh $number_of_virtual_functions $interface $virtual_function_index $mac_address
+#bash setup_virtual_function.sh $number_of_virtual_functions $interface $virtual_function_index $mac_address
 
 # Setup passthrough NIC
-bash setup_vfio_nic.sh
+./setup_vfio_nic.sh
 
 # Run VM in background
-bash run_vm_at_destination.sh $vcpu $memory $vm_image &
+#bash run_vm_at_destination.sh $vcpu $memory $vm_image &
+./run_vm.sh &

@@ -30,12 +30,12 @@ int main(int argc, char **argv) {
 
 	int vcpu = 1;
 	int memory = 1024;
-	char *vm_image = "/nfs/ubuntu_16_nic_bonding_source.img";
+	char *vm_image = "/spoorti/vm-images/c3po.qcow2";
 	int number_of_virtual_functions = 1;
 	char *interface = "enp7s0f1";
 	int virtual_function_index = 0;
 	char *mac_address = "00:25:90:d8:aa:ee";
-	char *command1, *command2;
+	char *command1, *command2, *command3;
 	char *background = "&";
 	int opt = 1;
 	int backlog = 1;
@@ -109,6 +109,7 @@ int main(int argc, char **argv) {
 
 		if (strcmp("prepare", buffer) == 0)
 		{
+      //printf("Received prepare message\n");
 			/* Setup virtual function;
 			 * Unbind virtual function from host;
 			 * Start destination guest.
@@ -125,6 +126,15 @@ int main(int argc, char **argv) {
 			command2 = "bash check_destination_status.sh";
 			system(command2);
 		}
+
+    //On hotplug message, run top half commands
+    if (strcmp("hotplug", buffer) == 0){
+      //printf("received hotplug message\n");
+      sleep(2);
+      command3 = "bash hotplug_top_half_vf.sh";
+      system(command3);
+    }
+  
 
 		//On migration completion message, plug vfio nic 
 		if (strcmp("Done", buffer) == 0)
@@ -149,6 +159,7 @@ int main(int argc, char **argv) {
 			/* Read from the socket*/
 			memset(buffer, '\0', SIZE);
 			bytes_read = read(socket_fd2, buffer, SIZE);
+      //printf("Received %s from guest\n", buffer);
 			if (bytes_read < 0)
 			{
 				perror("read");
@@ -156,7 +167,8 @@ int main(int argc, char **argv) {
 			}
 
 			//Hot plug vfio NIC
-			command2 = "bash hot_switch_vfio_nic.sh plug";
+			//command2 = "bash hot_switch_vfio_nic.sh plug";
+			command2 = "bash hotplug_bottom_half_vf.sh";
 			system(command2);
 
 		} 
