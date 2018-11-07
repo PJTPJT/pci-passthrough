@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 	}
 
 	char *background = "&";
-	char *command1, *command2, *command3;
+	char *command1, *command2, *command3, *command4;
 	int port = 1111;
 	int is_connected = -1;
 	char buffer[SIZE];
@@ -68,40 +68,42 @@ int main(int argc, char **argv) {
 	}
 
 	/* Convert IPv4 address from text to binary. */
-	//memset(&address1, '0', sizeof(struct sockaddr_in));
-	//address1.sin_family = AF_INET;
-	//address1.sin_port = htons(PORT1);
-	//if(inet_pton(AF_INET, argv[1], &address1.sin_addr) < 0) {
-	//	perror("inet_pton");
-	//	exit(EXIT_FAILURE);
-	//}
+	memset(&address1, '0', sizeof(struct sockaddr_in));
+	address1.sin_family = AF_INET;
+	address1.sin_port = htons(PORT1);
+	if(inet_pton(AF_INET, argv[1], &address1.sin_addr) < 0) {
+		perror("inet_pton");
+		exit(EXIT_FAILURE);
+	}
 
 	/* Connect to server. */
 	/* Connect to guest machine.
 	 */
-	//do {
-	//	is_connected = connect(socket_fd1, (struct sockaddr*)&address1, sizeof(address1));
-	//} while(is_connected < 0);
+	do {
+		is_connected = connect(socket_fd1, (struct sockaddr*)&address1, sizeof(address1));
+	} while(is_connected < 0);
 
 	/* Once connected, 
 	 * Send message "prepare" to setup migration 
 	 * enviroment in guest
 	 */
-	//send(socket_fd1, argv[3], strlen(argv[3]), 0);
+	send(socket_fd1, argv[3], strlen(argv[3]), 0);
 
 	/* Read from the socket*/
 	/* Read "prepared" message from guest machine 
 	 */
-	//memset(buffer, '\0', SIZE);
-	//bytes_read = read(socket_fd1, buffer, SIZE);
-	//if (bytes_read < 0)
-	//{   
-	//	perror("read");
-	//	exit(EXIT_FAILURE);
-	//}   
-
-	//if (strcmp("prepared", buffer) == 0)
-	//{
+	memset(buffer, '\0', SIZE);
+	bytes_read = read(socket_fd1, buffer, SIZE);
+	if (bytes_read < 0)
+	{   
+		perror("read");
+		exit(EXIT_FAILURE);
+	}   
+	
+	//printf("buffer %s\n", buffer);
+	if (strcmp("prepared", buffer) == 0)
+	{
+		//printf("Received prepared message from guest\n");
 
 		/*Convert IPv4 address from text to binary. */
 		memset(&address3, '0', sizeof(struct sockaddr_in));
@@ -166,18 +168,23 @@ int main(int argc, char **argv) {
 			bytes_read = -1;
 			memset(buffer, '\0', SIZE);
 			bytes_read = read(socket1, buffer, SIZE);
+			//printf("Received %s from destination\n", buffer);
 			if (bytes_read < 0)
 			{   
 				perror("read");
 				exit(EXIT_FAILURE);
 			}
 
+			//After "prepared" message is sent by destination host machine, enter the migrate command"
 			command1 = "bash prepare_and_migrate.sh";
 			snprintf(buffer,
 					strlen(command1) + strlen(background) + strlen(argv[2]) + strlen(background) +
 					sizeof(int) + strlen(background), 
 					"%s %s %d", command1, argv[2], port);
 			system(buffer);
+
+			command4 = "bash send_hotplug_command.sh";
+			system(command4);
 
 			//Check migration status; send message on completion
 			command2 = "bash migration_status.sh";
@@ -186,10 +193,12 @@ int main(int argc, char **argv) {
 			//command3 = "bash setup_vf.sh 0";
 			//system(command3);
 
+			break;
+
 		}while(true);
-	//}
+	}
 	close(socket_fd3);
 	close(socket_fd2);
-	//close(socket_fd1);
+	close(socket_fd1);
 	return 0;
 }
