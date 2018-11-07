@@ -29,4 +29,4 @@ mac_address=$7
 
 # Run VM in background
 #bash run_vm_at_destination.sh $vcpu $memory $vm_image &
-./run_vm.sh &
+run_destination_vm.sh &
