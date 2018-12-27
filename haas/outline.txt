@@ -1,0 +1,63 @@
+Virtualization for Bare-metal Cloud Computing
+---------------------------------------------
+- Abstract
+- Introduction
+- Related Work
+- Virtualization Support for HaaS
+- Performance Evaluation
+- Conclusion
+
+Introduction
+------------
+- Bare-metal cloud or hardware as a service (Haas)
+- Server support for HaaS
+- Network support for HaaS
+- Apply the virtualization to enhance the manageability of
+  servers in a HaaS
+- Single-VM virtualization requirements
+  - Direct device assignment for all PCIe devices
+  - Direct interrupt delivery
+  - Migration of bare-metal server
+  - VM introspection for the security and better visibility
+
+Related Work
+------------
+- IBM SoftLayer
+- Oracle
+- Zenlayer
+- Vultr
+
+Virtualization Support for HaaS
+-------------------------------
+- CPU idleness detection and processing
+- Direct NIC assignment
+  - VFIO
+  - NIC bonding of vhost and VFIO
+- Direct interrupt delivery
+  - Posted-interrupt mechanism
+  - Direct timer-interrupt delivery
+    - Periodic vs aperiodic timer interrupts
+    - One-shot vs periodic hardware timer
+    - Guest-level access to the PIR page
+    - Eliminate the hardware lock when processing PIR bits
+- Seamless physical machine migration
+  - NIC bonding with the hot plug/unplug operation during the
+    migration
+  - DTID during the migration
+
+Performance Evaluation
+----------------------
+- Evaluation of test bed and methodology
+- Energy saving when the CPU is in idle
+- Network bandwidth and latency for the direct NIC assignment
+  - vhost
+  - VFIO
+  - NIC bonding of vhost and VFIO
+- Efficiency of DTID
+  - Delivery effectiveness of NIC interrupts
+  - Delivery effectiveness of local timer interrupts
+    - Both periodic and aperiodic application-level interrupts
+      are present in the test workload
+- Service disruption time for physical machine migration
+  - Number of missed UDP packets during the migration
+  - Number of missed timer interrupt during the migration
