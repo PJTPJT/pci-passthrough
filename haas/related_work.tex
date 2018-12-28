@@ -14,12 +14,216 @@
 % - Malleable metal as service 2
 % - PlanetLab
 %
+% Other work
+% - Bareflank: hypervisor prototyping
+%
 % Partitioning hypervisor
 % - Jailhouse
 %
 % Previous work
 % - ELI
 % - DID
-%
-% Other work
-% - Bareflank: hypervisor prototyping
+
+% Partitioning hypervisor
+% - Jailhouse
+By far, Xen and KVM are the two Linux de facto hypervisors.
+The are versatile and cooperate with QEMU to virtualize the
+entire system. They utilize the modern hardware-assisted
+virtualization and match the bare-metal CPU, memory and I/O
+performance with the significantly reduced CPU overhead.
+Nonetheless, there are some areas that these two
+general-purpose solutions need further improvements. One such
+area deals with the real time applications. A real-time
+application needs to meet the minimal response time and/or the
+worst latency. For example, the vehicular break system needs
+to meet the minimal response time , when the driver presses
+the break. Failing the requirement leads to a detrimental
+consequence.
+
+The jailhouse hypervisor is a partitioning hypervisor that
+runs on the bare-metal and works closely with the
+Linux\cite{sinitsyn:2015, ramsauer:2017}. It is not trying to
+be the full-fledged KVM. Its responsibility is to partition
+and assign the available hardware resource to the guests and
+prevent a guest from interfering with the jailhouse or another
+guest. Each guest has its own set of dedicated hardware
+resource and do not share them. In the other words, there is
+no overcommitment of resources. Moreover, the jailhouse is an
+example of asymmetric multiprocessing design, which treats one
+processor core differently from another. For example, one
+processor can access the hard disk, while another accesses the
+serial port. The jailhouse uses this design to create an
+isolated environment, called a cell. When the jailhouse boots
+up, it creates a Linux cell or root cell, containing all the
+processor cores, memory and hardware resources. Before the
+jailhouse boots up a guest, it creates a new cell and allocate
+the requested hardware resources to the guest or inmate. This
+set of hardware resources is dedicated to the guest. This
+partitioning design indicates the jailhouse does not emulate
+the devices or manage resources for the guests.
+
+To passthrough the devices, the jailhouse requires the
+hardware-assisted virtualization. On the x86, it is the VT-x
+and VT-d. For the LAPIC registers, the jailhouse handles the
+accesses differently depending on whether the host supports
+the xAPIC or x2APIC mode. If the host only supports the xAPIC
+mode, the jailhouse traps all the guest's accesses to the
+LAPIC registers. Even if the guest would like to access the
+LAPIC using the MSR interface in the x2APIC mode, the
+jailhouse traps and emulates it on the top of xAPIC mode. If
+the host supports the x2APIC, the jailhouse only traps the
+access to the interrupt command register. ICR is used to send
+IPIs to other process cores. The trap is required, so the
+jailhouse can prevent the malicious guest from disturbing
+other guests. In terms of the interrupt handling, the external
+interrupts are delivered directly to the guest, which handles
+them through the guest IDT. One exception is the non-maskable
+interrupt. The jailhouse uses NMI to regain the controls of
+guest CPUs.
+
+Thus, the interrupts from the assigned devices and timer
+interrupts are delivered directly into the guest without any
+indirection, while the guest can have a fully control over its
+assigned devices and LAPIC timer. These features help to meet
+the real-time application requirement for the latency and
+response time or the long-running computations. Furthermore,
+the jailhouse confines the guest in its own cell and results
+in security enhancement and no resource overcommitment.
+
+% Previous work
+% - ELI
+
+Exitless Interrupt (ELI) is based on the following
+conditions~\cite{amit:2015}. First, the guest has its own set
+of dedicated cores. Second, the guest runs the I/O intensive
+workload with the directly assigned SR-IOV devices. Third, the
+number of interrupts that the guest receives from the assigned
+devices is proportional to the guest execution time. Thus, the
+ELI delivers the assigned interrupts to the guest directly and
+non-assigned interrupts to the VMM. This is achieved by the
+shadow interrupt descriptor table.
+
+When the guest runs in the guest mode, it runs with this
+shadow IDT prepared by the ELI instead of its own IDT. When
+the logical processor in the non-root mode receives an
+external interrupt, it screens the interrupt by the shadow
+IDT. If the interrupt is from the assigned device, it
+dereferences the corresponding table entry and invokes the
+guest's ISR. Otherwise, it traps to the host, which handles
+the non-assigned interrupts. To make such a distinction, the
+ELI copies the guest's IDT, including the guest's exceptions
+and assigned devices, to the shadow IDT. The ELI preserves
+the device interrupt priorities and keeps the interrupt vector
+numbers of each device the same between the corresponding
+guest and host interrupt handlers. It marks guest entries as
+present and the rest of entries as non-present. Moreover, the
+ELI configures the logical processor to force exit on the
+non-present exception. When the host handles the non-present
+exception, it needs to inspect the exit reason. If it is due
+to the non-assigned physical interrupt, it converts the
+exception back to the original interrupt vector and invoke the
+respective ISR. For the virtual interrupts from the emulated
+device, the ELI marks them as the non-assigned interrupts.
+After the trap, the host enters the special injection mode
+that configures the logical processor to exit on any physical
+interrupts and the guest to use its own IDT. The host injects
+the virtual interrupt to the guest.
+
+When the guest's ISR finishes handling its interrupt, it
+updates the LAPIC EOI register and triggers the VM exit. The
+VM exit can be disabled through the MSR bitmap, when
+configuring the VMX module with the x2APIC programming
+interface. Since the guest does not distinguish between the
+injected virtual interrupt or the assigned interrupt, it
+updates the EOI LAPIC register for all cases. This should not
+be the case for the virtual interrupt from the host emulated
+device. When the host operates in the special injection mode,
+it traps the EOI write to the host. Once the guest finishes
+all the pending EOI writes for the virtual interrupts, the
+host leaves the special injection mode.
+
+Thus, the ELI delivers the interrupts from the assigned
+devices directly and virtual interrupts indirectly, while
+preserving the interrupt priorities. It effectively reduces
+the VM exits due to the assigned interrupts to 0 and handles
+the EOI signals properly.
+
+% DID
+Direct Interrupt Delivery (DID) solves the two
+challenges~\cite{tu:2015}. First, the interrupts are directly
+delivered to the guest without the hypervisor intervention on
+the delivery path. Second, the guest completes the end of
+interrupts without the VM exit. The two challenges are divided
+into the following sub-tasks. First, if a guest is running,
+the interrupts from the SR-IOV devices, timers and emulated
+devices are delivered directly. Second, when the target guest
+is not running, its interrupts are delivered through the
+hypervisor. Third, the priority of physical and virtual
+interrupts are preserved. Fourth, the number of interrupts
+that the host needs to complete is zero. In addition, the DID
+supports the unmodified guests.
+
+The DID routes the interrupts to the guest or host
+appropriately by configuring the interrupt routing and
+remapping table from the IOAPIC and IOMMU respectively. For
+the SR-IOV device interrupts, the DID disables the VM-exit due
+to external interrupts. Consequently, the interrupts are
+delivered normally through the guest interrupt descriptor
+table. If the virtual processor is running, the device
+interrupt is directly delivered. If the virtual processor is
+rescheduled by the host, the interrupt is delivered to the
+host through the non-maskable interrupt. The host injects the
+corresponding virtual interrupt, when the virtual processor is
+re-scheduled on the logical processor.
+
+On the modern x86 architecture, each processor has its own
+LAPIC. LAPIC generates timer interrupts, which are not routed
+by the IOAPIC and IOMMU. Instead, the LAPIC delivers the timer
+interrupts to its associated processor. After the guest
+handles the timer interrupt, it sets up the next timer event
+by configuring the LAPIC timer. This requires the host's help.
+The DID ensures that the guest's timer interrupt only delivers
+to guest instead of other user-level processes. The DID
+installs the software timer on the host's dedicated core.
+After the host receives the guest's timer interrupt, it
+delivers the physical timer interrupt through the IPI. The
+host delivers the timer IPI, only when the virtual processor
+is active. If the virtual processor is preempted, the host
+delivers the timer IPI, when the virtual processor is
+scheduled on another logical processor.
+
+The DID delivers the virtual interrupts as the IPIs, which are
+treated as the external interrupts. Each QEMU virtual device
+is represented by a thread and runs on its dedicate core.
+Before delivering the virtual device interrupt, the device
+thread need to check if the virtual processor is active. If
+the virtual processor is running, the thread delivers the
+virtual device interrupt through the IPI. Since the DID
+disables the VM-exit due to external interrupts, the guest
+receives the device interrupt directly. If the vCPU is not
+running, the host receives the interrupt on the behalf of
+guest. The host injects it to the appropriate guest as the
+virtual interrupt, when the virtual-processor is scheduled on
+the logical processor.
+
+When the ISR completes, it instructs the logical processor to
+update the LAPIC end-of-interrupt register. In the DID scheme,
+the direct EOI write has the following considerations. First,
+if the handler of virtual interrupts directly updates the EOI
+register, the LAPIC may thinks there is no pending interrupt.
+Second, it may also think the pending interrupt is completed,
+which is still ongoing. Third, LAPIC may dispatch the lower
+priority interrupt to preempt a higher-priority interrupt. The
+root cause is that the virtual interrupts are not visible to
+the hardware LAPIC, when they are injected via IRR and ISR.
+The DID solves this problem by converting the virtual
+interrupts as the IPIs, while disabling the VM-exit due to the
+EOI writes. If there are multiple virtual interrupts, the host
+issues them as the IPIs one at a time.
+
+Thus, the DID delivers the external interrupts from the
+assigned devices, timer and emulated devices directly into the
+guest, while preserving the interrupt priorities. The DID
+zeroes the number of VM exits due to the interrupts. Moreover,
+it is not required to modify the guest kernel. This is one of
+the advantages over ELI and ELVIS.
