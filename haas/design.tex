@@ -16,3 +16,15 @@
 % - Seamless baremetal virtual machine migration
 %   - NIC bonding with the hot plug/unplug operation migration
 %   - DTID during the migration
+In this section we present the design and implementation of \name.
+The design goal is to eliminate the hypervisor from the guest I/O path
+while achieving bare-metal performance in the guest.
+To achieve this \name considers direct device assignment to
+the guest using Intel's VT-d support. First, the guest meets
+the bare-metal network and disk I/O performance with
+direct device assignment. We further apply optimizations to reduce
+the CPU utilization by hypervisor. Second, the periodic timer interrupts
+are transformed into the posted interrupts,
+which are directly delivered to the guest by the logical processor
+without causing any VMExits. Finally, we also present the migration
+of virtual machine with directly assigned devices.
