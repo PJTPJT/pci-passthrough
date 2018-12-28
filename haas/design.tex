@@ -1,4 +1,4 @@
-\section{Design}
+\section{Virtualization support for HaaS}
 % Virtualization support for HaaS include the following items
 % CPU idleness detection and processing
 % Direct NIC assignment
@@ -28,11 +28,11 @@ are directly delivered to the guest by the logical processor
 without causing any VM exits. Finally, we present the
 migration of virtual machine with directly assigned devices.
 
-% CPU idleness and processing
+\subsection{CPU idleness and processing}
 % TODO: CPU clock rate and implication to the power saving.
 
-% Direct NIC Assignment
-% VFIO
+\subsection{Direct PCI Device Assignment}
+\subsubsection{VFIO}
 Virtual function I/O is a secure framework for the userspace
 device drivers. It does not only support the direct PCI device
 assignment to the userspace processes of VM, but also the
@@ -103,7 +103,7 @@ Using the VT-d, the KVM and QEMU is completed removed from the
 signaling path way. It enables the direct interrupt delivery
 from the assigned device to its VM without a VM exit.
 
-% CPU optimization for the baremetal network performance
+\subsubsection{CPU Optimization}
 To ensure the guest have the bare-metal I/O performance and
 reduced system CPU utilization, our design utilizes the
 following optimization.
@@ -146,14 +146,15 @@ direct interrupt delivery are handled by the posted-interrupt
 hardware.
 
 Third, the guest has a dedicated set of logical
-processors\${amit:2015}. This is done by pinning the virtual
-processors to the isolated logical processors in the
+processors~\cite{amit:2015}. This is done by pinning the
+virtual processors to the isolated logical processors in the
 one-to-one relationship. Doing so not only prevents the host
 processes from competing with the guest's virtual processors,
 but also reduces the degrees of interrupt routing from the
 assigned devices.
 
-% posted-interrupt mechanism.
+\subsection{Direct Interrupt Delivery}
+\subsubsection{Posted-Interrupt Mechanism}
 VT-d supports the posted-interrupt capability and deliver the
 external interrupts directly from the I/O devices and external
 controllers without the cost of VM exits and the hypervisor
@@ -202,6 +203,7 @@ before it clears PIR. Seventh, the processor evaluates the
 pending virtual interrupt. Eighth, the processor delivers the
 virtual interrupt.
 
+\subsubsection{Shared-PID DTID}
 % TODO: Working on the shared-pid DTID.
 % Direct timer-interrupt delivery
 %   - periodic vs aperiodic timer interrupt
@@ -244,6 +246,7 @@ guest's dedicated core is configured to deliver the PIN. When
 the LAPIC timer is up, it delivers the PIN and activates the
 posted-interrupt processing and virtual-interrupt delivery.
 
+\subsection{Seamless VM Migration}
 % Seamless baremetal virtual machine migration
 %   - NIC bonding with the hot plug/unplug operation migration
 %   - DTID during the migration
@@ -260,6 +263,7 @@ transferred, such as the MAC address of network interface
 card.
 
 % TODO: insert the Guest's network interface configuration.
+\subsubsection{NIC Bonding Between the Assigned and Virtual NIC}
 To prove the concept, our design focuses on the case that
 guest has a virtio network device backed by the vhost driver
 and a passthrough network interface card~\cite{zhai:2008}. For
@@ -289,6 +293,7 @@ assigned NIC.
 %   - configure the QEMU software object, when the VM wakes
 %     up. This is done when the VM wakes up.
 
+\subsubsection{Migration with Share-PID DTID}
 % TODO: Working on DTID during the migration.
 % Before the migration, we tear down the DTID.
 % After the migration, we build the DTID.
