@@ -1,0 +1,17 @@
+% Virtualization support for HaaS include the following items
+% - CPU idleness detection and processing
+% - Direct NIC assignment
+%   - VFIO
+%   - CPU optimization for the baremetal network performance
+% - Direct interrupt delivery
+%   - Posted-interrupt mechanism
+%   - Direct timer-interrupt delivery
+%     - periodic vs aperiodic timer interrupt
+%     - one-shot vs periodic hardware timer interrupt
+%     - guest-level access to the PIR page
+%     - Eliminate the hardware lock, when the guest accesses
+%       the PIR bit
+%     - Spurious timer interrupts
+% - Seamless baremetal virtual machine migration
+%   - NIC bonding with the hot plug/unplug operation migration
+%   - DTID during the migration
