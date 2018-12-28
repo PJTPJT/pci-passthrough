@@ -32,7 +32,6 @@ Virtualization Support for HaaS
 - CPU idleness detection and processing
 - Direct NIC assignment
   - VFIO
-  - NIC bonding of vhost and VFIO
 - Direct interrupt delivery
   - Posted-interrupt mechanism
   - Direct timer-interrupt delivery
