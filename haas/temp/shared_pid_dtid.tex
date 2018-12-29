@@ -76,6 +76,8 @@ interrupt-request register because of the KVM implementation.
 One of time points to evaluate the virtual interrupt delivery
 is at the VM entry time. If the PIR timer-interrupt bit is
 present during the copy, the fake virtual timer interrupt is
-delivered into the guest. To reduce the CPU overhead of
-handling spurious interrupts, the guest ignores the spurious
-interrupts.
+delivered into the guest after the VM entry. If the arrival of
+virtual timer interrupt is earlier than the expected
+expiration, the guest ignores it and processes the next
+interrupt. Thus, the CPU overhead is reduced in comparison
+with the full timer interrupt processing. 
