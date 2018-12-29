@@ -25,7 +25,7 @@
 % - DID
 
 % Partitioning hypervisor
-% - Jailhouse
+\subsection{Jailhouse}
 By far, Xen and KVM are the two Linux de facto hypervisors.
 The are versatile and cooperate with QEMU to virtualize the
 entire system. They utilize the modern hardware-assisted
@@ -91,8 +91,7 @@ the jailhouse confines the guest in its own cell and results
 in security enhancement and no resource overcommitment.
 
 % Previous work
-% - ELI
-
+\subsection{Exitless Interrupt}
 Exitless Interrupt (ELI) is based on the following
 conditions~\cite{amit:2015}. First, the guest has its own set
 of dedicated cores. Second, the guest runs the I/O intensive
@@ -148,7 +147,7 @@ preserving the interrupt priorities. It effectively reduces
 the VM exits due to the assigned interrupts to 0 and handles
 the EOI signals properly.
 
-% DID
+\subsection{Direct Interrupt Delivery}
 Direct Interrupt Delivery (DID) solves the two
 challenges~\cite{tu:2015}. First, the interrupts are directly
 delivered to the guest without the hypervisor intervention on
