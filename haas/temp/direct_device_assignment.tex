@@ -1,2 +1,32 @@
 % Describe the design choice of direct device assignment and
 % its benefits.
+The hardware-assisted direct device assignment helps the guest
+achieve the baremetal I/O performance without the additional
+virtualization overhead. Using the VT-x and VT-d support
+fulfills our design goal. After proper VMCS and EPT
+configuration, the guest gain the control of assigned device
+by MMIO/PIO without the help of hypervisor. The VT-x APIC
+virtualization permits that the guest writes to the
+end-of-interrupt register without an VM exit. With the VT-d
+support, the guest performs DMA with the enhanced security and
+zero the VM-exit overhead due to the device interrupts by the
+posted-interrupt mechanism. Under the normal circumstances,
+the guest can not handle physical interrupts without the
+hypervisor. When a physical interrupt is delivered to the
+guest, it induces the following overheads. First, it triggers
+the VM exit and transfer the control to the host. Saving and
+loading the execution context between the root and non-root
+mode waste the CPU cycles. Second, the host needs to examine
+and handle the physical interrupt. If the physical interrupt
+is meant for the guest, the host needs to deliver it as the
+virtual interrupt upon the next VM entry. Otherwise, the host
+handles it and schedules the next VM entry. Third, when the
+guest's interrupt handler finishes, it writes to the EOI
+register. Such write operation may induce the VM exit. Since
+the guest is not aware of the distinction between the physical
+and virtual interrupt, it signals the completion of interrupt
+in the same way. After the guest handles the virtual
+interrupt, its EOI update is normally emulated by the host.
+Fourth, the host may need to use CPU cache and reduce the time
+to handle the physical interrupt. This introduces the CPU
+cache pollution.
