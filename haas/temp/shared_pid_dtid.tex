@@ -1,0 +1,41 @@
+% Working on the shared-pid DTID.
+% Direct timer-interrupt delivery
+%   - periodic vs aperiodic timer interrupt
+%   - one-shot vs periodic hardware timer interrupt
+%   - guest-level access to the PIR page
+%   - Eliminate the hardware lock, when the guest accesses
+%     the PIR bit
+%   - Spurious timer interrupts
+Both the host and guest requires to receive timer interrupts
+from the LAPIC or virtual APIC respectively. If the timer
+interrupt is delivered to the processor core in the root mode,
+the logical processor services the timer interrupt through the
+host's timer interrupt handler. Then, the host sets up the
+next timer event and execute the previously scheduled work
+from the bottom halves. If the timer interrupt is delivered,
+while the guest is running, it induces the VM exit. The host
+handles the timer interrupt and injects the virtual timer
+interrupt to the guest. When the guest receives the virtual
+timer interrupt, it services the timer interrupt and set up
+the next timer event by updating the LAPIC timer initial count
+register through the x2APIC interface. This triggers the
+MSR-write VM exit and the control is transfer to the host. The
+host helps the guest to set up its next timer by the $hrtimer$
+subsystem. If the interrupt is meant for the guest, the guest
+should not pay the additional price due to the interrupt
+processing by the host.
+
+The task is to transform the timer interrupts into the virtual
+interrupt and deliver through the posted-interrupt mechanism.
+Since the virtual timer interrupt is injected through the
+posted-interrupt mechanism, the corresponding bit in the
+posted-interrupt register and outstanding notification bit
+need to be set beforehand. When the logical processor receives
+the posted interrupt notification, it activates the
+posted-interrupt processing and delivers the timer interrupt
+as the virtual timer interrupt. The transformation is done by
+the two procedures. First, the ON bit and timer-interrupt bit
+in the PIR are set by the host. Second, the LAPIC timer on the
+guest's dedicated core is configured to deliver the PIN. When
+the LAPIC timer is up, it delivers the PIN and activates the
+posted-interrupt processing and virtual-interrupt delivery.

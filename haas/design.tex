@@ -28,10 +28,12 @@ are directly delivered to the guest by the logical processor
 without causing any VM exits. Finally, we present the
 migration of virtual machine with directly assigned devices.
 
-\subsection{CPU idleness and processing}
-% TODO: CPU clock rate and implication to the power saving.
+\subsection{CPU Idleness and Processing}
+\input{temp/cpu_idleness}
 
 \subsection{Direct PCI Device Assignment}
+\input{temp/direct_device_assignment}
+
 \subsubsection{VFIO}
 Virtual function I/O is a secure framework for the userspace
 device drivers. It does not only support the direct PCI device
@@ -154,6 +156,8 @@ but also reduces the degrees of interrupt routing from the
 assigned devices.
 
 \subsection{Direct Interrupt Delivery}
+\input{temp/direct_interrupt_delivery}
+
 \subsubsection{Posted-Interrupt Mechanism}
 VT-d supports the posted-interrupt capability and deliver the
 external interrupts directly from the I/O devices and external
@@ -204,96 +208,13 @@ pending virtual interrupt. Eighth, the processor delivers the
 virtual interrupt.
 
 \subsubsection{Shared-PID DTID}
-% TODO: Working on the shared-pid DTID.
-% Direct timer-interrupt delivery
-%   - periodic vs aperiodic timer interrupt
-%   - one-shot vs periodic hardware timer interrupt
-%   - guest-level access to the PIR page
-%   - Eliminate the hardware lock, when the guest accesses
-%     the PIR bit
-%   - Spurious timer interrupts
-Both the host and guest requires to receive timer interrupts
-from the LAPIC or virtual APIC respectively. If the timer
-interrupt is delivered to the processor core in the root mode,
-the logical processor services the timer interrupt through the
-host's timer interrupt handler. Then, the host sets up the
-next timer event and execute the previously scheduled work
-from the bottom halves. If the timer interrupt is delivered,
-while the guest is running, it induces the VM exit. The host
-handles the timer interrupt and injects the virtual timer
-interrupt to the guest. When the guest receives the virtual
-timer interrupt, it services the timer interrupt and set up
-the next timer event by updating the LAPIC timer initial count
-register through the x2APIC interface. This triggers the
-MSR-write VM exit and the control is transfer to the host. The
-host helps the guest to set up its next timer by the $hrtimer$
-subsystem. If the interrupt is meant for the guest, the guest
-should not pay the additional price due to the interrupt
-processing by the host.
-
-The task is to transform the timer interrupts into the virtual
-interrupt and deliver through the posted-interrupt mechanism.
-Since the virtual timer interrupt is injected through the
-posted-interrupt mechanism, the corresponding bit in the
-posted-interrupt register and outstanding notification bit
-need to be set beforehand. When the logical processor receives
-the posted interrupt notification, it activates the
-posted-interrupt processing and delivers the timer interrupt
-as the virtual timer interrupt. The transformation is done by
-the two procedures. First, the ON bit and timer-interrupt bit
-in the PIR are set by the host. Second, the LAPIC timer on the
-guest's dedicated core is configured to deliver the PIN. When
-the LAPIC timer is up, it delivers the PIN and activates the
-posted-interrupt processing and virtual-interrupt delivery.
+\input{temp/shared_pid_dtid}
 
 \subsection{Seamless VM Migration}
-% Seamless baremetal virtual machine migration
-%   - NIC bonding with the hot plug/unplug operation migration
-%   - DTID during the migration
-The direct device assignment makes it difficult to migrate the
-guest to its destination~\cite{zhai:2008}. After the VM
-migration, it is possible that the previously-assigned devices
-may not be available at the destination. Even if the assigned
-device is available, the internal state of device may not be
-readable or still on its way to the destination. The host at
-the destination has a hard time to passthrough the device
-without the device-specific knowledge. Moreover, some devices
-have the unique hardware information that cannot be
-transferred, such as the MAC address of network interface
-card.
+\input{temp/seamless_vm_migration}
 
-% TODO: insert the Guest's network interface configuration.
 \subsubsection{NIC Bonding Between the Assigned and Virtual NIC}
-To prove the concept, our design focuses on the case that
-guest has a virtio network device backed by the vhost driver
-and a passthrough network interface card~\cite{zhai:2008}. For
-the purpose of simplicity, the guest NIC is the only assigned
-device. The prototype overcomes the challenge by the following
-two strategies. First, it uses the Linux bonding driver to
-direct the network traffic between the assigned and virtual
-NIC. The migration procedure is divided into two parts. Before
-the migration, the host uses the bonding driver and shifts the
-network traffic from the assigned NIC to the virtual NIC. It
-hot unplug the assigned NIC and starts the migration. After
-the guest resumes at the destination, the destination host hot
-plugs the assigned NIC. It announces the MAC address of
-assigned NIC by sending the gracious ARP packets to its local
-network before shifting the network traffic back to the
-assigned NIC.
+\input{temp/migration_nic_bonding}
 
-% TODO: Seamless VFIO hotplug at the destination. This is
-% about the QEMU modification.
-% Explain why hotplugging of NIC at the destination cause the
-% network downtime?
-% Three general steps:
-%   - construct a QEMU software object that represent the
-%     passthrough NIC. This is done during migration.
-%   - realize the QEMU software object. This is done during
-%     the migration.
-%   - configure the QEMU software object, when the VM wakes
-%     up. This is done when the VM wakes up.
-
-\subsubsection{Migration with Share-PID DTID}
-% TODO: Working on DTID during the migration.
-% Before the migration, we tear down the DTID.
-% After the migration, we build the DTID.
+\subsubsection{Migration with Shared-PID DTID}
+\input{temp/migration_dtid}

@@ -1,0 +1,11 @@
+The direct device assignment makes it difficult to migrate the
+guest to its destination~\cite{zhai:2008}. After the VM
+migration, it is possible that the previously-assigned devices
+may not be available at the destination. Even if the assigned
+device is available, the internal state of device may not be
+readable or still on its way to the destination. The host at
+the destination has a hard time to passthrough the device
+without the device-specific knowledge. Moreover, some devices
+have the unique hardware information that cannot be
+transferred, such as the MAC address of network interface
+card.
