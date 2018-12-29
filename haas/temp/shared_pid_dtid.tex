@@ -6,36 +6,74 @@
 %   - Eliminate the hardware lock, when the guest accesses
 %     the PIR bit
 %   - Spurious timer interrupts
-Both the host and guest requires to receive timer interrupts
-from the LAPIC or virtual APIC respectively. If the timer
-interrupt is delivered to the processor core in the root mode,
-the logical processor services the timer interrupt through the
-host's timer interrupt handler. Then, the host sets up the
-next timer event and execute the previously scheduled work
-from the bottom halves. If the timer interrupt is delivered,
-while the guest is running, it induces the VM exit. The host
-handles the timer interrupt and injects the virtual timer
-interrupt to the guest. When the guest receives the virtual
-timer interrupt, it services the timer interrupt and set up
-the next timer event by updating the LAPIC timer initial count
-register through the x2APIC interface. This triggers the
-MSR-write VM exit and the control is transfer to the host. The
-host helps the guest to set up its next timer by the $hrtimer$
-subsystem. If the interrupt is meant for the guest, the guest
-should not pay the additional price due to the interrupt
-processing by the host.
+The longer the guest stays on its CPU, the more local timer
+interrupts it receives. The goal is to let the guest have its
+dedicated CPUs. Our design does not only directly deliver the
+timer interrupts to the guest, but also take one step further
+by allowing the guest update its next timer event directly.
 
-The task is to transform the timer interrupts into the virtual
-interrupt and deliver through the posted-interrupt mechanism.
-Since the virtual timer interrupt is injected through the
-posted-interrupt mechanism, the corresponding bit in the
-posted-interrupt register and outstanding notification bit
-need to be set beforehand. When the logical processor receives
-the posted interrupt notification, it activates the
-posted-interrupt processing and delivers the timer interrupt
-as the virtual timer interrupt. The transformation is done by
-the two procedures. First, the ON bit and timer-interrupt bit
-in the PIR are set by the host. Second, the LAPIC timer on the
-guest's dedicated core is configured to deliver the PIN. When
-the LAPIC timer is up, it delivers the PIN and activates the
-posted-interrupt processing and virtual-interrupt delivery.
+The local timer interrupt is delivered to the guest and
+results in two scenarios. First, the timer interrupt is meant
+for the guest. It induces the VM exit and the control is
+transferred back to the host. The host handles the timer
+interrupt and injects the virtual timer interrupt to the
+guest. When the guest receives the virtual timer interrupt, it
+services the timer interrupt and set up the next timer event
+by updating the LAPIC timer initial count register through the
+x2APIC interface. This triggers the MSR-write VM exit and the
+control is transfer to the host. The host helps the guest to
+set up its next timer by registering the \texttt{hrtimer}
+object of guest next timer event. Second, the timer interrupt
+is not meant for the guest. It induces the VM exit and
+transfer the control back to the host. The host processes the
+timer interrupt but does not inject the virtual timer
+interrupt. Nonetheless, if the timer interrupt is not meant
+for the guest, the guest should not pay the price.
+
+The first task is to transform the local timer interrupt into
+the posted interrupt, which is directly delivered to the guest
+by the VT-d hardware. It requires two actions. The
+timer-interrupt bit of posted-interrupt request needs to be
+set, before the posted-interrupt notification is delivered to
+the guest core. Since the guest is responsible for its own
+timer interrupt, the guest should set the bit in the PIR.
+However, such a PIR structure is embedded in the
+posted-interrupt descriptor and protected by the host. The
+host needs to share the PIR with the guest by isolating the
+entire PID to a shared page. If the guest messes up setting
+the proper bits in the PID, it does not affect the host normal
+operations. In our design, the shared PID page is accessible
+by three entities: host, guest and virtualization hardware.
+The second task is to allow the guest control the timer
+initial count register of LAPIC timer. With the
+hardware-assisted APIC virtualization, this is achieved by
+updating the MSR bitmap of VM control structure. The KVM
+intercept of TMICT MSR update is disabled. When the guest
+configures the TMICT, the change is written to the register
+directly without triggering the VM exit. In summary, we reach
+our goal of guest having dedicated CPUs by disabling the HLT-
+and timer-related VM exits.
+
+Using the shared PID has the draw back. It induces the
+spurious timer interrupts causing additional interrupt
+processing in the guest. Since the guest sets the PIR
+timer-interrupt bit before its next timer event, the it
+induces the spurious timer interrupts. Such a fake timer
+interrupt is induced in two cases. First, the guest
+experiences the spurious timer interrupt when performing
+I/O-bound activities with the assigned device. Let's take the
+assigned network card for an example. Both the bits of timer
+interrupt and network-device interrupt are set in the PIR.
+Based on the Intel architecture, the timer interrupt has a
+higher priority than the network interrupt does. The timer
+interrupt is delivered before the network interrupt. Although
+the guest should have only processed the network interrupt, it
+first processes the timer and then network interrupt. Second,
+upon the VM entry, the PIR is synced to the virtual
+interrupt-request register because of the KVM implementation.
+One of time points to evaluate the virtual interrupt delivery
+is at the VM entry time. If the PIR timer-interrupt bit is
+present during the copy, the fake virtual timer interrupt is
+delivered into the guest. To reduce the CPU overhead of
+handling spurious interrupts, the guest ignores the spurious
+interrupts.
