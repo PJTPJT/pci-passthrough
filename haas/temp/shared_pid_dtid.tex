@@ -41,18 +41,18 @@ However, such a PIR structure is embedded in the
 posted-interrupt descriptor and protected by the host. The
 host needs to share the PIR with the guest by isolating the
 entire PID to a shared page. If the guest messes up setting
-the proper bits in the PID, it does not affect the host normal
-operations. In our design, the shared PID page is accessible
-by three entities: host, guest and virtualization hardware.
-The second task is to allow the guest control the timer
-initial count register of LAPIC timer. With the
-hardware-assisted APIC virtualization, this is achieved by
-updating the MSR bitmap of VM control structure. The KVM
-intercept of TMICT MSR update is disabled. When the guest
-configures the TMICT, the change is written to the register
-directly without triggering the VM exit. In summary, we reach
-our goal of guest having dedicated CPUs by disabling the HLT-
-and timer-related VM exits.
+the proper bits in the PID through the EPT, it does not affect
+the host normal operations. In our design, the shared PID page
+is accessible by three entities: host, guest and
+virtualization hardware.  The second task is to allow the
+guest control the timer initial count register of LAPIC timer.
+With the hardware-assisted APIC virtualization, this is
+achieved by updating the MSR bitmap of VM control structure.
+The KVM intercept of TMICT MSR update is disabled. When the
+guest configures the TMICT, the change is written to the
+register directly without triggering the VM exit. In summary,
+we reach our goal of guest having dedicated CPUs by disabling
+the HLT- and timer-related VM exits.
 
 Using the shared PID has the draw back. It induces the
 spurious timer interrupts causing additional interrupt
