@@ -8,4 +8,17 @@ the destination has a hard time to passthrough the device
 without the device-specific knowledge. Moreover, some devices
 have the unique hardware information that cannot be
 transferred, such as the MAC address of network interface
-card.
+card. In the case of guest-controlled timer, it depends on the
+VT-x availability at the destination. Our design takes the
+approach of alternating the usage of passthrough and
+respective virtual device with the acceptable service downtime
+or number of missed time interrupts. We assume that the
+devices and hardware supports are available. For the network
+activity, the network traffic is switch from the assigned to
+virtual network device, before the migration starts. The
+network traffic is switched back after the guest starts up at
+the destination. For the local timer interrupt, the direct
+timer interrupt delivery is switched back to the indirect
+delivery with the help of \texttt{hrtimer} object and TMICT
+WRMSR VM exit is enabled, before the migration. The changes
+are reverted after the guest starts up at the destination.
