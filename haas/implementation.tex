@@ -83,7 +83,23 @@ in the guest timer interrupt handlers,
 \texttt{local\_apic\_timer\_interrupt}. If the timer interrupt
 arrives than the expected expiration, it is the spurious
 interrupt. Then, the guest ignores it by skipping the regular
-processing of timer interrupt.
+processing of timer interrupt. Fifth, the guest updates the
+PIR timer-interrupt bit, whenever it receives the timer
+interrupt. From the Intel Software Developer
+Manual~\cite{sdm:2018}, it is the general requirement to use
+the locked read-modify-write instruction to access the PID. If
+the guest uses the atomic test-and-set instruction to set the
+PIR bit, it prevents the KVM and VT-d from accessing the PID
+during the time of operation. Such an atomic instruction
+causes the processor's lock signal which ensures the exclusive
+usage of shared PID by locking the cache line. Because of the
+induced spurious interrupts from the guest I/O activities, the
+guest locks the shared PID so often and prohibits the VT-d to
+set the proper bit. Thus, the guest I/O performance is
+degraded. Since the guest only updates the PIR timer-interrupt
+bit, it is not necessary to lock it. In our implementation, we
+choose to use the non-atomic operation to set the bit. This
+effectively reduces the chance of lock contention.
 
 \subsection{Device Passthrough by QEMU}
 \input{temp/qemu_device_passthrough}
