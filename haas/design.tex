@@ -29,10 +29,47 @@ without causing any VM exits. Finally, we present the
 migration of virtual machine with directly assigned devices.
 
 \subsection{CPU Idleness and Processing}
-\input{temp/cpu_idleness}
+One of our design goals is to let the guest stay on its CPU as
+long as it can. We encounter two different types of
+virtualization overheads. First, the idles guest issues the
+privileged HLT instruction. Such an instruction induces the VM
+exit and transfers the control to the KVM which starts to poll
+on the CPU until the event arrival. This incurs the high CPU
+utilization due to the HLT-related VM exit. It is eliminated
+by updating the primary processor-based VM execution control
+and disabling the VM exit due to the HLT instruction. It
+allows the idle guest to stay on its CPU without the polling
+and results in the CPU clock frequency remains at minimal.
+Thus, disabling HLT-induced VM exit helps to reduce the CPU
+power consumption of idle guest. Second, the local timer
+interrupt fires and causes the VM exit, when the guest's time
+quantum is expired. The longer the guest stays on its CPU, the
+higher number of physical timer interrupt it receives. To
+support our objective, our work utilizes the posted-interrupt
+mechanism and directly deliver the interrupt into the guest
+without triggering any VM exit. This feature is discussed in
+the~\nameref{subsubsec:shared_pid_dtid}.
 
 \subsection{Direct PCI Device Assignment}
-\input{temp/direct_device_assignment}
+The hardware-assisted direct device assignment helps the guest
+achieve the baremetal I/O performance without the additional
+virtualization overhead. Using the VT-x and VT-d support
+fulfills our design goal. After proper VMCS and EPT
+configuration, the guest gain the control of assigned device
+by MMIO/PIO without the help of hypervisor. The VT-x APIC
+virtualization permits that the guest writes to the
+end-of-interrupt register without an VM exit. With the VT-d
+support, the guest performs DMA with the enhanced security and
+zero the VM-exit overhead due to the device interrupts by the
+posted-interrupt mechanism. In addition to the hardware
+support, VFIO provides the software framework for the
+userspace device drivers. It works with VT-d and QEMU and sets
+up the direct PCI device assignment. Although it is expected
+to move the hypervisor out of the guest I/O path, the
+hypervisor still induces the high CPU utilization due to the
+HLT emulation. This greatly deviates our goal of guest having
+its own dedicated cores. Nonetheless, our CPU optimization
+strategies remedy such a problem.
 
 \subsubsection{VFIO}
 Virtual function I/O is a secure framework for the userspace
@@ -156,7 +193,30 @@ but also reduces the degrees of interrupt routing from the
 assigned devices.
 
 \subsection{Direct Interrupt Delivery}
-\input{temp/direct_interrupt_delivery}
+Our design uses the hardware-assisted posted interrupt
+mechanism and achieves the direct interrupt delivery of
+assigned devices and local timers without the intervention of
+hypervisor. It reduces the hypervisor CPU utilization and
+dedicates the CPU time to the guest. Under the normal
+circumstances, the guest can not handle physical interrupts
+without the hypervisor. When a physical interrupt is delivered
+to the guest, it induces the following overheads. First, it
+triggers the VM exit and transfer the control to the host.
+Saving and loading the execution context between the root and
+non-root mode waste the CPU cycles. Second, the host needs to
+examine and handle the physical interrupt. If the physical
+interrupt is meant for the guest, the host needs to deliver it
+as the virtual interrupt upon the next VM entry. Otherwise,
+the host handles it and schedules the next VM entry. Third,
+when the guest's interrupt handler finishes, it writes to the
+EOI register. Such write operation may induce the VM exit.
+Since the guest is not aware of the distinction between the
+physical and virtual interrupt, it signals the completion of
+interrupt in the same way. After the guest handles the virtual
+interrupt, its EOI update is normally emulated by the host.
+Fourth, the host may need to use CPU cache and reduce the time
+to handle the physical interrupt. This introduces the CPU
+cache pollution.
 
 \subsubsection{Posted-Interrupt Mechanism}
 VT-d supports the posted-interrupt capability and deliver the
@@ -208,13 +268,140 @@ pending virtual interrupt. Eighth, the processor delivers the
 virtual interrupt.
 
 \subsubsection{Shared-PID DTID} \label{subsubsec:shared_pid_dtid}
-\input{temp/shared_pid_dtid}
+The longer the guest stays on its CPU, the more local timer
+interrupts it receives. The goal is to let the guest have its
+dedicated CPUs. Our design does not only directly deliver the
+timer interrupts to the guest, but also take one step further
+by allowing the guest update its next timer event directly.
+
+The local timer interrupt is delivered to the guest and
+results in two scenarios. First, the timer interrupt is meant
+for the guest. It induces the VM exit and the control is
+transferred back to the host. The host handles the timer
+interrupt and injects the virtual timer interrupt to the
+guest. When the guest receives the virtual timer interrupt, it
+services the timer interrupt and set up the next timer event
+by updating the LAPIC timer initial count register through the
+x2APIC interface. This triggers the MSR-write VM exit and the
+control is transfer to the host. The host helps the guest to
+set up its next timer by registering the \texttt{hrtimer}
+object of guest next timer event. Second, the timer interrupt
+is not meant for the guest. It induces the VM exit and
+transfer the control back to the host. The host processes the
+timer interrupt but does not inject the virtual timer
+interrupt. Nonetheless, if the timer interrupt is not meant
+for the guest, the guest should not pay the price.
+
+The first task is to transform the local timer interrupt into
+the posted interrupt, which is directly delivered to the guest
+by the VT-d hardware. It requires two actions. The
+timer-interrupt bit of posted-interrupt request needs to be
+set, before the posted-interrupt notification is delivered to
+the guest core. Since the guest is responsible for its own
+timer interrupt, the guest should set the bit in the PIR.
+However, such a PIR structure is embedded in the
+posted-interrupt descriptor and protected by the host. The
+host needs to share the PIR with the guest by isolating the
+entire PID to a shared page. If the guest messes up setting
+the proper bits in the PID through the EPT, it does not affect
+the host normal operations. In our design, the shared PID page
+is accessible by three entities: host, guest and
+virtualization hardware. The second task is to allow the guest
+control the timer initial count register of LAPIC timer. With
+the hardware-assisted APIC virtualization, this is achieved by
+updating the MSR bitmap of VM control structure. The KVM
+intercept of TMICT MSR update is disabled. When the guest
+configures the TMICT, the change is written to the register
+directly without triggering the VM exit. The third task is to
+configure the LAPIC timer chip to deliver the posted-interrupt
+notification instead of the actual timer interrupt. In
+summary, we reach our goal of guest having dedicated CPUs by
+disabling the HLT- and timer-related VM exits.
+
+Using the shared PID has the draw back. It induces the
+spurious timer interrupts causing additional interrupt
+processing in the guest. Since the guest sets the PIR
+timer-interrupt bit before its next timer event, the it
+induces the spurious timer interrupts. Such a fake timer
+interrupt is induced in two cases. First, the guest
+experiences the spurious timer interrupt when performing
+I/O-bound activities with the assigned device. Let's take the
+assigned network card for an example. Both the bits of timer
+interrupt and network-device interrupt are set in the PIR.
+Based on the Intel architecture, the timer interrupt has a
+higher priority than the network interrupt does. The timer
+interrupt is delivered before the network interrupt. Although
+the guest should have only processed the network interrupt, it
+first processes the timer and then network interrupt. Second,
+upon the VM entry, the PIR is synced to the virtual
+interrupt-request register because of the KVM implementation.
+One of time points to evaluate the virtual interrupt delivery
+is at the VM entry time. If the PIR timer-interrupt bit is
+present during the copy, the fake virtual timer interrupt is
+delivered into the guest after the VM entry. If the arrival of
+virtual timer interrupt is earlier than the expected
+expiration, the guest ignores it and processes the next
+interrupt. Thus, the CPU overhead is reduced in comparison
+with the full timer interrupt processing. 
 
 \subsection{Seamless VM Migration}
-\input{temp/seamless_vm_migration}
+The direct device assignment makes it difficult to migrate the
+guest to its destination~\cite{zhai:2008}. After the VM
+migration, it is possible that the previously-assigned devices
+may not be available at the destination. Even if the assigned
+device is available, the internal state of device may not be
+readable or still on its way to the destination. The host at
+the destination has a hard time to passthrough the device
+without the device-specific knowledge. Moreover, some devices
+have the unique hardware information that cannot be
+transferred, such as the MAC address of network interface
+card. In the case of guest-controlled timer, it depends on the
+VT-x availability at the destination. Our design takes the
+approach of alternating the usage of passthrough and
+respective virtual device with the acceptable service downtime
+or number of missed time interrupts. We assume that the
+devices and hardware supports are available. For the network
+activity, the network traffic is switch from the assigned to
+virtual network device, before the migration starts. The
+network traffic is switched back after the guest starts up at
+the destination. For the local timer interrupt, the direct
+timer interrupt delivery is switched back to the indirect
+delivery with the help of \texttt{hrtimer} object and TMICT
+WRMSR VM exit is enabled, before the migration. The changes
+are reverted after the guest starts up at the destination.
 
 \subsubsection{NIC Bonding Between the Assigned and Virtual NIC}
 \input{temp/migration_nic_bonding}
 
 \subsubsection{Migration with Shared-PID DTID}
-\input{temp/migration_dtid}
+The direct timer interrupt delivery depends the following
+factors. First, the host shares the posted-interrupt
+descriptor with the guest. When the guest udpates the
+timer-interrupt bit of posted-interrupt request through EPT,
+it does not trigger the EPT violations and the local timer
+interrupt is delivered as the posted interrupt. Second, the
+guest directly configures the timer initial count register
+without a WRMSR VM exit. This is achieved by updating the MSR
+bitmap of VM control structure. Third, the guest needs to
+correctly compute its next timer events with the
+host-calibrated LAPIC timer. To compute the next timer event
+from the nano-seconds to the clock cycles, the multiplication
+and shift factor of the calibrated timer are required. The
+host needs to convey such information to the guest. The guest
+configures the TMICT with the correct timer event in clock
+cycles.
+
+Before the migration starts, both host and guest need to tear
+down the DTID. In the host, it enables the TMICT WRMSR VM exit
+by updating the MSR bitmap of VMCS and configures the LAPIC
+time to fire the timer interrupt rather than the
+posted-interrupt notification. It needs to notify the guest to
+tear down its DTID. Upon receving the notification, the guest
+requests the host to unmap the shared PID and restores the
+timer multiplication and shift back in order to correctly
+compute the timer duration. Such a timer duration is conveyed
+to the host \texttt{hrtimer} object when the host handles
+TMICT WRMSR VM exit. After the guest starts at the
+destination, both the guest and host rebuild the DTID. The
+process of rebuilding the DTID is the reverse of
+aforementioned steps.
