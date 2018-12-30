@@ -78,7 +78,8 @@ the gust the multiplication and shift factor of calibrated
 LAPIC timer. When the guest programs the LAPIC TMICT, it needs
 the right factor to convert the duration in time to the number
 of clock cycles. Fourth, we implement the screening algorithm
-in the guest timer interrupt handler,
+in the guest timer interrupt handlers,
+\texttt{smp\_apic\_timer\_interrupt} and
 \texttt{local\_apic\_timer\_interrupt}. If the timer interrupt
 arrives than the expected expiration, it is the spurious
 interrupt. Then, the guest ignores it by skipping the regular
