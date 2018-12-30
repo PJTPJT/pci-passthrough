@@ -1,2 +1,35 @@
 % Implementation details about the direct timer interrupt
 % delivery.
+The core of DTID implementation relies on the following
+components. First, the PID is shared among the host, guest and
+VT-d. Before our modification, the PID is embedded within the
+\texttt{vcpu\_vmx} structure. If we simply shares the page
+where the PID is located, we also allows the guest access to
+the sensitive or privilege information in the host and thus,
+put the host in a greater risk. Our implementation isolates
+the PID into its own page and modifies the way how some KVM
+functions access the PID. The PID is located in the beginning
+of the page and accessed as a pointer. When each vCPU is
+created, the PID page is also allocated, which are accessible
+by the host and VT-d. Before the guest access the shared PID
+page, it needs to tell the host where to map the shared page.
+The guest issues the hypercall and passes the target guest
+physical address to the host. Once the host receives the GPA,
+the host updates the QEMU page table entry and extended page
+table entry to the physical location of shared page and the
+reference count of shared page. To have the DTID reversible,
+the implementation saves the host physical address of target
+GPA. When the DTID is torn down, our implementation reverts
+the PTE and EPTE back to the saved HPA and updates the
+reference counts of shared page. Second, the TMICT WRMSR VM
+exit is disabled, so the guest is able to update its TMICT
+without the additional cost. Third, the host needs to inform
+the gust the multiplication and shift factor of calibrated
+LAPIC timer. When the guest programs the LAPIC TMICT, it needs
+the right factor to convert the duration in time to the number
+of clock cycles. Fourth, we implement the screening algorithm
+in the guest timer interrupt handler,
+\texttt{local\_apic\_timer\_interrupt}. If the timer interrupt
+arrives than the expected expiration, it is the spurious
+interrupt. Then, the guest ignores it by skipping the regular
+processing of timer interrupt.
