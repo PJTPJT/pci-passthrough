@@ -31,14 +31,14 @@ migration of virtual machine with directly assigned devices.
 \subsection{CPU Idleness and Processing}
 One of our design goals is to let the guest stay on its CPU as
 long as it can. We encounter two different types of
-virtualization overheads. First, the idles guest issues the
+virtualization overheads. First, the idle guest issues the
 privileged HLT instruction. Such an instruction induces the VM
 exit and transfers the control to the KVM which starts to poll
 on the CPU until the event arrival. This incurs the high CPU
 utilization due to the HLT-related VM exit. It is eliminated
 by updating the primary processor-based VM execution control
 and disabling the VM exit due to the HLT instruction. It
-allows the idle guest to stay on its CPU without the polling
+allows the idle guest to stay on its CPU without polling
 and results in the CPU clock frequency remains at minimal.
 Thus, disabling HLT-induced VM exit helps to reduce the CPU
 power consumption of idle guest. Second, the local timer
@@ -53,20 +53,20 @@ the~\nameref{subsubsec:shared_pid_dtid}.
 \subsection{Direct PCI Device Assignment}
 The hardware-assisted direct device assignment helps the guest
 achieve the baremetal I/O performance without the additional
-virtualization overhead. Using the VT-x and VT-d support
-fulfills our design goal. After proper VMCS and EPT
-configuration, the guest gain the control of assigned device
+virtualization overhead using the VT-x and VT-d support.
+After proper VMCS and EPT configuration, the guest gains
+the control of assigned device
 by MMIO/PIO without the help of hypervisor. The VT-x APIC
-virtualization permits that the guest writes to the
-end-of-interrupt register without an VM exit. With the VT-d
+virtualization permits the guest to write to the
+end-of-interrupt register without a VM exit. With the VT-d
 support, the guest performs DMA with the enhanced security and
-zero the VM-exit overhead due to the device interrupts by the
-posted-interrupt mechanism. In addition to the hardware
+eliminates the VM exit overhead due to the device interrupts by using 
+the posted-interrupt mechanism. In addition to the hardware
 support, VFIO provides the software framework for the
 userspace device drivers. It works with VT-d and QEMU and sets
 up the direct PCI device assignment. Although it is expected
 to move the hypervisor out of the guest I/O path, the
-hypervisor still induces the high CPU utilization due to the
+hypervisor still induces high CPU utilization due to the
 HLT emulation. This greatly deviates our goal of guest having
 its own dedicated cores. Nonetheless, our CPU optimization
 strategies remedy such a problem.
