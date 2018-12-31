@@ -11,3 +11,48 @@
 %   - Direct interrupt delivery
 %   - Migration of bare-metal server
 %   - VM introspection for the security and better visibility
+
+Infrastructure as a service (IaaS), which was popularized by AWS's EC2 service, has evolved and morphed into multiple forms over the last decade.
+In the beginning, the basic compute unit for IaaS was a {\em virtual machine}, which represents a slice of a physical machine carved out by a hardware-abstraction-layer hypervisor.
+Then the basic compute unit could also be a {\em container}, which is pre-configured with an operating system and corresponds to a piece of a physical machine delimited by that OS.
+A more recent option for IaaS's basic compute unit is a {\em function}, which comes with a complete operating environment constsing of an OS and a middleware layer, and is created on demand.  
+Lately, even a physical machine could serve as the basic compute unit. This type of IaaS is known as {\em bare metal cloud service} or {\em hardware as a service} (HaaS). In the past three years, we have been developing a HaaS operating system called {\em ITRI HaaS OS} or \sna.  
+The focus of this paper is on \sna's virtualization support that emhances the manageability and serviceability required of a modern bare metal cloud service. 
+
+The HaaS offerings from cloud operators such as IBM (SoftLayer) and Oracle provide a user a physical data center instance (PDCI), which is composed of a set of physical machines connected in a way specified by the user. HaaS users prefer physical machines to virtual machines primarily because they want to make the best of the underlying hardware resources for workloads that do not need the flexibility afforded by virtualization, such as HPC computation, big data analytics or AI training.
+Other HaaS use cases include that users have a preferred hypervisor or operating system which is not supported by cloud operators, and 
+that users need special hardware for which virtualization is not sufficiently mature, such as ARM SOC-based micro-server and GPU/FPGA cluster.
+
+In the case of IaaS, cloud operators own and manage the physical machines.
+In contrast, for HaaS, cloud operators own the physical machines but users manage them. 
+This way, HaaS users are still able to enjoy the multiplexing benefits of cloud computing that are due to sharing of hardware and facilities.
+A HaaS user or tenant makes a HaaS service request to \na by specifying a PDCI, which consists of 
+\begin{itemize} 
+\setlength\itemsep{-0.04in}
+\item A set of physical servers, each with its CPU/memory/PCIe device specification, and configurations on the BIOS, BMC, and PCI devices,
+
+\item A set of storage volumes that exist in local or shared storage, and are attached to the servers,
+
+\item A set of IP subnets that describe how the servers are connected with one another and to the Internet, and  
+
+\item A set of public IP addresses to be bound to some of the servers facing the Internet, and their firewall policies. 
+
+\end{itemize}
+\na processes each PDCI request by first making corresponding allocations for server, network and storage resources, and 
+then setting up the PDCI's required network connectivity.  Because a HaaS operator cannot install any agent software on the physical servers rented out on a PDCI, the only way for \na to programmatically build a virtual network that meets a PDCI's IP subset specification is to leverage the VLAN and VXLAN capabilities in modern network switches and routers by properly configuring them according to the network connectivity specification.  
+Moreover, \na allows a HaaS tenant to {\em remotely} check, configure, and update the firmware on the physical servers, as well as intsall the desired operating systems and applications 
+on them, in a way that minimizes human errors and the adverse side effects that come with these errors. 
+Finally, \na enables a HaaS tenant to monitor the hardware status of the physical servers and the network traffic among them with full visibility, without revealing anything associated with other co-inhabiting tenants. 
+
+For the HaaS use case in which a tenant installs an operating system (Linux or Windows) rather than a proprietary hypervisor on the physical servers of its PDCI, \na runs a specialized hypervisor on each physical server to enable migration of physical machine state and informed monitoring of application-level performance. This hypervisor, conceptually an extension of a physical server's BIOS, allows only one VM to run on each server and enables the VM's operating system to interact with all the server's devices as if it runs directly on a bare metal server.
+More concretely, the functional requirements of this {\em single-VM virtualization} hypervisor are
+\begin{itemize} 
+\setlength\itemsep{-0.04in}
+\item Direct pass-through of all PCIe devices without involving the hypervisor,
+\item Direct delivery of interrupts, including PCIe interrupts and local timer interrupts, 
+\item Seamless migration of virtual machine and physical device state, and 
+\item Resource usage of the hypervisor is limited to one CPU core and 100MB of RAM.
+\end{itemize}
+Except during VM migration, this hypervisor is not involved in the data-plane processing of any I/O operations, and thus imposes a negligible I/O performance overhead at run time.  
+With such a hypervisor installed on each physical server, \na is now able to monitor each server's internal user activities using VM introspection, and seamlessly migrate the user state on the server from one physical machine to another. 
+
