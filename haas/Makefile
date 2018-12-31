@@ -8,4 +8,4 @@ main:
 
 .PHONY: clean
 clean:
-	rm *.aux *.log *.blg *.bbl *.out *.pdf
+	rm *.aux *.log *.blg *.bbl *.out
