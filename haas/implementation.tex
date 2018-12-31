@@ -59,26 +59,28 @@ the sensitive or privilege information in the host and thus,
 put the host in a greater risk. Our implementation isolates
 the PID into its own page and modifies the way how some KVM
 functions access the PID. The PID is located in the beginning
-of the page and accessed as a pointer. When each vCPU is
-created, the PID page is also allocated, which are accessible
-by the host and VT-d. Before the guest access the shared PID
-page, it needs to tell the host where to map the shared page.
-The guest issues the hypercall and passes the target guest
-physical address to the host. Once the host receives the GPA,
-the host updates the QEMU page table entry and extended page
-table entry to the physical location of shared page and the
-reference count of shared page. To have the DTID reversible,
-the implementation saves the host physical address of target
-GPA. When the DTID is torn down, our implementation reverts
-the PTE and EPTE back to the saved HPA and updates the
-reference counts of shared page. Second, the TMICT WRMSR VM
-exit is disabled, so the guest is able to update its TMICT
-without the additional cost. Third, the host needs to inform
-the gust the multiplication and shift factor of calibrated
-LAPIC timer. When the guest programs the LAPIC TMICT, it needs
-the right factor to convert the duration in time to the number
-of clock cycles. Fourth, we implement the screening algorithm
-in the guest timer interrupt handlers,
+of the page and accessed as a pointer. During the vCPU
+creation, the PID page is allocated. When KVM sets up the VMCS
+for each vCPU, the physical address of PID is stored in the
+field of posted-interrupt descriptor address. As a result, the
+PID is accessible from both KVM and VT-d. Before the guest
+access the shared PID page, it needs to tell the host where to
+map the shared page. The guest issues the hypercall and passes
+the target guest physical address to the host. Once the host
+receives the GPA, the host updates the QEMU page table entry
+and extended page table entry to the physical location of
+shared page and the reference count of shared page. To have
+the DTID reversible, the implementation saves the host
+physical address of target GPA. When the DTID is torn down,
+our implementation reverts the PTE and EPTE back to the saved
+HPA and updates the reference counts of shared page. Second,
+the TMICT WRMSR VM exit is disabled, so the guest is able to
+update its TMICT without the additional cost. Third, the host
+needs to inform the gust the multiplication and shift factor
+of calibrated LAPIC timer. When the guest programs the LAPIC
+TMICT, it needs the right factor to convert the duration in
+time to the number of clock cycles. Fourth, we implement the
+screening algorithm in the guest timer interrupt handlers,
 \texttt{smp\_apic\_timer\_interrupt} and
 \texttt{local\_apic\_timer\_interrupt}. If the timer interrupt
 arrives than the expected expiration, it is the spurious
@@ -92,7 +94,7 @@ the guest uses the atomic test-and-set instruction to set the
 PIR bit, it prevents the KVM and VT-d from accessing the PID
 during the time of operation. Such an atomic instruction
 causes the processor's lock signal which ensures the exclusive
-usage of shared PID by locking the cache line. Because of the
+usage of shared PID and lock the cache line. Because of the
 induced spurious interrupts from the guest I/O activities, the
 guest locks the shared PID so often and prohibits the VT-d to
 set the proper bit. Thus, the guest I/O performance is
