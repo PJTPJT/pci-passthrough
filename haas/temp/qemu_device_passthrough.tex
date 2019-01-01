@@ -1,3 +1,25 @@
 % Implementation details about the modified device passthrough
 % in QEMU in order to minimize the network downtime during the
 % hot-plugging event.
+
+For the migration of guest with NIC passthrough device, we setup the 
+guest with both virtual NIC and assigned NIC. The two interfaces 
+are enslaved to the bonding driver in active-backup mode. The 
+active-backup mode provides fault-tolerance by switching the
+network traffic from failed active interface to slave interface.
+In active-backup mode, the MAC address of bond interface 
+is the same as the MAC address of active interface. On failure 
+of active interface, the MAC address of bond interface has to 
+be changed to the MAC address of the slave interface. On changing
+the MAC address of the bond interface, the ARP packets have to be
+broadcast through newly setup bond interface to switch-over the
+traffic from active to slave interface. The bonding driver 
+provides \texttt{fail\_over\_mac} option to change 
+the MAC address and broadcast the ARP packets on fail-over of
+active interface. In \na the bonding driver is configured 
+with \texttt{fail\_over\_mac} set to one. This results in minimum
+network downtime during hot unplug operation which is performed
+before initiating the migration process.
+
+ 
+

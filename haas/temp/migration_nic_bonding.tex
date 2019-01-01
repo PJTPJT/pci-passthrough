@@ -41,5 +41,19 @@ interface fails, one of the slave interfaces becomes active. In \na,
 just before the migration is initiated, the network traffic is gradually 
 shifted to the slave interface using ARP packets before hot unplugging
 the assigned NIC. Once the assigned NIC is hot unplugged, QEMU issues migrate
-command. 
+command. After the migration is completed, once the guest resumes on the
+destination, the NIC device is hot plugged.
 
+The hot plug mechanism of assigned NIC consists of the following three steps. 
+First, QEMU prepares a software object that represents the passthrough NIC.
+It then realizes the QEMU software object by getting a copy of configuarion
+space from the NIC device. Finally, it resets the software NIC object and 
+setup the BAR and interrupt forwarding. The first and last steps happen in
+QEMU main event loop during which the guest remains paused. As a result,
+the guest experiences downtime during hot plug operation. In \na, to 
+mitigate the downtime due to hot plug operation on the 
+destination host, the first two steps are executed during migration.
+QEMU allows to setup and realize the software object during migration.
+However, the BAR and interrupts can be setup only after resuming the guest.
+Hence, we eliminate the downtime caused during the setup of software NIC object
+phase.	 
