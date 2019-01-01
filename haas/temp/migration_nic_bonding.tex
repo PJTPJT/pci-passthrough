@@ -1,21 +1,22 @@
-In this section we describe the mechanism of migrating a guest with 
-direct NIC assignment. The guest is configured with virtio network 
-device backed by the vhost driver and a passthrough network interface 
-card~\cite{zhai:2008}. For the purpose of simplicity, we assume that the 
-guest NIC is the only assigned device. The prototype overcomes 
-the challenge of migrating NIC assigned guest by the following
-two strategies. First, it uses the Linux bonding driver to
-direct the network traffic between the assigned and virtual
-NIC. The migration procedure is divided into two parts. During regular operation 
-of guest, the assigned NIC is used for higher network bandwidth. 
-Before the migration, the host uses the bonding driver and shifts the
+In this section we describe the mechanism of migrating a guest
+with direct NIC assignment. The guest is configured with
+virtio network device backed by the vhost driver and a
+passthrough network interface card~\cite{zhai:2008}. For the
+purpose of simplicity, we assume that the guest has one
+assigned network device. The prototype overcomes the challenge
+of migrating NIC assigned guest by the following strategy. It
+uses the Ethernet bonding driver to direct the network traffic
+between the assigned and virtual NIC. The migration procedure
+is divided into two parts. During regular operation of guest,
+the assigned NIC is used for higher network bandwidth. Before
+the migration, the host uses the bonding driver and shifts the
 network traffic from the assigned NIC to the virtual NIC. It
 hot unplugs the assigned NIC and starts the migration. After
 the guest resumes at the destination, the destination host hot
-plugs the assigned NIC and switches the network traffic
-from virtual NIC to assigned NIC. 
-%It announces the MAC address of assigned NIC by sending 
-%the gracious ARP packets to its local network before 
+plugs the assigned NIC and switches the network traffic from
+virtual NIC to assigned NIC.
+%It announces the MAC address of assigned NIC by sending
+%the gracious ARP packets to its local network before
 %shifting the network traffic back to the
 %assigned NIC.
 
@@ -33,27 +34,65 @@ from virtual NIC to assigned NIC.
 %   - configure the QEMU software object, when the VM wakes
 %     up. This is done when the VM wakes up.
 
-Linux provides bonding driver to present multiple network interfaces
-into a single logical interface. In \na the virtual NIC and the assigned NIC 
-are enslaved in active-backup mode where only one of the interfaces
-is active at any time. In active-backup mode, when any of the active
-interface fails, one of the slave interfaces becomes active. In \na,
-just before the migration is initiated, the network traffic is gradually 
-shifted to the slave interface using ARP packets before hot unplugging
-the assigned NIC. Once the assigned NIC is hot unplugged, QEMU issues migrate
-command. After the migration is completed, once the guest resumes on the
-destination, the NIC device is hot plugged.
 
-The hot plug mechanism of assigned NIC consists of the following three steps. 
-First, QEMU prepares a software object that represents the passthrough NIC.
-It then realizes the QEMU software object by getting a copy of configuarion
-space from the NIC device. Finally, it resets the software NIC object and 
-setup the BAR and interrupt forwarding. The first and last steps happen in
-QEMU main event loop during which the guest remains paused. As a result,
-the guest experiences downtime during hot plug operation. In \na, to 
-mitigate the downtime due to hot plug operation on the 
-destination host, the first two steps are executed during migration.
-QEMU allows to setup and realize the software object during migration.
-However, the BAR and interrupts can be setup only after resuming the guest.
-Hence, we eliminate the downtime caused during the setup of software NIC object
-phase.	 
+% COMMENT
+% - We may need to explain the reason why we choose to use the
+%   active-backup mode among other different modes such as
+%   round robin, transmission-load balancing or adaptive load
+%   balancing.
+% - The active backup mode only handles the outgoing traffic
+%   instead of the incoming traffic. For the outgoing traffic,
+%   the bonding driver deposits the outgoing packet requests
+%   to the target outgoing ring buffer with the respective to
+%   the assigned or virtual NIC. For the incoming traffic, it
+%   uses the gratuitous ARP to redirect the incoming traffic.
+% - We may need to explain the reason why we would like to
+%   shift the network traffic before hot unplugging. What if
+%   we do not shift the network traffic and hot unplug the
+%   assigned NIC. In the other words, how does shifting the
+%   traffic helps with the objective of exitless guest?
+% - We may need to first highlight what was the problem we
+%   have encountered when hot plugging the assigned device at
+%   the destination, so the QEMU modification would make
+%   sense. In the other words, the long time we spend inside
+%   the main event loop on adding a I/O device, the longer it
+%   takes to pause the guest. This is the QEMU implementation
+%   restriction.Then, we would explain the QEMU modification
+%   which helps to resolve the network service downtime during
+%   the unmodified hotplugging event. Probably just need to
+%   restructure the paragraphs a bit.
+% - What would be the benefit to hide the first two steps of
+%   hot plug during the migration? Or will it introduce the
+%   addition migration downtime at all? If we do the first two
+%   steps of configuration, the effects are taken at the
+%   destination. It does not really seem to affect the QEMU
+%   migrating the memory pages and CPU context from the source
+%   to the destination.
+
+Linux provides bonding driver to present multiple network
+interfaces into a single logical interface. In \na the virtual
+NIC and the assigned NIC are enslaved in active-backup mode
+where only one of the interfaces is active at any time. When
+any of the active interface fails, one of the slave interfaces
+becomes active. Before the migration is initiated, the network
+traffic is gradually shifted to the slave interface using ARP
+packets before hot unplugging the assigned NIC. Once the
+assigned NIC is hot unplugged, QEMU issues migrate command.
+After the migration is completed, once the guest resumes on
+the destination, the NIC device is hot plugged.
+
+The hot plug mechanism of assigned NIC consists of the
+following three steps. First, QEMU prepares a software object
+that represents the passthrough NIC. It then realizes the QEMU
+software object by getting a copy of configuarion space from
+the NIC device. Finally, it resets the software NIC object and
+setup the BAR and interrupt forwarding. The first and last
+steps happen in QEMU main event loop during which the guest
+remains paused. As a result, the guest experiences downtime
+during hot plug operation. In \na, to mitigate the downtime
+due to hot plug operation on the destination host, the first
+two steps are executed during migration. QEMU allows to setup
+and realize the software object during migration. However, the
+BAR and interrupts can be setup only after resuming the guest.
+Hence, we eliminate the downtime caused during the setup of
+software NIC object phase.
