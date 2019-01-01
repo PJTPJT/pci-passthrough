@@ -2,6 +2,24 @@
 % in QEMU in order to minimize the network downtime during the
 % hot-plugging event.
 
+% COMMENT
+% - Here we have explained the configuration of bonding driver
+%   and QEMU modification. To have a full story, we would want
+%   to describe what the hot-plug and unplug operation mean
+%   and how they are done.
+% - We may want to explain how we determine if it is the right
+%   time to hot unplug the assigned NIC that does not cause
+%   the network downtime. For example, 0 byte of
+%   outgoing/incoming traffic are used as the criteria. What
+%   would be the duration for us to determin if is the good
+%   time to hot unplug the assigned NIC.
+% - In the design, we only mentioned the hot plug/unplug
+%   operations, but we have not mention how they are done. It
+%   is a good place to describe how the operations are done.
+%   How the NIC ownership is transferred between the host and
+%   guest in our implementation, so the procedures do not
+%   disturb the guest work or induce the network downtime.
+
 For the migration of guest with NIC passthrough device, we setup the 
 guest with both virtual NIC and assigned NIC. The two interfaces 
 are enslaved to the bonding driver in active-backup mode. The 

@@ -36,6 +36,11 @@ virtual NIC to assigned NIC.
 
 
 % COMMENT
+% - What are the components in play here? We have QEMU, VFIO
+%   and guest. We can structure the design and flow of nic
+%   bonding and migration with these comopnents in mind. We
+%   also have a figure for the NIC bonding and migraiton. It
+%   would help too.
 % - We may need to explain the reason why we choose to use the
 %   active-backup mode among other different modes such as
 %   round robin, transmission-load balancing or adaptive load
@@ -51,6 +56,10 @@ virtual NIC to assigned NIC.
 %   we do not shift the network traffic and hot unplug the
 %   assigned NIC. In the other words, how does shifting the
 %   traffic helps with the objective of exitless guest?
+% - We may want to describe what the "hot" plug/unplug mean
+%   conceptually. It is a bit like plug-n-play device without
+%   rebooting the machine. Currently, QEMU supports the hot
+%   plug/unplug capabilities.
 % - We may need to first highlight what was the problem we
 %   have encountered when hot plugging the assigned device at
 %   the destination, so the QEMU modification would make
@@ -68,6 +77,18 @@ virtual NIC to assigned NIC.
 %   destination. It does not really seem to affect the QEMU
 %   migrating the memory pages and CPU context from the source
 %   to the destination.
+% - We may want to mention when would be a good time to hot
+%   unplug the assigned NIC, which is still performing the
+%   network I/O. In the other words, what is the algorithm to
+%   determine if it is a right time to hot unplug the NIC
+%   device with the minimal network service downtime.
+% - We may want to explain the concept of hot plug and unplug.
+%   For the hot plug operation, the host transfers the NIC
+%   ownership to the guest. For the hot unplug operation, the
+%   host re-acquires the assigned NIC back. It signifies the
+%   host still has the high order of device controls than the
+%   guest. The guest is permitted to own the device and
+%   achieves the baremetal network I/O performance.
 
 Linux provides bonding driver to present multiple network
 interfaces into a single logical interface. In \na the virtual
