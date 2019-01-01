@@ -14,39 +14,26 @@
 %   - Network downtime
 %   - The required time to set up or tear down the VFIO and DTID
 
-\subsection{Evaluation testbed and methodology}
+\subsection{Evaluation Testbed and Methodology}
+\input{temp/evaluation_testbed}
 
-\subsection{Direct assignment of 1Gbps and 10Gbps NIC}
+\subsection{CPU and Performance of Assigned Network Device}
+% Excel: cpu_network_io_performance.xlsx
+% network bandwidth performance: 1 gbps and 40 gbps.
+% CPU utilization when guest performs the network I/O.
+% number of VM exits during the network I/O.
 
-\subsubsection{Network Bandwidth, Latency and CPU Utilization}
+\subsection{Direct Interrupt Delivery Efficiency}
+% Excel: did_efficiency.xlsx
+% number of interrupts from the network card.
+% number of timer interrupts.
+% number of spurious interrupts.
+% time to handle the spurious interrupts.
+% cyclic test and cumulative probability distribution.
 
-\subsection{NIC bonding}
-
-\subsubsection{Hot-plug and Hot-unplug}
-
-\subsubsection{Migration of guest}
-
-%% Suggested subsections
-%\subsection{Evaluation Testbed and Methodology}
-%\input{temp/evaluation_testbed}
-%
-%\subsection{CPU and Performance of Assigned Network Device}
-%% Excel: cpu_network_io_performance.xlsx
-%% network bandwidth performance: 1 gbps and 40 gbps.
-%% CPU utilization when guest performs the network I/O.
-%% number of VM exits during the network I/O.
-%
-%\subsection{Direct Interrupt Delivery Efficiency}
-%% Excel: did_efficiency.xlsx
-%% number of interrupts from the network card.
-%% number of timer interrupts.
-%% number of spurious interrupts.
-%% time to handle the spurious interrupts.
-%% cyclic test and cumulative probability distribution.
-%
-%\subsection{Seamless Live Migration}
-%% Excel: migration_performancy.xlsx
-%% migration downtime
-%% network downtime
-%% time to set up and tear down the VFIO NIC.
-%% time to set up and tear down the DTID.
+\subsection{Seamless Live Migration}
+% Excel: migration_performancy.xlsx
+% migration downtime
+% network downtime
+% time to set up and tear down the VFIO NIC.
+% time to set up and tear down the DTID.
