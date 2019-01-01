@@ -21,5 +21,15 @@ with \texttt{fail\_over\_mac} set to one. This results in minimum
 network downtime during hot unplug operation which is performed
 before initiating the migration process.
 
- 
-
+The NIC devices are hot plugged and unplugged using 
+\texttt{device\_add} and \texttt{device\_del} commands provided
+by QEMU. The hot unplug operation or \texttt{device\_del} command
+is further broken down into three commands \texttt{setup\_nic}, 
+\texttt{realize\_vfio\_nic} and \texttt{reset\_nic\_device}.
+\texttt{setup\_nic} command sets up the software NIC object, 
+\texttt{realize\_vfio\_nic} configures the software NIC object
+and \texttt{reset\_nic\_device} resets the device by setting the 
+BARs and redirecting the interrrupts. The commands \texttt{setup\_nic}
+and \texttt{realize\_vfio\_nic} are executed on the destination host
+during the migration. The destination host executes 
+\texttt{reset\_nic\_device} command on migration completion.    
