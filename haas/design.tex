@@ -196,6 +196,8 @@ processes from competing with the guest's virtual processors,
 but also reduces the degrees of interrupt routing from the
 assigned devices.
 
+\figw{dtid}{9}{Direct Timer Interrupt Delivery}
+
 \subsection{Direct Interrupt Delivery}
 Our design uses the hardware-assisted posted interrupt
 mechanism and achieves the direct interrupt delivery of
@@ -347,6 +349,8 @@ virtual timer interrupt is earlier than the expected
 expiration, the guest ignores it and processes the next
 interrupt. Thus, the CPU overhead is reduced in comparison
 with the full timer interrupt processing. 
+
+\figh{nic_bonding}{6}{NIC bonding}
 
 \subsection{Seamless VM Migration}
 The direct device assignment makes it difficult to migrate the
