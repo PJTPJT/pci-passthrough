@@ -33,3 +33,13 @@ from virtual NIC to assigned NIC.
 %   - configure the QEMU software object, when the VM wakes
 %     up. This is done when the VM wakes up.
 
+Linux provides bonding driver to present multiple network interfaces
+into a single logical interface. In \na the virtual NIC and the assigned NIC 
+are enslaved in active-backup mode where only one of the interfaces
+is active at any time. In active-backup mode, when any of the active
+interface fails, one of the slave interfaces becomes active. In \na,
+just before the migration is initiated, the network traffic is gradually 
+shifted to the slave interface using ARP packets before hot unplugging
+the assigned NIC. Once the assigned NIC is hot unplugged, QEMU issues migrate
+command. 
+
