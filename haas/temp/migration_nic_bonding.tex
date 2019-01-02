@@ -6,7 +6,7 @@ with direct NIC assignment. As shown in Figure
 \ref{fig:nic_bonding} the guest is configured with
 virtio network device backed by the vhost driver and a
 passthrough network interface card~\cite{zhai:2008}. Using
-SR-IOV ~\cite{} the physical NIC is presented as virtual NIC
+SR-IOV ~\cite{dong:2008} the physical NIC is presented as virtual NIC
 through virtual functions. For the
 purpose of simplicity, we assume that the guest has one
 assigned network device. The prototype overcomes the challenge
@@ -137,8 +137,9 @@ remains paused. As a result, the guest experiences downtime
 during hot plug operation. In \na, to mitigate the downtime
 due to hot plug operation on the destination host, the first
 two steps are executed during migration. During the first 
-phase of pre-copy live migration, all the memory pages
-are transferred to the destination over the network. The dirty 
+phase of pre-copy live migration ~\cite{}, 
+all the memory pages are transferred to the 
+destination over the network. The dirty 
 memory pages are then transferred in multiple iterative rounds.
 The VCPU and I/O state of guest are transferred in the final
 phase to resume the guest on destination. Step one and two 
