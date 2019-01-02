@@ -17,7 +17,7 @@ In the beginning, the basic compute unit for IaaS was a {\em virtual machine}, w
 Then the basic compute unit could also be a {\em container}, which is pre-configured with an operating system and corresponds to a piece of a physical machine delimited by that OS.
 A more recent option for IaaS's basic compute unit is a {\em function}, which comes with a complete operating environment constsing of an OS and a middleware layer, and is created on demand.  
 Lately, even a physical machine could serve as the basic compute unit. This type of IaaS is known as {\em bare metal cloud service} or {\em hardware as a service} (HaaS). In the past three years, we have been developing a HaaS operating system called {\em ITRI HaaS OS} or \sna.  
-The focus of this paper is on \sna's virtualization support that emhances the manageability and serviceability required of a modern bare metal cloud service. 
+The focus of this paper is on \sna's virtualization support that enhances the manageability and serviceability required of a modern bare metal cloud service. 
 
 The HaaS offerings from cloud operators such as IBM (SoftLayer) and Oracle provide a user a physical data center instance (PDCI), which is composed of a set of physical machines connected in a way specified by the user. HaaS users prefer physical machines to virtual machines primarily because they want to make the best of the underlying hardware resources for workloads that do not need the flexibility afforded by virtualization, such as HPC computation, big data analytics or AI training.
 Other HaaS use cases include that users have a preferred hypervisor or operating system which is not supported by cloud operators, and 
@@ -40,7 +40,7 @@ A HaaS user or tenant makes a HaaS service request to \na by specifying a PDCI, 
 \end{itemize}
 \na processes each PDCI request by first making corresponding allocations for server, network and storage resources, and 
 then setting up the PDCI's required network connectivity.  Because a HaaS operator cannot install any agent software on the physical servers rented out on a PDCI, the only way for \na to programmatically build a virtual network that meets a PDCI's IP subset specification is to leverage the VLAN and VXLAN capabilities in modern network switches and routers by properly configuring them according to the network connectivity specification.  
-Moreover, \na allows a HaaS tenant to {\em remotely} check, configure, and update the firmware on the physical servers, as well as intsall the desired operating systems and applications 
+Moreover, \na allows a HaaS tenant to {\em remotely} check, configure, and update the firmware on the physical servers, as well as install the desired operating systems and applications 
 on them, in a way that minimizes human errors and the adverse side effects that come with these errors. 
 Finally, \na enables a HaaS tenant to monitor the hardware status of the physical servers and the network traffic among them with full visibility, without revealing anything associated with other co-inhabiting tenants. 
 
