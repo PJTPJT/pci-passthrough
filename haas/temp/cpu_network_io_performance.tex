@@ -2,3 +2,45 @@
 % - Describe what we have done.
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
+
+To demonstrate that \na achieves near bare-metal 
+performance with minimum CPU utilization and minimal
+hypervisor involvement, we measure the performance using
+macro benchmark in (a)Host (b)VM with virtio-net
+interface and (c)VFIO interface. Additionally, we
+also show that we eliminate the VM exits due to 
+HLT instruction.
+
+We measure the TCP throughput in (a)-(c) using iperf
+benchmark \cite{}. In Figure \ref{}, we observe that the
+network bandwidth in host for a 1Gbps and 40Gbps NIC
+is 940Mbps and 37.4Gbps respectively. With virtio network
+front-end device and vhost back-end driver, the network
+bandwidth in guest for 1Gbps and 40Gbps is -- and --. The
+guest achives near bare metal performance using 
+configuration (b) and (c). However, the CPU
+utilization differs between (b) and (c). With virtio
+network device backed with vhost driver, the CPU 
+utilization in system mode is -- and -- in guest mode.
+With NIC passthrough we observe that the CPU utilization 
+is in system mode is -- and -- in guest mode. The CPU 
+overhead with passthrough NIC is high compared to 
+virtio network backed by vhost driver.
+The VCPUs execute HLT instruction when the guest is idle.
+The VCPUs burn CPU cycles when they poll for sometime
+before executing the HLT instruction. The VCPU polling
+mechanism keeps the CPU busy leading to higher CPU 
+utilization.
+
+As explained before, to reduce the CPU utilization in 
+host, we disable the HLT exits by modifying the VMCS 
+structure in KVM. To avoid other system processes 
+to compete with guest, the VCPUs are pinned on isolated 
+CPUs. As shown in \ref{}, we notice that disabling HLT exits 
+alongwith dedicating cores to guest, reduces the 
+CPU utilization in system
+mode and increases the CPU Utilization in guest mode
+indicating that the guest occupies the CPUs for most
+of the time. In \ref{} we show that the number of VMExits
+due to HLT instruction is zero.
+
