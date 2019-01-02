@@ -3,6 +3,30 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
+\figw{iperf}{10}{Place holder for iperf performance}
+\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
+
+\begin{table}
+\begin{tabular}{|p{4cm}|p{1.8cm}|p{1.8cm}|} \hline
+ & \multicolumn{2}{|c|}{\textbf{Number of VM Exits}} \\ \cline{2-3} 
+\textbf{VM Exit Reasons}& \textbf{Before \linebreak opti} & \textbf{After \linebreak opti}\\ %\hline
+\textbf{HLT} & &\\ \hline
+\textbf{MSR\_WRITE} & &\\ \hline
+\textbf{EXTERNAL\_INTERRUPT} & &\\ \hline
+\textbf{PREEMPTION\_TIMER} & &\\ \hline
+\textbf{IO\_INSTRUCTION} & &\\ \hline
+\textbf{EXCEPTION\_NMI} & &\\ \hline
+\textbf{PAUSE\_INSTRUCTION} & &\\ \hline
+\textbf{EPT\_VIOLATION} & &\\ \hline
+\textbf{MSR\_READ} & &\\ \hline
+\textbf{CPUID} & &\\ \hline
+\textbf{TOTAL} &  &\\ \hline
+\end{tabular}
+\vspace{6pt}
+\caption{Place holder for VM Exit Reasons}
+\label{VM Exit Reasons}
+\end{table}
+
 To demonstrate that \na achieves near bare-metal 
 performance with minimum CPU utilization and minimal
 hypervisor involvement, we measure the performance using
