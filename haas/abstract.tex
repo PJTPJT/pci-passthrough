@@ -1,47 +1,69 @@
 
 \begin{abstract}
-
---------Prof. Chiueh'ss abstract
-Bare metal cloud service is an emerging form of cloud service in which users 
-rent physical servers from a cloud operator because they want to make full 
-use of the server’s underlying hardware without paying any virtualization overhead. 
-Building a bare metal cloud service management system is technically challenging 
-because of the constraint that no software agent could be installed on the 
-physical servers to be rent out. Such a constraint is particularly limiting 
-when it comes to the support for migration of physical machine state and 
-performance monitoring for applications running on physical machines. 
-The ITRI HaaS OS or IHO, is a bare metal cloud service management system 
-that removes this constraint by installing on each physical server a 
-single-VM virtualization hypervisor, which affords the user complete and 
-direct access to all the devices on the server, and at the same time 
-significantly enhances each server’s serviceability and manageability.
-
---------Our abstract -- TODO: merge above -----
-
-%Motivation
-Hardware-as-a-service (HaaS) enables customers to rent physical
-machines on cloud platforms to execute their 
-applications with near bare-metal performance.
-% Problem
-However, traditional hypervisor platforms used to host system virtual machines (VMs) 
-are heavyweight and impose significant overheads 
-in interrupt and I/O processing, making them unsuitable for use in HaaS platforms.
-On the other hand, native execution of OS and applications limits 
-a cloud provider's ability to migrate customer workloads for system maintenance
-and failure recovery.
-% Our contributions
-In this paper, we propose the \fullname (\sna) to reduce
-key virtualization overheads on HaaS platforms.
-\na enables a traditional system VM to run atop a thin hypervisor 
-and achieve near baremetal performance while retaining the 
-administrator's flexibility to live migrate the VM.
-A key feature of \na includes
-direct delivery of timer and network interrupts to the VM without VM Exits, 
-thus eliminating hypervisor-level emulation overheads in interrupt delivery.
-% Implementation summary
-We describe a prototype implementation on the KVM/QEMU hypervisor
-that leverages Intel VT-d hardware support to achieve direct network and timer 
-interrupt delivery with no hypervisor intervention, while
-supporting live VM migration.
+Bare-metal cloud is an emerging cloud service model in which users
+rent dedicated physical servers from a remote cloud provider
+to execute their applications natively, without any virtualization 
+overheads inherent in multi-tenant clouds.
+However, building a bare-metal cloud service management system is technically challenging 
+due to the constraint that no software agent can be installed on the 
+physical servers being rented out. Such a constraint particularly limits
+the cloud provider's ability to live migrate customers' workloads for 
+system maintenance or monitor application performance to 
+meet service-level agreements.
+The \fullname, or \sna, is a bare metal cloud service management system 
+that eliminates this constraint by installing on each physical server
+a thin single-VM hypervisor that combines the benefits of 
+bare-metal execution and virtualization --
+customer workloads have complete and direct access to all the hardware 
+devices while the cloud operator retains the 
+serviceability and manageability of the physical machine.
+We describe a prototype implementation of \na 
+that provides direct device access to the customer's VM, 
+direct delivery of timer and network interrupts without VM Exits,
+and supports live migration.
 \end{abstract}
+
+
+%--------Prof. Chiueh'ss abstract
+%Bare metal cloud service is an emerging form of cloud service in which users 
+%rent physical servers from a cloud operator because they want to make full 
+%use of the server’s underlying hardware without paying any virtualization overhead. 
+%Building a bare metal cloud service management system is technically challenging 
+%because of the constraint that no software agent could be installed on the 
+%physical servers to be rent out. Such a constraint is particularly limiting 
+%when it comes to the support for migration of physical machine state and 
+%performance monitoring for applications running on physical machines. 
+%The ITRI HaaS OS or IHO, is a bare metal cloud service management system 
+%that removes this constraint by installing on each physical server a 
+%single-VM virtualization hypervisor, which affords the user complete and 
+%direct access to all the devices on the server, and at the same time 
+%significantly enhances each server’s serviceability and manageability.
+%
+%--------Our abstract -- TODO: merge above -----
+%
+%%Motivation
+%Hardware-as-a-service (HaaS) enables customers to rent physical
+%machines on cloud platforms to execute their 
+%applications with near bare-metal performance.
+%% Problem
+%However, traditional hypervisor platforms used to host system virtual machines (VMs) 
+%are heavyweight and impose significant overheads 
+%in interrupt and I/O processing, making them unsuitable for use in HaaS platforms.
+%On the other hand, native execution of OS and applications limits 
+%a cloud provider's ability to migrate customer workloads for system maintenance
+%and failure recovery.
+%% Our contributions
+%In this paper, we propose the \fullname (\sna) to reduce
+%key virtualization overheads on HaaS platforms.
+%\na enables a traditional system VM to run atop a thin hypervisor 
+%and achieve near baremetal performance while retaining the 
+%administrator's flexibility to live migrate the VM.
+%A key feature of \na includes
+%direct delivery of timer and network interrupts to the VM without VM Exits, 
+%thus eliminating hypervisor-level emulation overheads in interrupt delivery.
+%% Implementation summary
+%We describe a prototype implementation on the KVM/QEMU hypervisor
+%that leverages Intel VT-d hardware support to achieve direct network and timer 
+%interrupt delivery with no hypervisor intervention, while
+%supporting live VM migration.
 
