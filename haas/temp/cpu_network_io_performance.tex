@@ -3,6 +3,9 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
+% For some reason, putting the figures next to each other
+% gives me the compilation error. We temporarily comment it
+% out.
 %\figw{iperf}{10}{Place holder for iperf performance}
 %\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
 
@@ -85,17 +88,16 @@
 \label{tab:cpu_utilization_40gbps}
 \end{table}
 
-In this experiment, we would like to demonstrate that the \na
-achieves near bare-metal performance with minimum CPU
-utilization and minimal hypervisor involvement in the
-following three metrics.
+In this experiment, we demonstrate that the \na achieves near
+bare-metal performance with minimum CPU utilization and
+minimal hypervisor involvement in the following three metrics.
 \begin{itemize}
   \item Network latency.
   \item Network bandwidth.
   \item CPU utilization.
 \end{itemize}
 
-we measure the performance using macro benchmark in (a) Host
+We measure the performance using macro benchmark in (a) Host
 (b) VM with virtio-net interface and (c) VFIO interface.
 Additionally, we also show that we eliminate the VM exits due
 to HLT instruction.
