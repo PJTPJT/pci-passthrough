@@ -2,3 +2,49 @@
 % - Describe what we have done.
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
+
+\figw{cyclictest}{10}{Place holder for cyclictest performance}
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+& IB & CORE & NIC & SPU & LOC \\ \hline
+\multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 0 & 256 \\ \cline{3-6} 
+&  & 1 & 0 & 0 & 348 \\ \hline
+\multirow{2}{*}{GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 0 & 256 \\ \cline{3-6} 
+&  & 1 & 0 & 0 & 347 \\ \hline
+\multirow{2}{*}{DTID GUEST} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6} 
+&  & 1 & 0 & 3933 & 348 \\ \hline
+\end{tabular}
+\caption{Spurious Timer Interrupt}
+\label{tab:spurious_timer_interrupt}
+\end{table}
+
+In this experiment, we demonstrate that the guest improve its
+timer interrupt latency using our DTID mechanism. Typically,
+the host virtualizes the timer and the time interrupt by its
+high-resolution timer subsystem and the delivery of virtual
+timer interrupts. DTID reduces the overheads by directly
+delivering the timer interrupts and allowing the guest to
+configure TMICT directly. We measure the latency using the
+cylictest in (a) host, (b) guest and (c) DTID guest. For (b)
+and (c), we apply our CPU optimization. (c) has DTID enabled
+whereas (b) has DTID disabled. We also show the additional
+cost to handle the spurious timer interrupts in the DTID
+guest.
+
+In Figure~\ref{fig:cyclictest}, we observe that the median of
+interrupt latency for the host, guest and DTID are --, -- and
+--ns respectively. Using the DTID algorithm, we improve the
+timer interrupt latency by --\%.
+
+In Table~\ref{tab:spurious_timer_interrupt}, the DTID guest
+matches the baremetal network bandwidth performance over the
+infiniband, while handling both the expected timer interrupts
+and spurious timer interrupts. The number of network and
+spurious timer interrupts are -- and -- per second
+respectively. We measure the overhead of handling spurious
+interrupt in the kernel. It takes --$\mu$s, while the typical
+handling of timer interrupt is --$\mu$s. The data suggests our
+algorithm works efficiently to deliver the timer interrupt and
+ignore the spurious timer interrupts.
