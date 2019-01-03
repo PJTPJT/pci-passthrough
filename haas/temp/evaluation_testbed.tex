@@ -3,9 +3,12 @@
 % - Guest: CPU, memory, bonding driver, assigned and virtual devices.
 % - QEMU
 % - KVM
-
-The experiments are run on a 10-core Intel Xeon CPU
-of 2.2GHz, 32GB memory and 40Gbps Mellanox ConnectX-3
-Pro network interface server machine. The guest is
-configured with --GB memory and --VCPUs. The bonding
-driver in guest operates in active-backup mode.
+The experiments are run on machines equipped with the 10-core
+Intel Xeon CPU E4 v4 of 2.2GHz, 32GB memory, 40Gbps Mellanox
+ConnectX-3 Pro network interface and Intel Corporation
+Ethernet Connection I217-LM. The Linux kernel 4.10.1 and QEMU
+2.9.0 are installed in the host. The guest is configured with
+1 to 9 vCPUs, 10GB of RAM, 1 Virtio and 1 passthrough network
+device. The Linux kernel of 4.10.1 and the Ethernet bonding
+driver are installed in the guest. The bonding driver operates
+in active-backup mode.
