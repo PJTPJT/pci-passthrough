@@ -1,4 +1,4 @@
-\section{Implementation}
+\section{Implementation Details}
 % Low-level implementation details include the hypervisor
 % modifications.
 % - Disable the HLT existing: KVM
@@ -7,6 +7,8 @@
 
 \figw{cpu_state_diagram}{10}{CPU state diagram}
 
+\mycomment{
+%MOSTLY REDUNDANT
 In addition to the existing supports from the VT-x and VT-d,
 Linux and its modules, QEMU and KVM, we modify the kernel, KVM
 and QEMU and reach our goal of baremetal virtual machine. The
@@ -40,6 +42,8 @@ Ethernet bonding driver. Furthermore, the network service down
 time is eliminated when hot plugging the assigned network
 device to the running guest.
 
+
+
 \subsection{Disable HLT Exiting and Update the MSR Bitmap}
 To disable HLT-related VM exit, the HLT-exiting bit of
 processor-based VM-execution control of VMCS is cleared. Our
@@ -51,26 +55,54 @@ WRMSR. The function is
 function as the prototype and enable the TMICT WRMSR VM exits,
 while consulting the MSR bitmap from the Intel Software
 Developer Manual.
+}
 
-\subsection{Direct Timer Interrupt Delivery}
-The core of DTID implementation relies on the following
-components. First, the PID is shared among the host, guest and
-VT-d. Before our modification, the PID is embedded within the
-\texttt{vcpu\_vmx} structure. If we simply shares the page
-where the PID is located, we also allows the guest access to
-the sensitive or privilege information in the host and thus,
-put the host in a greater risk. Our implementation isolates
-the PID into its own page and modifies the way how some KVM
-functions access the PID. The PID is located in the beginning
-of the page and accessed as a pointer. During the vCPU
-creation, the PID page is allocated. When KVM sets up the VMCS
-for each vCPU, the physical address of PID is stored in the
-field of posted-interrupt descriptor address. As a result, the
-PID is accessible from both KVM and VT-d. Before the guest
-access the shared PID page, it needs to tell the host where to
-map the shared page. The guest issues the hypercall and passes
-the target guest physical address to the host. Once the host
-receives the GPA, the host updates the QEMU page table entry
+\subsection{CPU Idleness Processing}
+
+When a CPU on a Linux-based physical machine does not have any applications to run and becomes idle,
+Linux schedules a special idle task to run on the CPU. On X86 CPU, this idle task consists of a loop of {\tt HLT} instructions, 
+each of which places the CPU in the C1 energy-saving mode until an external interrupt occurs.
+Because {\tt HLT} is a privileged instruction, its execution inside a guest VM triggers a VM exit and causes the control to be transferred to KVM. 
+Currently, KVM emulates a {\tt HLT} instruction using a busy waiting loop, which polls the CPU until the associated external interrupt comes along. 
+%One of our design goals is to let the guest stay on its CPU as
+%long as it can. We encounter two different types of
+%virtualization overheads. First, the idle guest issues the
+%privileged HLT instruction. Such an instruction induces the VM
+%exit and transfers the control to the KVM which starts to poll
+%on the CPU until the event arrival. 
+
+This polling-loop emulation of {\tt HLT} instruction incurs higher CPU utilization than that when {\tt HLT} instruction is executed natively. 
+To address this issue, \na prevents VM exit when executing a {\tt HLT} instruction inside a VM by modifying the VM-execution control fields 
+in the VM's virtual machine control structure (VMCS).
+As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, the CPU lowers its clock frequency, and the total energy consumption is reduced. 
+%It is eliminated
+%by updating the primary processor-based VM execution control
+%and disabling the VM exit due to the HLT instruction. It
+%allows the idle guest to stay on its CPU without polling
+%and results in the CPU clock frequency remains at minimal.
+%Thus, disabling HLT-induced VM exit helps to reduce the CPU
+%power consumption of idle guest. 
+%Second, the local timer
+%interrupt fires and causes the VM exit, when the guest's time
+%quantum is expired. The longer the guest stays on its CPU, the
+%higher number of physical timer interrupt it receives. 
+
+%To support our objective, our work utilizes the posted-interrupt
+%mechanism and directly deliver the interrupt into the guest
+%without triggering any VM exit. This feature is discussed in
+%Interrupts that wake a CPU up from the {\tt HLT}-induced energy-saving mode used to go through the hypervisor and thus may incur additional VM exits.
+%As disucussed in the~\nameref{subsubsec:shared_pid_dtid}, we leverage X86's {\em posted interrupt} mechanism to deliver these interrupts directly to a VM in the energy-saving mode.
+%Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare metal server.
+
+\subsection{PID Sharing}
+
+In \sna, a CPU core's PID is accessible is accessible to the IOMMU (Interrupt Remapping Table), the hypervisor and the HaaS running on the CPU core. 
+Originally, the PID  is embedded within the
+\texttt{vcpu\_vmx} structure. To make a PID only accessible to the associated HaaS VM,
+when a vCPU is created, \na allocates a separate page for its PID, and places the PID's base address in the vCPU's VMCS, and in all the Interrupt Remapping Table entries for those interrupts that are destined to the vCPU.
+To enable the vCPU's associated VM to access this PID page, the VM's OS provides the address of a page in the guest physical address space to the hypervisor via a hypercall, and the hypervisor maps this address to the host physical address of the PID page in QEMU's page table and the extended page table (EPT), and updates the PID page's reference count accordingly.
+   
+\mycomment{
 and extended page table entry to the physical location of
 shared page and the reference count of shared page. To have
 the DTID reversible, the implementation saves the host
@@ -90,21 +122,31 @@ arrives than the expected expiration, it is the spurious
 interrupt. Then, the guest ignores it by skipping the regular
 processing of timer interrupt. Fifth, the guest updates the
 PIR timer-interrupt bit, whenever it receives the timer
-interrupt. From the Intel Software Developer
-Manual~\cite{sdm:2018}, it is the general requirement to use
-the locked read-modify-write instruction to access the PID. If
-the guest uses the atomic test-and-set instruction to set the
-PIR bit, it prevents the KVM and VT-d from accessing the PID
-during the time of operation. Such an atomic instruction
-causes the processor's lock signal which ensures the exclusive
-usage of shared PID and lock the cache line. Because of the
-induced spurious interrupts from the guest I/O activities, the
-guest locks the shared PID so often and prohibits the VT-d to
-set the proper bit. Thus, the guest I/O performance is
-degraded. Since the guest only updates the PIR timer-interrupt
-bit, it is not necessary to lock it. In our implementation, we
-choose to use the non-atomic operation to set the bit. This
-effectively reduces the chance of lock contention.
+interrupt. 
+}
 
-\subsection{Migration of guest with passthrough NIC}
-\input{temp/qemu_device_passthrough}
+According to Intel IA-32 Intel Architecture Software Developer's
+Manual~\cite{sdm:2018}, all accesses to the PID
+must use the locked read-modify-write instruction to ensure mutual exclusion. 
+In \sna, when network packets come in at a high rate, a HaaS VM may repeatedly turn on the timer interrupt bit in the PIR to process spurious timer interrupts that come with NIC interrupts. However, these accesses to the PIR, being based on the atomic test-and-set instruction, may prevent the Interrupt Remapping Table from accessing the PIR on behalf of incoming packets, and cause some of these packets to be dropped and eventually degraded network performance.
+ 
+\na solves this performance problem by requiring a HaaS VM to set the timer interrupt bit
+in the PIR using a non-atomic instruction, which immediately cuts down the lock contention
+and boosts the network performance. This lockless design is safe because the PIR bits that a HaaS VM and the Interrupt Remapping Table are guaranteed to be disjoint and thus do not need to be locked before being accessed.
+
+
+\subsection{NIC Bonding}
+Linux's bonding driver provides a \texttt{fail\_over\_mac} option to change 
+the MAC address of the bonded interface and broadcast ARP packets for the new MAC address when the Active slave fails. \na configures the bonding driver by setting   
+\texttt{fail\_over\_mac} to 1, and cuts down the
+network downtime due to hot unplug operations.
+
+
+\na uses the QEMU command \texttt{device\_add} to implement a hot plug operation,
+and the QEMU command \texttt{device\_del} to implement a hot unplug operation. 
+and the control is transferred back (hot unplug) to host 
+The \texttt{device\_del} command itself is further broken down 
+into three commands \texttt{setup\_nic}, which sets up a software NIC object, 
+\texttt{realize\_vfio\_nic}, which configures a software NIC object, and \texttt{reset\_nic\_device}, which resets a software NIC object by setting the 
+BARs and redirecting the associated interrrupts. 
+The \texttt{setup\_nic} and \texttt{reset\_nic\_device} command must be executed when the VM issuing them is paused. 
