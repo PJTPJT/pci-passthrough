@@ -11,4 +11,7 @@ Ethernet Connection I217-LM. The Linux kernel 4.10.1 and QEMU
 1 to 9 vCPUs, 10GB of RAM, 1 Virtio and 1 passthrough network
 device. The Linux kernel of 4.10.1 and the Ethernet bonding
 driver are installed in the guest. The bonding driver operates
-in active-backup mode.
+in active-backup mode. The TCP/UDP throughput is measured by
+the iperf 2.0.5. The CPU utlization is measured by the atopsar
+2.3.0. The interrupt latency is measured by the cyclictest
+0.93.
