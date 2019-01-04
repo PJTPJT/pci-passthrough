@@ -11,7 +11,7 @@ number of bare-metal cloud
 services~\cite{softlayer,oracle,zenlayer,vultr,m2}
 which provision dedicated physical machines for customers
 with stronger isolation and native execution speeds.
-The absence of a virtualization layer limits the migratability 
+The absence of a virtualization layer 
 limits the cloud provider's ability to manage and live migrate
 customer workloads, leaving the customer responsible for 
 these functions.
@@ -22,8 +22,8 @@ thin non-intrusive hypervisor.
 % Reducing virtualization overheads
 On the other hand, virtualized IaaS cloud platforms~\cite{gcp,azure,aws}
 retain the cloud provider's ability to manage and live migrate customers'
-VMs but introduce virtualization overheads in the form of hypervisor-level
-emulation of hardware access by guests. To mitigate I/O-related 
+VMs but also introduce hypervisor-level
+emulation overhead of hardware access by guests. To mitigate I/O-related 
 virtualization costs, customers can provision VMs with 
 direct device assignment~\cite{vtd}. 
 However, doing so entails sacrificing the ability 
@@ -37,18 +37,18 @@ for direct delivery of I/O interrupts to the VM.
 Intel VT-d~\cite{vtd} supports a posted interrupt delivery mechanism.
 However, these techniques do not fully eliminate hypervisor's role
 in the delivery of device interrupt.
-Specifically, the hypervisor must intercept and deliver device interrupt,
+Specifically, the hypervisor must intercept and deliver device interrupts
 (using either virtual interrupts or inter-processor interrupts)
-when the target VM's VCPU is not scheduled on the processor 
+when the target VM's VCPU is not scheduled on the CPU
 that receives the device interrupt. Further, idling guest VCPUs
 waiting for I/O completion trap to the hypervisor, where a well-intended
 halt-polling optimizations can inadvertently end up increasing CPU utilization.
 In contrast, \na eliminates these virtualization
 overheads in device interrupt delivery by not only leveraging
-Intel VT-d posted interrupts, but also isolating  hypervisor execution 
+Intel VT-d posted interrupts, but also by isolating  hypervisor execution 
 to a single physical core, and ensuring that physical 
 cores assigned to the VM remain in guest (non-root) 
-mode when the guest idles when waiting for I/O.
+mode whenever the guest idles while waiting for I/O completion.
 
 Furthermore, a key distinction of \na lies in
 eliminating hypervisor overheads in timer interrupt delivery 
