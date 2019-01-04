@@ -601,7 +601,7 @@ We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC,
 which provides one physical function and multiple virtual functions, each with its own MAC address.
 \na sets up a directly accessed or pass-through NIC using one of the virtual functions
 and an indirectly accessed or virtual NIC using another virtual function,
-and then teams them up using the active-backup mode of the Linux bonding driver~\cite{bonding}, as shown in Figure~\ref{fig:nic_bonding}.
+and then teams them up using the active-backup mode of the Linux bonding driver~\cite{bond-dri}, as shown in Figure~\ref{fig:nic_bonding}.
 The HaaS VM running on every \na physical server sends and receives network packets through such a bonded interface. 
 
 
