@@ -91,7 +91,7 @@ strategies remedy such a problem.
 
 %\subsubsection{Virtual Function I/O}
 
-Virtual function I/O (VFIO) is a Linux software framework that enables user-space
+Virtual function I/O (VFIO)~\cite{vfio} is a Linux software framework that enables user-space
 device drivers to interact with PCIe devices directly without involving the Linux kernel. 
 Essentially, VFIO makes the configuration register space and the memory regions specified in the BARs of
 each PCIe device accessible to user-space programs. 
@@ -148,7 +148,7 @@ thus require KVM's or QEMU's emulation.
 VFIO allows a DMA operation to move data between a PCIe device and 
 a region of a user-space program's virtual address space.
 The address of the source or destination buffer of a DMA operation resides in the {\em device or IO address space} of the PCIe device involved in the DMA operation.
-Intel's VT-d architecture provides an IOMMU, that maps a PCIe operation's per-device {\em device address} into a {\em physical address}, which is used to access main memory.
+Intel's VT-d architecture provides an IOMMU~\cite{ben:2006}, that maps a PCIe operation's per-device {\em device address} into a {\em physical address}, which is used to access main memory.
 When a user-space program sets up a DMA operation, it only knows the virtual address of the associated buffer and thus places
 this address in the DMA command, essentially treating this virtual address as a device address. 
 Given such a DMA command, VFIO consults with the page table associated with this user-space program to extract the physical address corresponding
@@ -163,8 +163,8 @@ from using DMA operations to corrupt the physical memory areas owned by other us
 To KVM, a VM runs as a user-space program.
 Therefore, VFIO allows a VM running on KVM to directly interact with the memory regions associated with 
 such PCIe devices as NIC and SAS controller without involving KVM.
-In contrast, in the Vhost~\cite{vhost} architecture, each incoming or outgoing I/O operation (network or block I/O) must goes through 
-a special kernel thread (called the vhost worker thread), which emulates a virtio~\cite{virtio} device in the kernel and therefore keeps QEMU out of the data plane.
+In contrast, in the Vhost~\cite{vhost-net} architecture, each incoming or outgoing I/O operation (network or block I/O) must goes through 
+a special kernel thread (called the vhost worker thread), which emulates a virtio~\cite{russell:2008} device in the kernel and therefore keeps QEMU out of the data plane.
 However, QEMU still is responsible for such control plane processing as setting up, configuring and negotiating features for an in-kernel virtio device.  
 
 
@@ -604,7 +604,7 @@ are reverted after the guest starts up at the destination.
 \subsubsection{NIC State Migration}
 \figh{nic_bonding}{6}{NIC bonding}
 
-We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC,
+We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
 which provides one physical function and multiple virtual functions, each with its own MAC address.
 \na sets up a directly accessed or pass-through NIC using one of the virtual functions
 and an indirectly accessed or virtual NIC using another virtual function,
