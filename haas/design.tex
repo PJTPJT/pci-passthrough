@@ -44,9 +44,15 @@ which is based on Linux/KVM/QEMU, and our corresponding solutions.
 
 \subsection{Direct Interactions with PCI Devices}
 
-The main technical challenge of providing the user OS the illusion of running on a bare metal server is that its interactions with such PCIe devices as network 
-interface card (NIC) and disk controller are direct without going through any intermediary.
-In general, there are four types of interactions between an OS and the PCIe devices under its management:
+I/O operations using traditional VMs incur higher overheads than bare-metal execution. 
+I/O operations issued by guest OS typically trap into the hypervisor via VM Exits. 
+Each VM Exit in turn requires expensive saving and restoring of the VM's execution context.
+The main technical challenge of providing the user's OS with the illusion of running on 
+a bare metal server is that its interactions with I/O devices as network 
+interface card (NIC) and disk controller must be direct without going through any intermediary.
+In general, there are four types of interactions between an OS and the PCIe 
+I/O devices under its management:
+
 \begin{enumerate} 
 \setlength\itemsep{-0.04in}
 \item At the system start-up time, the OS probes and enumerates the PCIe devices existing in the system, and assigns a device number, configuration space address range, and interrupt to each discovered PCIe device.
@@ -58,7 +64,8 @@ In general, there are four types of interactions between an OS and the PCIe devi
 \item A PCIe device interrupts the OS for its attention to certain hardware events, e.g., completion of a packet's transmission or expiration of a timer.
 
 \end{enumerate}   
-Except the probe/enumeration operations, \na allows a user OS to interact directly with NICs and disk controllers with respect to the other three types of PCIe interactions.
+Except the probe/enumeration operations, \na allows a user's OS to interact directly, i.e. without VM Exits,
+with NICs and disk controllers for the other three types of PCIe interactions.
 
 \mycomment{
 The hardware-assisted direct device assignment helps the guest
