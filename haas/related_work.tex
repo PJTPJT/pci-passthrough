@@ -58,7 +58,8 @@ to the guest OS. \na does so by a novel use of Intel VT-d posted
 interrupt mechanism that allows the guest to directly set timer events
 on the LAPIC and receive timer interrupts without any VM Exits.
 
-%TODO: Discuss existing bare-metal approaches
+%TODO: Discuss existing live migration and bare-metal approaches
+% pre-copy, post-copy, BLMvisor, and Bitvisor
 Finally, \na supports live migration of the VM that has pass-through device
 access and direct timer access, by seamlessly tearing down its 
 hardware dependencies  at the source before live migration and 
