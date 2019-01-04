@@ -4,21 +4,69 @@
 % - Oracle
 % - Zenlayer
 % - Vultr
-%
-% Multiplexing the hardware among multiple guests
-% - Malleable metal as service 2, Boston Univ, Network boot.
-% - PlanetLab
-%
-% Previous work
-% - ELI
-% - DID
-%
-% Partitioning hypervisor
-% - Jailhouse
-%
-% Other work
-% - Bareflank: hypervisor prototyping
-% - LightVM: HotOS'18 Dan Williams
+In recent years, virtualization overheads and security concerns on 
+multi-tenant IaaS platforms have led to the rise of a 
+number of bare-metal cloud 
+services~\cite{softlayer,oracle,zenlayer,vultr,m2}
+which provision dedicated physical machines for customers
+with stronger isolation and native execution speeds.
+The absence of a virtualization layer limits the migratability 
+limits the cloud provider's ability to manage and live migrate
+customer workloads, leaving the customer responsible for 
+these functions.
+In contrast, \na aims to support bare-metal server performance
+while retaining the benefits of virtualization via a 
+thin non-intrusive hypervisor.
+
+% Reducing virtualization overheads
+On the other hand, virtualized IaaS cloud platforms~\cite{gcp,azure,aws}
+retain the cloud provider's ability to manage and live migrate customers'
+VMs but introduce virtualization overheads in the form of hypervisor-level
+emulation of hardware access by guests. To mitigate I/O-related 
+virtualization costs, customers can provision VMs with 
+direct device assignment~\cite{vtd}. 
+However, doing so entails sacrificing the ability 
+to live migrate VMs for load balancing and fault-tolerance
+due to the difficulty of migrating the state of physical I/O devices.
+
+A number of techniques have been proposed to reduce virtualization
+overheads in interrupt delivery by eliminating VM Exits to the hypervisor.
+ELI~\cite{amit:2015} and DID~\cite{tu:2015} presented techniques
+for direct delivery of I/O interrupts to the VM. 
+Intel VT-d~\cite{vtd} supports a posted interrupt delivery mechanism.
+However, these techniques do not fully eliminate hypervisor's role
+in the delivery of device interrupt.
+Specifically, the hypervisor must intercept and deliver device interrupt,
+(using either virtual interrupts or inter-processor interrupts)
+when the target VM's VCPU is not scheduled on the processor 
+that receives the device interrupt. Further, idling guest VCPUs
+waiting for I/O completion trap to the hypervisor, where a well-intended
+halt-polling optimizations can inadvertently end up increasing CPU utilization.
+In contrast, \na eliminates these virtualization
+overheads in device interrupt delivery by not only leveraging
+Intel VT-d posted interrupts, but also isolating  hypervisor execution 
+to a single physical core, and ensuring that physical 
+cores assigned to the VM remain in guest (non-root) 
+mode when the guest idles when waiting for I/O.
+
+Furthermore, a key distinction of \na lies in
+eliminating hypervisor overheads in timer interrupt delivery 
+to the VM. None of the existing techniques to reduce virtualization
+overheads solve the problem of direct delivery of timer interrupts
+to the guest OS. \na does so by a novel use of Intel VT-d posted 
+interrupt mechanism that allows the guest to directly set timer events
+on the LAPIC and receive timer interrupts without any VM Exits.
+
+%TODO: Discuss existing bare-metal approaches
+Finally, \na supports live migration of the VM that has pass-through device
+access and direct timer access, by seamlessly tearing down its 
+hardware dependencies  at the source before live migration and 
+re-establishing these dependencies at the destination after migration,
+with minimal downtime.
+
+%TODO: Summarize Jailhouse
+
+\mycomment{
 \subsection{Jailhouse}
 By far, Xen and KVM are the two Linux de facto hypervisors.
 The are versatile and cooperate with QEMU to virtualize the
@@ -220,3 +268,4 @@ guest, while preserving the interrupt priorities. The DID
 zeroes the number of VM exits due to the interrupts. Moreover,
 it is not required to modify the guest kernel. This is one of
 the advantages over ELI and ELVIS.
+}
