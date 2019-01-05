@@ -13,8 +13,54 @@
 % - Service disruption time for the baremetal guest migration
 %   - Network downtime
 %   - The required time to set up or tear down the VFIO and DTID
+\begin{table}[tbp]
+\begin{tabular}{|l|l|}
+\hline
+& LINES of CODE \\ \hline
+TIMER SUBSYSTEM & 43 \\ \hline
+CLOCKEVENT DEVICE & 110 \\ \hline
+PID PAGE MAPPING & 234 \\ \hline
+\end{tabular}
+\caption{Number of Lines Changed in the Guest OS. The changes
+in the GUEST OS are made for the timer interrupt handler,
+timer configuration and mapping/unmapping the shared PID.}
+\label{tab:guest_os_changes}
+\end{table}
+
 In this section we present our solutions using macro
-and microbenchmarks.
+and micro-benchmarks. We demonstrate the following.
+\begin{itemize}
+  \item Using our optimization, the guest matches the
+  baremetal network performance with low CPU overhead.
+  \item The guest with DTID improves the timer interrupt
+  latency.
+  \item The guest with DTID receives the timer interrupt and
+  updates the timer directly.
+  \item The guest with DTID ignores the NIC-induced timer
+  interrupts while achieving the baremetal network bandwidth
+  and latency performance with low CPU overhead.
+  \item DTID is scalable to all CPUs, while the host has one
+  dedicated CPU.
+  \item The guest with DTID matches the baremetal CPU
+  throughput for all the cores.
+  \item The guest using the bonding driver and our QEMU
+  optimization does not experience the apparent network
+  downtime during the migration.
+  \item The total memory consumption of idle hypervisor is
+  between 80 to 120MB of RAM.
+\end{itemize}
+
+In addition, the total number lines changed in the guest OS is
+387. In Table~\ref{tab:guest_os_changes}, the changes are made
+in the guest OS to support DTID. First, 43 lines of code are
+added to the timer interrupt handler to set the PIR
+timer-interrupt bits and ignore the spurious timer interrupt.
+Second, the kernel module of 110 lines is used to adjust for
+the LAPIC timers. Since the timers are calibrated by the host
+at boot time, the guest needs to adjust its multiplication and
+shift factor of tick-calculation algorithm to the host
+configuration. Third, the kernel module of 234 lines is used
+to map or unmap the shared PID page, test and cleanup.
 
 \subsection{Evaluation Testbed and Methodology}
 \input{temp/evaluation_testbed}
