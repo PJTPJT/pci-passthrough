@@ -33,9 +33,9 @@ INTR: interrupt, TMR: timer.}
 \multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}GUEST\\ + DTID\end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6} 
 &  & 1 & 0 & 3933 & 348 \\ \hline
 \end{tabular}
-\caption{Spurious Timer Interrupts. The interrupts are
-reported as the average number of interrupts per second. We
-apply the optimization and DTID to the guest. The spurious
+\caption{Analysis of Spurious Timer Interrupts. The interrupts
+are reported as the average number of interrupts per second.
+We apply the optimization and DTID to the guest. The spurious
 interrupts are induced when the guest receives the network
 interrupts. When there is a spurious interrupt, the DTID guest
 ignore it and is able to saturate the bandwidth. IB: 40Gbps
