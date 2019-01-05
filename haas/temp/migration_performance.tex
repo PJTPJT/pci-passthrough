@@ -18,18 +18,6 @@ UDP RECEIVER & 1.8 & 300 & 0 \\ \hline
 \label{tab:migration_network_downtime}
 \end{table}
 
-\begin{table}[]
-\begin{tabular}{|l|l|}
-\hline
-& LOCAL TIMER INTERRUPT \\ \hline
-HOST & 255 \\ \hline
-DTID GUEST & 255 \\ \hline
-DTID GUEST - DTID &  \\ \hline
-\end{tabular}
-\caption{Missed Local Timer Interrupt}
-\label{tab:migration_missed_loc}
-\end{table}
-
 In this experiment, we show the network downtime when
 switching between the assigned and Virtio network device. We
 also demonstrate the average number of missed local timer
@@ -45,7 +33,15 @@ creation during the VM migration, the network downtime is
 reduced to -- and -- ms for the UDP sender and receiver
 respectively.
 
-In Table~\ref{tab:migration_missed_loc}, the average number of
-local timer interrupts in host and DTID guest are -- and --
-respectively. When disabling the DTID in both host and guest,
-the average number of timer interrupts in guest is --.
+When disabling the DTID, the timer interrupts received by the
+guest per seconds matches the expected frequency of timer
+interrupt received by the unmodified guest. Since KVM delivers
+the virtual interrupts with or without DTID, the guest can
+still receives its interrupt during the transition. The longer
+the transition takes, the later the migration starts. The host
+communicates with the guest by the TCP transmission. We expect
+most of the transition time is due to the packet transmission
+and processing. The average transition time is -- $\mu$s.
+
+% TODO: Analysis of DTID algorithm in the guest shows the
+% guest does not miss the next timer interrupt.
