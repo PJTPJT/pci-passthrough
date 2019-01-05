@@ -3,20 +3,44 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
-\figw{cyclictest}{10}{Place holder for cyclictest performance}
+\figw{cyclictest}{10}{Cyclictest Performance. The distrubution
+of interrupt latency are estimated for (a) host (b) guest and
+(c) DTID guest. We apply the optimization on (b) and (c). We
+also enabled DTID in (c).}
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+& IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
+\multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5} 
+&  & 1 & 0 & 348 \\ \hline
+\multirow{2}{*}{GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5} 
+&  & 1 & 0 & 347 \\ \hline
+\end{tabular}
+\caption{Network Interrupts Comparison Between Host and Guest.
+The interrupts are reported as the average number of
+interrupts per second. We apply the CPU optimization to the
+guest. IB: 40Gbps infiniband. NIC: network interface card,
+INTR: interrupt, TMR: timer.}
+\label{tab:network_interrupts}
+\end{table}
+
 
 \begin{table}[]
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
-& IB & CORE & NIC & SPU & LOC \\ \hline
-\multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 0 & 256 \\ \cline{3-6} 
-&  & 1 & 0 & 0 & 348 \\ \hline
-\multirow{2}{*}{GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 0 & 256 \\ \cline{3-6} 
-&  & 1 & 0 & 0 & 347 \\ \hline
-\multirow{2}{*}{DTID GUEST} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6} 
+& IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}GUEST\\ + DTID\end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6} 
 &  & 1 & 0 & 3933 & 348 \\ \hline
 \end{tabular}
-\caption{Spurious Timer Interrupt}
+\caption{Spurious Timer Interrupts. The interrupts are
+reported as the average number of interrupts per second. We
+apply the optimization and DTID to the guest. The spurious
+interrupts are induced when the guest receives the network
+interrupts. When there is a spurious interrupt, the DTID guest
+ignore it and is able to saturate the bandwidth. IB: 40Gbps
+infiniband. NIC: network interface card, INTR: interrupt, SPU
+TMR INTR: spurious timer interrupt.}
 \label{tab:spurious_timer_interrupt}
 \end{table}
 
@@ -38,13 +62,23 @@ interrupt latency for the host, guest and DTID are --, -- and
 --ns respectively. Using the DTID algorithm, we improve the
 timer interrupt latency by --\%.
 
-In Table~\ref{tab:spurious_timer_interrupt}, the DTID guest
-matches the baremetal network bandwidth performance over the
-infiniband, while handling both the expected timer interrupts
-and spurious timer interrupts. The number of network and
-spurious timer interrupts are -- and -- per second
-respectively. We measure the overhead of handling spurious
-interrupt in the kernel. It takes --$\mu$s, while the typical
-handling of timer interrupt is --$\mu$s. The data suggests our
-algorithm works efficiently to deliver the timer interrupt and
-ignore the spurious timer interrupts.
+In Table~\ref{tab:network_interrupt}, both the host and guest
+have two cores. All the network interrupts are handled on the
+core 0, while the iperf benchmark runs on the core 1. The
+guest has its own dedicated core once we apply the CPU
+optimization. The host and guest receive the expected number
+of interrupts per second. In
+Table~\ref{tab:spurious_timer_interrupt}, the guest with DTID
+enabled matches the baremetal network bandwidth performance ,
+while handling both the expected timer interrupts and spurious
+timer interrupts. The number of network and spurious timer
+interrupts are -- and -- per second respectively. For every
+network interrupt, the guest needs to handle a spurious timer
+interrupt first.
+
+% TODO: atopsar and micro-benchmark
+We measure the overhead of handling spurious interrupt. It
+takes --$\mu$s, while the typical handling of timer interrupt
+is --$\mu$s. The data suggests our algorithm works efficiently
+to deliver the timer interrupt and ignore the spurious timer
+interrupts.
