@@ -9,82 +9,82 @@
 %\figw{iperf}{10}{Place holder for iperf performance}
 %\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
 
-\begin{table}
-\begin{tabular}{|p{4cm}|p{1.8cm}|p{1.8cm}|} \hline
- & \multicolumn{2}{|c|}{\textbf{Number of VM Exits}} \\ \cline{2-3} 
-\textbf{VM Exit Reasons}& \textbf{Before \linebreak opti} & \textbf{After \linebreak opti}\\ %\hline
-\textbf{HLT} & &\\ \hline
-\textbf{MSR\_WRITE} & &\\ \hline
-\textbf{EXTERNAL\_INTERRUPT} & &\\ \hline
-\textbf{PREEMPTION\_TIMER} & &\\ \hline
-\textbf{IO\_INSTRUCTION} & &\\ \hline
-\textbf{EXCEPTION\_NMI} & &\\ \hline
-\textbf{PAUSE\_INSTRUCTION} & &\\ \hline
-\textbf{EPT\_VIOLATION} & &\\ \hline
-\textbf{MSR\_READ} & &\\ \hline
-\textbf{CPUID} & &\\ \hline
-\textbf{TOTAL} &  &\\ \hline
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|}
+\hline
+& \begin{tabular}[c]{@{}l@{}}BEFORE\\ OPTI\end{tabular} & \begin{tabular}[c]{@{}l@{}}AFTER\\ OPTI\end{tabular} \\ \hline
+HLT & 4785929 & 0 \\ \hline
+EXTERNAL INTERRUPT & 13114 & 29881 \\ \hline
+IO INSTRUCTION & 1110 & 1073 \\ \hline
+MSR READ & 120 & 120 \\ \hline
+MSR WRITE & 235121 & 269695 \\ \hline
+PAUSE INSTRUCTION & 23 & 0 \\ \hline
+PREEMPTION TIMER & 16260 & 36063 \\ \hline
+TOTAL & 5051677 & 336832 \\ \hline
 \end{tabular}
-\vspace{6pt}
-\caption{Place holder for VM Exit Reasons}
-\label{tab:vm_exit_reasons}
+\caption{Comparison of VM Exit Before and After the CPU
+Optimization. The VM exits are recorded for 60 seconds when
+the guest with the passthrough NIC generates the TCP outgoing
+traffic. The HLT exiting is eliminated.}
+\label{tab:vm_exit}
 \end{table}
 
-\begin{table}
-\begin{tabular}{|l|p{2cm}|p{2cm}|}
-\hline
-\textbf{} & \textbf{GIGABIT ($\mu$s)} & \textbf{INFINIBAND ($\mu$s)} \\ \hline
-\textbf{BAREMETAL} & & \\ \hline
-\textbf{vHOST} & & \\ \hline
-\textbf{VFIO} & & \\ \hline
-\textbf{VFIO + OPTI} & & \\
-\hline
-\end{tabular}
-\caption{Network Latency}
-\label{tab:network_latency}
-\end{table}
 
-\begin{table}
-\begin{tabular}{|l|p{2cm}|p{2cm}|}
+\begin{table}[]
+\begin{tabular}{|l|l|l|}
 \hline
-\textbf{} & \textbf{GIGABIT (Mbps)} & \textbf{INFINIBAND (Gbps)} \\ \hline
-\textbf{BAREMETAL} & & \\ \hline
-\textbf{vHOST} & & \\ \hline
-\textbf{VFIO} & & \\ \hline
-\textbf{VFIO + OPTI} & & \\
-\hline
+& \begin{tabular}[c]{@{}l@{}}OUTGOING\\ TRAFFIC\end{tabular} & \begin{tabular}[c]{@{}l@{}}INCOMING\\ TRAFFIC\end{tabular} \\ \hline
+BAREMETAL & $37.39 \pm 0.08$ & $37.52 \pm 0.10$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular} & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular} & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular} & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ \\ \hline
 \end{tabular}
-\caption{Network Bandwidth}
+\caption{Comparison of Network Bandwith for the Outgoing and
+Incoming TCP Traffic. We measured the network bandwidth for
+the (a) baremetal, (b) guest using the Virtio frontend backed
+by the host vHost driver, (c) guest using the assigned NIC and
+(d) guest using the assigned NIC with CPU optimization.}
 \label{tab:network_bandwidth}
 \end{table}
 
-\begin{table}
-\begin{tabular}{|l|l|l|l|}
+\begin{table}[]
+\begin{tabular}{|l|l|}
 \hline
-\textbf{} & \textbf{\%GUEST} & \textbf{\%USER} & \textbf{\%SYS} \\ \hline
-\textbf{BAREMETAL} & 0 & & \\ \hline
-\textbf{vHOST} & & & \\ \hline
-\textbf{VFIO} & & & \\ \hline
-\textbf{VFIO + OPTI} & & & \\ \hline
-\textbf{OPTI GUEST} & 0 & & \\
-\hline
+& RTT ($\mu$s) \\ \hline
+BAREMETAL & $12 \pm 3$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular} & $24 \pm 5$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular} & $13 \pm 2$ \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular} & $13 \pm 5$ \\ \hline
 \end{tabular}
-\caption{CPU Utilization while saturating the gigabit link}
-\label{tab:cpu_utilization_1gbps}
+\caption{Comparison of Network Latency. We measured the
+network latency for the (a) baremetal, (b) guest using the
+Virtio frontend backed by the host vHost driver, (c) guest
+using the assigned NIC and (d) guest using the assigned NIC
+with CPU optimization.}
+\label{tab:network_latency}
 \end{table}
 
-\begin{table}
+\begin{table}[]
 \begin{tabular}{|l|l|l|l|}
 \hline
-\textbf{} & \textbf{\%GUEST} & \textbf{\%USER} & \textbf{\%SYS} \\ \hline
-\textbf{BAREMETAL} & 0 & & \\ \hline
-\textbf{vHOST} & & & \\ \hline
-\textbf{VFIO} & & & \\ \hline
-\textbf{VFIO + OPTI} & & & \\ \hline
-\textbf{OPTI GUEST} & 0 & & \\
-\hline
+& \%USER & \%SYSTEM & \%GUEST \\ \hline
+BAREMETAL & 0.64 & 80.98 & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular} & 68.6 & 84.36 & 68.6 \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular} & 90.48 & 85.08 & 90.48 \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular} & 199.76 & 0.24 & 199.76 \\ \hline
+IN GUEST & 0.66 & 81.62 & -- \\ \hline
 \end{tabular}
-\caption{CPU Utilization while saturating the infiniband}
+\caption{Comparison of CPU Utilization. When the guest
+generates the TCP outgoing traffic, we measured the CPU
+utilization of 2 cores in the host with the following
+configuration: (a) baremetal, (b) guest using the Virtio
+frontend backed by the host vHost driver, (c) guest using the
+assigned NIC and (d) guest using the assigned NIC with CPU
+optimization.  We also measure the CPU utilization in the
+guest using (d). \%USER is the \%CPU time consumed in the user
+mode, \%SYSTEM is the \%CPU time consumed in the kernel mode
+and \%GUEST is the \%CPU time consumed by the guest.}
 \label{tab:cpu_utilization_40gbps}
 \end{table}
 
