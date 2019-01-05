@@ -8,7 +8,7 @@ of interrupt latency are estimated for (a) host (b) guest and
 (c) DTID guest. We apply the optimization on (b) and (c). We
 also enabled DTID in (c).}
 
-\begin{table}[]
+\begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 & IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
@@ -26,7 +26,7 @@ INTR: interrupt, TMR: timer.}
 \end{table}
 
 
-\begin{table}[]
+\begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
 & IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
@@ -91,5 +91,5 @@ while the host has 1 dedicated core. Each vCPU receives the
 expected number of timer interrupts. When the DTID guest uses
 the periodic timer of 250Hz, each vCPU receives around 250
 interrupts per second. To see how well the DTID guest performs
-the parallel processing, we run Kernbench~\ref{kernbench} or
-PARSEC~\ref{bienia:2008} benchmark. The result shows ....
+the parallel processing, we run Kernbench~\cite{kernbench} or
+PARSEC~\cite{bienia:2008} benchmark. The result shows ....
