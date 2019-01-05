@@ -82,3 +82,14 @@ takes --$\mu$s, while the typical handling of timer interrupt
 is --$\mu$s. The data suggests our algorithm works efficiently
 to deliver the timer interrupt and ignore the spurious timer
 interrupts.
+
+% DTID scalability
+% parallel processing
+% Kernbench
+We are able to scale the DTID algorithm to all the 9 cores,
+while the host has 1 dedicated core. Each vCPU receives the
+expected number of timer interrupts. When the DTID guest uses
+the periodic timer of 250Hz, each vCPU receives around 250
+interrupts per second. To see how well the DTID guest performs
+the parallel processing, we run Kernbench~\ref{kernbench} or
+PARSEC~\ref{bienia:2008} benchmark. The result shows ....
