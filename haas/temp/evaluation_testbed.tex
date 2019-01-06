@@ -25,26 +25,27 @@ timer interrupt latency. Kernbench 0.42~\cite{kernbench}
 benchmarks the CPU throughput.
 
 In our study, we have the following guest configurations
-depending on the assigned network device, CPU optimization and
-DTID.
+depending on the physical or virtual network device, CPU
+optimization and DTID.
 \begin{enumerate}[(a)]
   \item The guest uses the Virtio network device backed by the
   vHost driver.
   \item The guest uses the assigned network device.
   \item The guest uses the assigned network device. We also
-  apply the CPU optimization. Thus, there are no VM exits due
-  to the network interrupt and HLT instruction.
+  apply the CPU optimization. It is labeled as OPTI guest.
+  There are no VM exits due to the network interrupt and HLT
+  instruction.
   \item The guest uses the assigned network device. We apply
-  both the CPU optimization and DTID. Thus, there are no VM
-  exits due the network interrupts, HLT instruction, local
-  timer interrupts, direct timer updates or EPT violations
-  when accessing the shared PID page.
+  both the CPU optimization and DTID. It is labeled as DTID
+  guest. There are no VM exits due the network interrupts, HLT
+  instruction, local timer interrupts, direct timer updates or
+  EPT violations when accessing the shared PID page.
   \end{enumerate}
 In Figure~\ref{fig:cpu_state_diagram}, it shows the transition
 among host and different guest configurations. The control is
 transferred to the host upon a VM exit. After the host has
 done it emulation, the control is return back to the guest. In
-the case of live migration, OPTID or DTID guest are reverted
+the case of live migration, OPTI or DTID guest are reverted
 back to the unmodified guest before the migration starts.
 After the migration ends, the unmodified guest is again
 transformed to the OPTI or DTID guest.
