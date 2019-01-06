@@ -80,25 +80,29 @@ Table~\ref{tab:spurious_timer_interrupt}, the DTID guest
 matches the baremetal network bandwidth performance, while
 handling the additional spurious timer interrupts. Since the
 PIR timer-interrupt is almost always set, for each network
-interrupt, there is a spurious timer interrupt. The frequency
+interrupt, there is a spurious timer interrupt.  The frequency
 of network interrupt and spurious timer interrupts are 110856
 and 100114 respectively. The DTID algorithm simply ignores all
 the spurious timer interrupts. In
 Table~\ref{tab:network_performance} and
 Table~\ref{tab:cpu_utilization_40gbps}, the DTID guest is able
 to match the baremetal network bandwidth and latency, while
-having 1.7\% additional CPU overhead.
+having 1.2\% additional CPU overhead to handle the spurious
+timer interrupts. The spurious interrupt occurs on the core
+running the iperf benchmark, but there is no network
+interrupts. Since the spurious timer interrupt also happens
+after the VM entry, the perf analysis suggests it is due to
+other type of VM exits such as IO instructions, MSR writes or
+IPIs.
 
 % TODO: atopsar and micro-benchmark
-We measure the overhead of handling spurious interrupt. It
-takes --$\mu$s, while the typical handling of timer interrupt
-is --$\mu$s. The data suggests our algorithm works efficiently
-to deliver the timer interrupt and ignore the spurious timer
-interrupts.
+Furthermore, We measure the overhead of handling spurious
+interrupt. It takes --$\mu$s, while the typical handling of
+timer interrupt is --$\mu$s. The data suggests our algorithm
+works efficiently to deliver the timer interrupt and ignore
+the spurious timer interrupts.
 
-% DTID scalability
-% parallel processing
-% Kernbench
+% DTID scalability parallel processing Kernbench
 We are able to scale the DTID algorithm to all the 9 cores,
 while the host has 1 dedicated core. Each vCPU receives the
 expected number of timer interrupts. When the DTID guest uses
