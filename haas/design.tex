@@ -209,12 +209,12 @@ the VFIO framework removes the host from the forward I/O path.
 The guest has the control over the assigned devices and avoids
 the virtualization overhead, when accessing the device control
 registers and performing the
-DMA~\cite{sdm:2018,vt-d:2017,williamson:2016}. After the
+DMA~\cite{sdm:2018,intelvtd-manual,williamson:2016}. After the
 assigned device services the request, it delivers the
 interrupt to the guest and triggers the VM exits due to the
 external interrupts and EOI respectively. Using the VT-d
-posted-interrupt support and APIC virtualization from VT-x,
-the guest handles the device interrupt and update the EOI
+posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
+the guest handles the device interrupt and updates the EOI
 without any VM exit. Thus, the host is completed removed from
 the guest I/O path for the passthrough devices. Nonetheless,
 utilizing the hardware posted-interrupt support is not enough
@@ -258,7 +258,7 @@ assigned devices.
 In addition to direct access to most of the memory regions associated with PCIe devices,
 \na also enables all interrupts, including external interrupts, timer interrupts and 
 virtual interrupts, to be directly delivered to the user OS running inside a VM by leveraging
-the {\em posted interrupt} mechanism in the Intel VT-d architecture.
+the posted interrupt mechanism in Intel VT-d~\cite{postedinterrupt}.
 Direct interrupt delivery (DID) greatly reduces the interrupt processing latency and is
 particularly useful for real-time applications running on rented physical servers. 
 
@@ -316,7 +316,7 @@ In the Intel VT-d architecture, all interrupts sent to any local APIC are interc
 which provides a similar functionality to that of an Interrupt Redirection Table
 to those external interrupts that do not come from an IOAPIC, e.g., message signaled interrupts from PCI devices.
 
-The Posted Interrupt mechanism allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
+The Posted Interrupt mechanism~\cite{intelvtd-paper,intelvtd-manual} allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
 (Post Interrupt Notification or PIN vector) directly without involving the hypervisor.
 When a CPU core handles a PIN interrupt, it examines a bitmap data structure associated with the CPU core called Virtual Interrupt Request Register (vIRR),
 which is copied from another privileged data structure also associated with the CPU core called Posted Interrupt Requests (PIR) as a side effect of an PIN interrupt delivery,  
@@ -327,8 +327,7 @@ The address of the PID and the PIN vector associated with a CPU core are both co
 \subsubsection{Direct External Interrupt Delivery}
 
 To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table entry for that external interrupt as follows.
-First , it sets the entry's IM bit to 1, which means that any interrupt matching this Interrupt Remapping Table entry is to be delivered via the posted interrupt 
-mechanism.  
+First , it sets the entry's IM bit to 1, which means that any interrupt matching this Interrupt Remapping Table entry is to be delivered via the posted interrupt mechanism.  
 Then, it ses the entry's PID address field to the PID address of the VM running on the external interrupt's target CPU core. 
 When an external interrupt arrives at the IOMMU and matches an entry in the Interrupt Remapping Table, the 
 hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
@@ -711,7 +710,7 @@ guest experiences downtime during hot plug operation. In \na,
 to mitigate the downtime due to hot plug operation on the
 destination host, the first two steps are executed during
 migration. During the first phase of pre-copy live
-migration~\cite{clark:2005}, all the memory pages are
+migration~\cite{clark:2005,postcopy-osr}, all the memory pages are
 transferred to the destination over the network. The dirty
 memory pages are then transferred in multiple iterative
 rounds. The VCPU and I/O state of guest are transferred in the

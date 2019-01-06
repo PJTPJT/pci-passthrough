@@ -98,7 +98,7 @@ In \sna, a CPU core's PID is accessible is accessible to the IOMMU (Interrupt Re
 Originally, the PID  is embedded within the
 \texttt{vcpu\_vmx} structure. To make a PID only accessible to the associated HaaS VM,
 when a vCPU is created, \na allocates a separate page for its PID, and places the PID's base address in the vCPU's VMCS, and in all the Interrupt Remapping Table entries for those interrupts that are destined to the vCPU.
-To enable the vCPU's associated VM to access this PID page, the VM's OS provides the address of a page in the guest physical address space to the hypervisor via a hypercall, and the hypervisor maps this address to the host physical address of the PID page in QEMU's page table and the extended page table (EPT), and updates the PID page's reference count accordingly.
+To enable the vCPU's associated VM to access this PID page, the VM's OS provides the address of a page in the guest physical address space to the hypervisor via a hypercall, and the hypervisor maps this address to the host physical address of the PID page in QEMU's page table and the Extended Page Table (EPT)~\cite{ept-wiki}, and updates the PID page's reference count accordingly.
    
 \mycomment{
 and extended page table entry to the physical location of

@@ -20,12 +20,12 @@ while retaining the benefits of virtualization via a
 thin non-intrusive hypervisor.
 
 % Reducing virtualization overheads
-On the other hand, virtualized IaaS cloud platforms~\cite{gcp,azure,aws}
+On the other hand, virtualized IaaS cloud platforms~\cite{gcp,azure,ec2}
 retain the cloud provider's ability to manage and live migrate customers'
 VMs but also introduce hypervisor-level
 emulation overhead of hardware access by guests. To mitigate I/O-related 
 virtualization costs, customers can provision VMs with 
-direct device assignment~\cite{vtd}. 
+direct device assignment~\cite{intelvtd}. 
 However, doing so entails sacrificing the ability 
 to live migrate VMs for load balancing and fault-tolerance
 due to the difficulty of migrating the state of physical I/O devices.
@@ -34,7 +34,7 @@ A number of techniques have been proposed to reduce virtualization
 overheads in interrupt delivery by eliminating VM Exits to the hypervisor.
 ELI~\cite{amit:2015} and DID~\cite{tu:2015} presented techniques
 for direct delivery of I/O interrupts to the VM. 
-Intel VT-d~\cite{vtd} supports a posted interrupt delivery mechanism.
+Intel VT-d~\cite{intelvtd-paper,intelvtd-manual} supports a posted interrupt delivery mechanism~\cite{postedinterrupt}.
 However, these techniques do not fully eliminate hypervisor's role
 in the delivery of device interrupt.
 Specifically, the hypervisor must intercept and deliver device interrupts
