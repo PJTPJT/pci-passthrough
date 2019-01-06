@@ -18,34 +18,47 @@ UDP RECEIVER & 1.8 & 300 & 0 \\ \hline
 \label{tab:migration_network_downtime}
 \end{table}
 
-In this experiment, we show the network downtime when
-switching between the assigned and Virtio network device. 
-The guest is configured with bonding driver in active-
-backup mode where the assigned device acts as 
-active interface and Virtio network device as 
-backup interface. We also demonstrate the average 
+In this section, we show the network service disruption
+due to transition from pass-through NIC to the virtual NIC 
+on the source server and virtual NIC to the pass-through
+NIC on the destination server.
+We also demonstrate the average 
 number of missed local timer interrupts in guest, 
 when we disable the DTID.
 
+The guest is configured with bonding driver in active-
+backup mode where the pass-through NIC acts as 
+active slave and Virtio network device as 
+backup slave. The bonding driver accepts 
+\texttt{fail\_over\_mac} as parameter. The 
+\texttt{fail\_over\_mac} parameter ensures that the
+MAC address of the bond is always the same as the active
+interface. Before migrtion, \na hot-unplugs the assigned
+NIC. The bonding driver detects hot-unplug event as failure
+of pass-through NIC and choses
+Virtio NIC as the active slave. It switches the network 
+traffic to the Virtio network interface by broadcasting
+ARP packets notifying the change in MAC address of the bond.
 In Figure~\ref{fig:default_seamless_migration}, we measure 
-the bandwidth of 1Gbps network card using iperf. 
+the bandwidth of 1Gbps network card using iperf benchmark. 
 The guest sends the network traffic at 940Mbps bandwidth 
 during regular runtime. When the network traffic is 
-switched by bonding driver from assigned device to 
-Virtio network device on hot unplug of assigned device, 
-the guest experiences 0.3seconds network downtime. 
-During the migration of the guest, the network
-bandwidth remains to be 940Mbps using Virtio network
+switched by bonding driver from pass-through device to 
+Virtio network device on hot-unplug of assigned device, 
+the guest experiences 0.1seconds network service disruption. 
+During the migration of the guest, the guest continues
+to run with the network bandwidth of 940Mbps using Virtio network
 device. The guest experiences network dowtime of 
 0.1seconds during the last phase of migration 
-when the guest is paused on source host
+when the guest is paused on source server
 to transfer the CPU and I/O state to destination host
-for guest resumption. After the guest resumes on the
-destination host, the guest is setup to use the assigned
-device through hot plug event. After the assigned device
-is hot plugged, the network traffic is switched from Virtio
-network device to assigned device by setting the assigned
-device as the active device.
+for guest resumption. After the guest resumes, the
+destination server hot-plugs the network device. \na
+sets the pass-through NIC as the active slave and
+switches the network traffic from Virtio network interface
+back to pass-through NIC. As shown in 
+Figure~\ref{default_seamless_migration}, the above step
+introduces additional downtime of 0.3seconds.
 
 
 In Table~\ref{tab:migration_network_downtime}, when switching
