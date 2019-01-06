@@ -7,29 +7,63 @@
 % - Vultr
 In recent years, virtualization overheads and security concerns on 
 multi-tenant IaaS platforms have led to the rise of a 
-number of bare-metal cloud 
-services~\cite{softlayer,oracle,zenlayer,vultr,m2}
-which provision dedicated physical machines for customers
-with stronger isolation and native execution speeds.
-The absence of a virtualization layer 
-limits the cloud provider's ability to manage and live migrate
+number of bare-metal or HaaS~\cite{softlayer,oracle,zenlayer,vultr,m2}
+clouds which provision dedicated physical machines for customers
+to provide native execution and I/O performance.
+However, the absence of a virtualization layer 
+limits the cloud provider's ability to manage, monitor, 
+and live migrate~\cite{clark:2005,postcopy-osr}
 customer workloads, leaving the customer responsible for 
 these functions.
-In contrast, \na aims to support bare-metal server performance
-while retaining the benefits of virtualization via a 
-thin non-intrusive hypervisor.
-
 % Reducing virtualization overheads
 On the other hand, virtualized IaaS cloud platforms~\cite{gcp,azure,ec2}
 retain the cloud provider's ability to manage and live migrate customers'
-VMs but also introduce hypervisor-level
-emulation overhead of hardware access by guests. To mitigate I/O-related 
+VMs but also introduce overheads  due to
+hypervisor-level emulation of hardware access by guests. To mitigate I/O-related 
 virtualization costs, customers can provision VMs with 
 direct device assignment~\cite{intelvtd}. 
 However, doing so entails sacrificing the ability 
 to live migrate VMs for load balancing and fault-tolerance
 due to the difficulty of migrating the state of physical I/O devices.
+\na aims to  support bare-metal server performance
+while retaining the benefits of virtualization via a 
+thin hypervisor.
 
+%TODO container/process migration cannot migrate the OS state
+% and limit the type of processes that can be migrated, such as 
+% those without active network connections.
+{\bf Live migration of bare-metal server:} 
+On-demand virtualization~\cite{ondemand} presented an approach
+to insert a hypervisor that deprivileges the OS at the 
+source server just before migration and re-privileges it
+at the destination after migration. However, this approach 
+requires the hypervisor to fully trust the OS being migrated, 
+the OS having full access to the hypervisor's memory and code.
+Such lack of isolation rules out the use of many hypervior-level
+cloud services that require strong isolation, such as VM introspection
+and SLA enforcement. In contrast, with \na, the guest OS 
+cannot access or modify hypervisor code or memory.
+BLMVisor~\cite{blmvisor,blmvisor-journal} proposes live migration of VMs 
+having direct access to physical devices by having the hypervisor
+regulary intercept and capture low-level physical device states
+during normal execution; the captured state is then reconstructed
+at the destination after migration. This approach requires
+implementing device-specific state capture and reconstruction code 
+for each type of physical device, besides active 
+interception of these operations by the hypervisor. 
+In contrast, \na is device agnostic and does not require
+the hypervisor to intercept guest I/O accesses.
+Finally, unlike the above aproaches,
+\na support direct delivery of timer interrupts 
+to the guest OS without hypervisor intervention, besides supporting
+live migration of guests having direct timer access.
+\na seamlessly tears down the VM's
+physical device and timer dependencies  at the source server before live migration and 
+re-establishes these dependencies at the destination server after migration
+with minimal disruption of the VM's execution.
+
+
+{\em Reducing virtualization overheads:}
 A number of techniques have been proposed to reduce virtualization
 overheads in interrupt delivery by eliminating VM Exits to the hypervisor.
 ELI~\cite{amit:2015} and DID~\cite{tu:2015} presented techniques
@@ -50,21 +84,14 @@ to a single physical core, and ensuring that physical
 cores assigned to the VM remain in guest (non-root) 
 mode whenever the guest idles while waiting for I/O completion.
 
-Furthermore, a key distinction of \na lies in
-eliminating hypervisor overheads in timer interrupt delivery 
-to the VM. None of the existing techniques to reduce virtualization
-overheads solve the problem of direct delivery of timer interrupts
-to the guest OS. \na does so by a novel use of Intel VT-d posted 
+Furthermore, a key distinction of \na lies in LAPIC timer
+access and timer interrupt processing by the VM.
+None of the existing techniques eliminate hypervisor overheads 
+when a VM accesses its LAPIC timer and nor do they 
+support direct delivery of timer interrupts to the guest OS.
+\na does so for the single-VM virtualization case by a novel use of Intel VT-d posted 
 interrupt mechanism that allows the guest to directly set timer events
-on the LAPIC and receive timer interrupts without any VM Exits.
-
-%TODO: Discuss existing live migration and bare-metal approaches
-% pre-copy, post-copy, BLMvisor, and Bitvisor
-Finally, \na supports live migration of the VM that has pass-through device
-access and direct timer access, by seamlessly tearing down its 
-hardware dependencies  at the source before live migration and 
-re-establishing these dependencies at the destination after migration,
-with minimal downtime.
+on LAPIC and receive timer interrupts without any VM Exits.
 
 %TODO: Summarize Jailhouse
 
