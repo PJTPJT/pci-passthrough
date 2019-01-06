@@ -17,18 +17,17 @@ In this section we present our solutions using macro
 and micro-benchmarks. We demonstrate the following.
 \begin{itemize}
   \item The guest using our optimization matches the baremetal
-  network performance with low CPU overhead.
+  network performance with the minimum CPU overhead.
   \item The guest with DTID improves the timer interrupt
-  latency.
-  \item The guest with DTID receives the timer interrupt and
-  updates the timer directly.
+  latency by directly handling the timer interrupt and
+  updating the timer.
   \item The guest with DTID ignores the NIC-induced timer
   interrupts while achieving the baremetal network bandwidth
   and latency performance with low CPU overhead.
-  \item DTID is scalable to all CPUs, while the host has one
+  \item DTID is scalable to all CPUs, while the host has its
   dedicated CPU.
   \item The guest with DTID matches the baremetal CPU
-  throughput for all the cores.
+  throughput.
   \item The guest using the bonding driver and our QEMU
   optimization does not experience the apparent network
   downtime during the migration.
