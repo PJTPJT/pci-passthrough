@@ -34,14 +34,14 @@ DTID.
   \item The guest uses the assigned network device. We also
   apply the CPU optimization. Thus, there are no VM exits due
   to the network interrupt and HLT instruction.
-  \item The guest uses the assigned network device. We also
-  apply both the CPU optimization and DTID. Thus, there are no
-  VM exits due the network interrupts, HLT instruction, local
+  \item The guest uses the assigned network device. We apply
+  both the CPU optimization and DTID. Thus, there are no VM
+  exits due the network interrupts, HLT instruction, local
   timer interrupts, direct timer updates or EPT violations
   when accessing the shared PID page.
   \end{enumerate}
 In Figure~\ref{fig:cpu_state_diagram}, it shows the transition
-among host and different guest configuration. The control is
+among host and different guest configurations. The control is
 transferred to the host upon a VM exit. After the host has
 done it emulation, the control is return back to the guest. In
 the case of live migration, OPTID or DTID guest are reverted
