@@ -60,6 +60,18 @@ back to pass-through NIC. As shown in
 Figure~\ref{default_seamless_migration}, the above step
 introduces additional downtime of 0.3seconds.
 
+In \na, to minimize the additional downtime introduced by
+the hot-plug event, it is broken down to three steps.
+As explained in section 3.4.1, the first step of creating 
+software NIC object and extracting the values from the 
+configuration space induces 0.3seconds downtime.
+The last step of resetting the software NIC object 
+to setup the BAR and interrupt forwarding is executed
+after the guest migration is completed. In \na as
+shown in Figure~\ref{seamless_migration} the 
+downtime due to hotplug of passthrough NIC is zero
+as the first two steps are executed when the guest is
+paused.
 
 In Table~\ref{tab:migration_network_downtime}, when switching
 from the assigned to Virtio network device, the network is --

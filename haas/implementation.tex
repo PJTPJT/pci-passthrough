@@ -142,9 +142,10 @@ network downtime due to hot unplug operations.
 
 \na uses the QEMU command \texttt{device\_add} to implement a hot plug operation,
 and the QEMU command \texttt{device\_del} to implement a hot unplug operation. 
-and the control is transferred back (hot unplug) to host 
-The \texttt{device\_del} command itself is further broken down 
+\texttt{device\_add} transfers the control of NIC device from host to guest and.
+on \texttt{device\_del} command the NIC device control is transferred back to host 
+In \na, the \texttt{device\_del} command itself is further broken down 
 into three commands \texttt{setup\_nic}, which sets up a software NIC object, 
 \texttt{realize\_vfio\_nic}, which configures a software NIC object, and \texttt{reset\_nic\_device}, which resets a software NIC object by setting the 
 BARs and redirecting the associated interrrupts. 
-The \texttt{setup\_nic} and \texttt{reset\_nic\_device} command must be executed when the VM issuing them is paused. 
+The \texttt{setup\_nic} and \texttt{reset\_nic\_device} commands must be executed when the VM issuing them is paused. The \texttt{reset\_nic\_device} command is issued on VM resumption. 
