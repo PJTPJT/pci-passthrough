@@ -3,78 +3,91 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
-\figw{cyclictest}{10}{Cyclictest Performance. The distrubution
-of interrupt latency are estimated for (a) host (b) guest and
-(c) DTID guest. We apply the optimization on (b) and (c). We
-also enabled DTID in (c).}
+\figw{cyclictest}{10}{Cumulative Probability Distribution of
+Timer-Interrupt Latency.}
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 & IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
-\multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5} 
+\multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 348 \\ \hline
-\multirow{2}{*}{GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5} 
+\multirow{2}{*}{OPTI GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 347 \\ \hline
 \end{tabular}
-\caption{Network Interrupts Comparison Between Host and Guest.
-The interrupts are reported as the average number of
-interrupts per second. We apply the CPU optimization to the
-guest. IB: 40Gbps infiniband. NIC: network interface card,
-INTR: interrupt, TMR: timer.}
+\caption{Comparison of Network Interrupts Between Host and
+Guest. The interrupts are reported as the average number of
+interrupts per second. OPTI guest uses the assigned NIC with
+the CPU optimization. IB: 40Gbps infiniband. NIC: network
+interface card. INTR: interrupt. TMR: timer.}
 \label{tab:network_interrupts}
 \end{table}
-
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
 & IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}GUEST\\ + DTID\end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6} 
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID GUEST \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6}
 &  & 1 & 0 & 3933 & 348 \\ \hline
 \end{tabular}
 \caption{Analysis of Spurious Timer Interrupts. The interrupts
 are reported as the average number of interrupts per second.
-We apply the optimization and DTID to the guest. The spurious
-interrupts are induced when the guest receives the network
-interrupts. When there is a spurious interrupt, the DTID guest
-ignore it and is able to saturate the bandwidth. IB: 40Gbps
-infiniband. NIC: network interface card, INTR: interrupt, SPU
-TMR INTR: spurious timer interrupt.}
+DTID guest uses the assigned NIC with the CPU optimization and
+DTID enabled. IB: 40Gbps infiniband. NIC: network interface
+card, INTR: interrupt, SPU TMR INTR: spurious timer
+interrupt.}
 \label{tab:spurious_timer_interrupt}
 \end{table}
 
 In this experiment, we demonstrate that the guest improve its
-timer interrupt latency using our DTID mechanism. Typically,
+timer interrupt latency using the DTID mechanism. Typically,
 the host virtualizes the timer and the time interrupt by its
 high-resolution timer subsystem and the delivery of virtual
 timer interrupts. DTID reduces the overheads by directly
 delivering the timer interrupts and allowing the guest to
-configure TMICT directly. We measure the latency using the
-cylictest in (a) host, (b) guest and (c) DTID guest. For (b)
-and (c), we apply our CPU optimization. (c) has DTID enabled
-whereas (b) has DTID disabled. We also show the additional
-cost to handle the spurious timer interrupts in the DTID
-guest.
+configure TMICT directly. We measure the timer-interrupt
+latency using the cyclictest~\cite{cyclictest} in (a) host,
+(b) guest and (c) DTID guest. For (b) and (c), we also apply
+our CPU optimization. (c) has DTID enabled whereas (b) has
+DTID disabled. We also show the additional cost to handle the
+spurious timer interrupts in the DTID guest.
 
-In Figure~\ref{fig:cyclictest}, we observe that the median of
-interrupt latency for the host, guest and DTID are --, -- and
---ns respectively. Using the DTID algorithm, we improve the
-timer interrupt latency by --\%.
+To estimate the cumulative probability distribution, we
+collect the timer-interrupt latency by
+cyclictest~\cite{cyclictest}. It measures the latency by
+comparing the time taken the sleep and wakeup time. We run the
+cyclictest with the sleep time of 200$\mu$s for $10^7$
+iterations. The main thread of cyclictest runs on the core
+which is not being evaluated, whereas the test thread runs on
+the experiment core. We use the top 99\% of data to estimate
+the CDF. In Figure~\ref{fig:cyclictest}, we observe that the
+median of interrupt latency for the host, guest and DTID are
+1.2, 2.46 and 8.06 $\mu$s respectively. Using the DTID
+algorithm, we improve the timer interrupt latency by
+5.6$\mu$s.
 
-In Table~\ref{tab:network_interrupt}, both the host and guest
-have two cores. All the network interrupts are handled on the
-core 0, while the iperf benchmark runs on the core 1. The
-guest has its own dedicated core once we apply the CPU
-optimization. The host and guest receive the expected number
-of interrupts per second. In
-Table~\ref{tab:spurious_timer_interrupt}, the guest with DTID
-enabled matches the baremetal network bandwidth performance ,
-while handling both the expected timer interrupts and spurious
-timer interrupts. The number of network and spurious timer
-interrupts are -- and -- per second respectively. For every
-network interrupt, the guest needs to handle a spurious timer
-interrupt first.
+We measure the expected frequency of timer and network
+interrupts, when running the iperf benchmark over the 40Gbps
+infiniband. Both the host and guest uses two cores. One core
+handles the network interrupts, while the other core runs the
+iperf benchmark. In Table~\ref{tab:network_interrupts}, the
+host and guest both receive the expected frequency of timer
+and network interrupts and saturate the 40Gbps link.
+Nonetheless, DTID guest needs to handle the spurious timer
+interrupt before processing the network interrupts. This is
+the addition CPU overhead. In
+Table~\ref{tab:spurious_timer_interrupt}, the DTID guest
+matches the baremetal network bandwidth performance, while
+handling the additional spurious timer interrupts. Since the
+PIR timer-interrupt is almost always set, for each network
+interrupt, there is a spurious timer interrupt. The frequency
+of network interrupt and spurious timer interrupts are 110856
+and 100114 respectively. The DTID algorithm simply ignores all
+the spurious timer interrupts. In
+Table~\ref{tab:network_performance} and
+Table~\ref{tab:cpu_utilization_40gbps}, the DTID guest is able
+to match the baremetal network bandwidth and latency, while
+having 1.7\% additional CPU overhead.
 
 % TODO: atopsar and micro-benchmark
 We measure the overhead of handling spurious interrupt. It
