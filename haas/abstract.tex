@@ -1,27 +1,49 @@
 
 \begin{abstract}
-Bare-metal cloud is an emerging cloud service model in which users
-rent dedicated physical servers from a remote cloud provider
-to execute their applications natively, without any virtualization 
-overheads inherent in multi-tenant clouds.
-However, building a bare-metal cloud service management system is technically challenging 
-due to the constraint that no software agent can be installed on the 
-physical servers being rented out. Such a constraint particularly limits
-the cloud provider's ability to live migrate customers' workloads for 
-system maintenance or monitor application performance to 
-meet service-level agreements.
-The \fullname, or \sna, is a bare metal cloud service management system 
-that eliminates this constraint by installing on each physical server
-a thin single-VM hypervisor that combines the benefits of 
-bare-metal execution and virtualization --
-customer workloads have complete and direct access to all the hardware 
-devices while the cloud operator retains the 
-serviceability and manageability of the physical machine.
-We describe a prototype implementation of \na 
-that provides direct device access to the customer's VM, 
-direct delivery of timer and network interrupts without VM Exits,
-and supports live migration.
+Bare-metal cloud computing or Hardware as a Service (HaaS) allows customers
+to rent remote physical servers so as to install their preferred operating system
+and make the best of the server's raw hardware capabilities. 
+Common management functions available on virtualized servers offered 
+by cloud platforms, such as workload migration and introspection-based 
+application performance management, are difficult to 
+duplicate on HaaS servers, because HaaS service providers typically 
+do not install any software on these bare-metal servers.
+To address this manageability gap of existing HaaS services, 
+we propose a special form of virtualization called Single Virtual Machine 
+Virtualization (SVMV) that is optimized to run a single VM on a 
+physical server and allow the VM's  guest OS to directly interact 
+with I/O devices and the timer hardware, as if it runs right on top 
+of the physical server. 
+This paper describes the design, implementation and evaluation of 
+a HaaS management system called the \fullname (\sna) that supports 
+SVMV without incurring any I/O performance penalty, and enables 
+seamless live migration of VMs with direct I/O device access and 
+direct timer access with low migration downtime.
 \end{abstract}
+
+%\begin{abstract}
+%Bare-metal cloud is an emerging cloud service model in which users
+%rent dedicated physical servers from a remote cloud provider
+%to execute their applications natively, without any virtualization 
+%overheads inherent in multi-tenant clouds.
+%However, building a bare-metal cloud service management system is technically challenging 
+%due to the constraint that no software agent can be installed on the 
+%physical servers being rented out. Such a constraint particularly limits
+%the cloud provider's ability to live migrate customers' workloads for 
+%system maintenance or monitor application performance to 
+%meet service-level agreements.
+%The \fullname, or \sna, is a bare metal cloud service management system 
+%that eliminates this constraint by installing on each physical server
+%a thin single-VM hypervisor that combines the benefits of 
+%bare-metal execution and virtualization --
+%customer workloads have complete and direct access to all the hardware 
+%devices while the cloud operator retains the 
+%serviceability and manageability of the physical machine.
+%We describe a prototype implementation of \na 
+%that provides direct device access to the customer's VM, 
+%direct delivery of timer and network interrupts without VM Exits,
+%and supports live migration.
+%\end{abstract}
 
 
 %--------Prof. Chiueh'ss abstract
