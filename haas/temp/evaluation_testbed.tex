@@ -1,8 +1,10 @@
 % Describe the tested including the following items.
-% - Hardare configuration: CPU, memory and network cards.
+% - Hardware configuration: CPU, memory and network cards.
 % - Guest: CPU, memory, bonding driver, assigned and virtual devices.
 % - QEMU
 % - KVM
+\figw{cpu_state_diagram}{10}{CPU State Diagram}
+
 The experiments are run on machines equipped with the 10-core
 Intel Xeon CPU E4 v4 of 2.2GHz, 32GB memory, 40Gbps Mellanox
 ConnectX-3 Pro network interface and Intel Corporation
@@ -21,3 +23,22 @@ CPU utilization. Free 3.3.10~\cite{free} measures the memory
 consumption. Cyclictest 0.93~\cite{cyclictest} benchmarks the
 timer interrupt latency. Kernbench 0.42~\cite{kernbench}
 benchmarks the CPU throughput.
+
+In Figure~\ref{fig:cpu_state_diagram}, we have the following
+guest configurations.
+\begin{enumerate}[(a)]
+  \item Guest is the unmodified guest.
+  \item OPTI guest is the guest using the assigned device with
+  out optimization. There are no VM exits due to the
+  assigned-device interrupt and HLT instruction.
+  \item DTID guest is the OPTI Guest with DTID enabled. While
+  it has all the features in OPTI guest, there are no VM exits
+  due to the local timer interrupts, direct timer updates or
+  EPT violations when accessing the shared PID page.
+\end{enumerate}
+When the VM exit happens, the control is transferred to the
+host. After the host has done it emulation, the control is
+return back to the guest. In the case of live migration, OPTID
+or DTID guest are reverted back to the unmodified guest before
+the migration starts. After the migrate ends, the unmodified
+guest is again transformed to the OPTI or DTID guest.

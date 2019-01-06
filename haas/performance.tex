@@ -37,18 +37,16 @@ and micro-benchmarks. We demonstrate the following.
 \end{itemize}
 
 In addition, the total number lines changed in the guest OS is
-387. In Table~\ref{tab:guest_os_changes}, the changes are made
-in the guest OS to support DTID. First, 43 lines of code are
-added to the timer interrupt handler to set the PIR
-timer-interrupt bits and ignore the spurious timer interrupt.
-Second, the kernel module of 110 lines is used to adjust for
-the LAPIC timers. Since the timers are calibrated by the host
-at boot time, the guest needs to adjust its multiplication and
-shift factor of tick calculation to the host configuration.
-The module consumes 16KB of RAM. Third, the kernel module of
-234 lines is used to map or unmap the shared PID page. The
-module consumes 16KB of RAM plus $n$ shared PID pages, where
-each page is 4KB.
+387. First, 43 lines of code are added to the timer interrupt
+handler to set the PIR timer-interrupt bits and ignore the
+spurious timer interrupt. Second, the kernel module of 110
+lines is used to adjust for the LAPIC timers. Since the timers
+are calibrated by the host at boot time, the guest needs to
+adjust its multiplication and shift factor of tick calculation
+to the host configuration. The module consumes 16KB of RAM.
+Third, the kernel module of 234 lines is used to map or unmap
+the shared PID page. The module consumes 16KB of RAM plus $n$
+shared PID pages, where each page is 4KB.
 
 \subsection{Evaluation Testbed and Methodology}
 \input{temp/evaluation_testbed}
