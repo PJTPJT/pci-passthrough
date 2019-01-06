@@ -80,14 +80,14 @@ using the VFIO out performs the guest using the vHost
 configuration by 50\%.
 
 The network bandwidth is measure by the incoming and outgoing
-TCP traffic using iperf~\ref{iperf}. The bandwidth performance
-for the gigabit link is not shown here. All the configurations
-are able to saturate the 1Gbps NIC and 40 Gbps infiniband for
-the outgoing traffic. For the incoming traffic, the bandwidth
-performance of 40Gbps infiniband is differed. The guests using
-the VFIO configuration saturate the bandwidth and out perform
-the guest using the vHost configuration by 48\% as shown in
-Table~\ref{tab:network_performance}.
+TCP traffic using iperf~\cite{iperf}. The bandwidth
+performance for the gigabit link is not shown here. All the
+configurations are able to saturate the 1Gbps NIC and 40 Gbps
+infiniband for the outgoing traffic. For the incoming traffic,
+the bandwidth performance of 40Gbps infiniband is differed.
+The guests using the VFIO configuration saturate the bandwidth
+and out perform the guest using the vHost configuration by
+48\% as shown in Table~\ref{tab:network_performance}.
 
 Althought the outgoing TCP throughput is about 37.4Gbps for
 the guest using the vHost as the backend driver or assigned
