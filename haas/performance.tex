@@ -13,20 +13,6 @@
 % - Service disruption time for the baremetal guest migration
 %   - Network downtime
 %   - The required time to set up or tear down the VFIO and DTID
-\begin{table}[tbp]
-\begin{tabular}{|l|l|}
-\hline
-& LINES of CODE \\ \hline
-TIMER SUBSYSTEM & 43 \\ \hline
-CLOCKEVENT DEVICE & 110 \\ \hline
-PID PAGE MAPPING & 234 \\ \hline
-\end{tabular}
-\caption{Number of Lines Changed in the Guest OS. The changes
-in the GUEST OS are made for the timer interrupt handler,
-timer configuration and mapping/unmapping the shared PID.}
-\label{tab:guest_os_changes}
-\end{table}
-
 In this section we present our solutions using macro
 and micro-benchmarks. We demonstrate the following.
 \begin{itemize}
@@ -58,9 +44,11 @@ timer-interrupt bits and ignore the spurious timer interrupt.
 Second, the kernel module of 110 lines is used to adjust for
 the LAPIC timers. Since the timers are calibrated by the host
 at boot time, the guest needs to adjust its multiplication and
-shift factor of tick-calculation algorithm to the host
-configuration. Third, the kernel module of 234 lines is used
-to map or unmap the shared PID page, test and cleanup.
+shift factor of tick calculation to the host configuration.
+The module consumes 16KB of RAM. Third, the kernel module of
+234 lines is used to map or unmap the shared PID page. The
+module consumes 16KB of RAM plus $n$ shared PID pages, where
+each page is 4KB.
 
 \subsection{Evaluation Testbed and Methodology}
 \input{temp/evaluation_testbed}
