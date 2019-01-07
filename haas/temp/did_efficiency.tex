@@ -9,33 +9,32 @@ Timer-Interrupt Latency.}
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
-& IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
+& IB & CPU & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
 \multirow{2}{*}{HOST} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 348 \\ \hline
-\multirow{2}{*}{OPTI GUEST} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}
+\multirow{2}{*}{OPTI Guest} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 347 \\ \hline
 \end{tabular}
 \caption{Comparison of Network Interrupts Between Host and
-Guest. The interrupts are reported as the average number of
-interrupts per second. OPTI guest uses the assigned NIC with
-the CPU optimization. IB: 40Gbps infiniband. NIC: network
-interface card. INTR: interrupt. TMR: timer.}
+Guest. The interrupts are reported as the number of interrupts
+per second. OPTI guest uses the assigned NIC with the CPU
+optimization. IB: 40Gbps infiniband. NIC: network interface
+card. INTR: interrupt. TMR: timer.}
 \label{tab:network_interrupts}
 \end{table}
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
-& IB & CORE & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID GUEST \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6}
+& IB & CPU & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID Guest \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6}
 &  & 1 & 0 & 3933 & 348 \\ \hline
 \end{tabular}
 \caption{Analysis of Spurious Timer Interrupts. The interrupts
-are reported as the average number of interrupts per second.
-DTID guest uses the assigned NIC with the CPU optimization and
-DTID enabled. IB: 40Gbps infiniband. NIC: network interface
-card, INTR: interrupt, SPU TMR INTR: spurious timer
-interrupt.}
+are reported as the number of interrupts per second. DTID
+guest uses the assigned NIC with the CPU optimization and DTID
+enabled. IB: 40Gbps infiniband. NIC: network interface card,
+INTR: interrupt, SPU TMR INTR: spurious timer interrupt.}
 \label{tab:spurious_timer_interrupt}
 \end{table}
 

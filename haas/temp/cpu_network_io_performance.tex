@@ -12,15 +12,15 @@
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|}
 \hline
-& \begin{tabular}[c]{@{}l@{}}BEFORE \end{tabular} & \begin{tabular}[c]{@{}l@{}}AFTER \end{tabular} \\ \hline
+& \begin{tabular}[c]{@{}l@{}}Before \end{tabular} & \begin{tabular}[c]{@{}l@{}}After \end{tabular} \\ \hline
 HLT                & 4785929 & 0 \\ \hline
-EXTERNAL INTERRUPT & 13114   & 29881 \\ \hline
-IO INSTRUCTION     & 1110    & 1073 \\ \hline
-MSR READ           & 120     & 120 \\ \hline
-MSR WRITE          & 235121  & 269695 \\ \hline
-PAUSE INSTRUCTION  & 23      & 0 \\ \hline
-PREEMPTION TIMER   & 16260   & 36063 \\ \hline
-TOTAL              & 5051677 & 336832 \\ \hline
+External Interrupt & 13114   & 29881 \\ \hline
+IO Instruction     & 1110    & 1073 \\ \hline
+MSR Read           & 120     & 120 \\ \hline
+MSR Write          & 235121  & 269695 \\ \hline
+Pause Instruction  & 23      & 0 \\ \hline
+Preemption Timer   & 16260   & 36063 \\ \hline \hline
+Total              & 5051677 & 336832 \\ \hline
 \end{tabular}
 \caption{Comparison of VM Exits Before and After the CPU
 Optimization. The VM exits are recorded when the guest with
@@ -31,12 +31,12 @@ the passthrough NIC generates the TCP outgoing traffic.}
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
 \hline
-& \begin{tabular}[c]{@{}l@{}}OUTBOUND\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}INBOUND\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST + vHOST\end{tabular} & 37.39 & 19.02 & 24\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST + VFIO\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
-\begin{tabular}[c]{@{}l@{}}OPTI GUEST\end{tabular}    & 37.37 & 37.52 & 13\\ \hline
-\begin{tabular}[c]{@{}l@{}}DTID GUEST\end{tabular}    & 37.35 & 37.50 & 12\\ \hline
+& \begin{tabular}[c]{@{}l@{}}Outbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}l@{}}Baremetal\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
+\begin{tabular}[c]{@{}l@{}}Guest + vHOST\end{tabular} & 37.39 & 19.02 & 24\\ \hline
+\begin{tabular}[c]{@{}l@{}}Guest + VFIO\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular}    & 37.37 & 37.52 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}}DTID Guest\end{tabular}    & 37.35 & 37.50 & 12\\ \hline
 %\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                          & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ & $24 \pm 5$\\ \hline
 %\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                           & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ & $13 \pm 2$\\ \hline
 %\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
@@ -51,13 +51,13 @@ the passthrough NIC generates the TCP outgoing traffic.}
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
 \hline
-& \%USER & \%SYSTEM & \%GUEST \\ \hline
-\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}       & 0.64   & 80.98 & -- \\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST + vHOST\end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST + VFIO\end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
-\begin{tabular}[c]{@{}l@{}}OPTI GUEST\end{tabular}      & 199.76 & 0.24  & 199.76 \\ \hline \hline
-\begin{tabular}[c]{@{}l@{}}IN OPTI GUEST\end{tabular}   & 0.66   & 81.7  & -- \\ \hline
-\begin{tabular}[c]{@{}l@{}}IN DTID GUEST\end{tabular}   & 0.68   & 82.9  & -- \\ \hline
+& \%User & \%System & \%Guest \\ \hline
+\begin{tabular}[c]{@{}l@{}}Baremetal\end{tabular}     & 0.64   & 80.98 & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}Guest + vHOST\end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
+\begin{tabular}[c]{@{}l@{}}Guest + VFIO\end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
+\begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular}    & 199.76 & 0.24  & 199.76 \\ \hline \hline
+\begin{tabular}[c]{@{}l@{}}In OPTI Guest\end{tabular} & 0.66   & 81.7  & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}In DTID Guest\end{tabular} & 0.68   & 82.9  & -- \\ \hline
 \end{tabular}
 \caption{Comparison of CPU Utilization. When the guest
 generates the TCP outgoing traffic, we measure the CPU
