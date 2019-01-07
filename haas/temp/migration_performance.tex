@@ -3,7 +3,10 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
-\figw{seamless_migration}{10}{Place holder for seamless
+\figw{seamless_migration_default}{10}{Place holder for seamless
+migration. Top: Guest sends the outgoing traffic. Bottom:
+guest receives the incoming traffic.}
+\figw{seamless_migration_haas}{10}{Place holder for seamless
 migration. Top: Guest sends the outgoing traffic. Bottom:
 guest receives the incoming traffic.}
 
@@ -33,19 +36,23 @@ backup slave. The bonding driver accepts
 \texttt{fail\_over\_mac} as parameter. The 
 \texttt{fail\_over\_mac} parameter ensures that the
 MAC address of the bond is always the same as the active
-interface. Before migrtion, \na hot-unplugs the assigned
+slave. Before migrtion, \na hot-unplugs the assigned
 NIC. The bonding driver detects hot-unplug event as failure
 of pass-through NIC and choses
-Virtio NIC as the active slave. It switches the network 
+Virtio NIC as the active slave. \texttt{fail\_over\_mac} 
+switches the network 
 traffic to the Virtio network interface by broadcasting
 ARP packets notifying the change in MAC address of the bond.
-In Figure~\ref{fig:default_seamless_migration}, we measure 
+In Figure~\ref{fig:seamless_migration_default}, we measure 
 the bandwidth of 1Gbps network card using iperf benchmark. 
 The guest sends the network traffic at 940Mbps bandwidth 
 during regular runtime. When the network traffic is 
 switched by bonding driver from pass-through device to 
 Virtio network device on hot-unplug of assigned device, 
-the guest experiences 0.1seconds network service disruption. 
+the guest experiences 0.1seconds network service disruption.
+As shown in Figure~\ref{fig:seamless_migration_haas} with
+\texttt{fail\_over\_mac} the dowtime due to hot unplug reduces 
+to 0.1seconds.
 During the migration of the guest, the guest continues
 to run with the network bandwidth of 940Mbps using Virtio network
 device. The guest experiences network dowtime of 
