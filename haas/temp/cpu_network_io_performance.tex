@@ -22,7 +22,7 @@ PAUSE INSTRUCTION  & 23      & 0 \\ \hline
 PREEMPTION TIMER   & 16260   & 36063 \\ \hline
 TOTAL              & 5051677 & 336832 \\ \hline
 \end{tabular}
-\caption{Comparison of VM Exit Before and After the CPU
+\caption{Comparison of VM Exits Before and After the CPU
 Optimization. The VM exits are recorded when the guest with
 the passthrough NIC generates the TCP outgoing traffic.}
 \label{tab:vm_exit}
@@ -32,34 +32,40 @@ the passthrough NIC generates the TCP outgoing traffic.}
 \begin{tabular}{|l|l|l|l|}
 \hline
 & \begin{tabular}[c]{@{}l@{}}OUTBOUND\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}INBOUND\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}                                & $37.39 \pm 0.08$ & $37.52 \pm 0.10$ & $12 \pm 3$\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                          & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ & $24 \pm 5$\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                           & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ & $13 \pm 2$\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\\ + DTID\end{tabular} & $37.35 \pm 0.08$ & $37.50 \pm 0.23$ & $12 \pm 5$\\ \hline
+\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST + vHOST\end{tabular} & 37.39 & 19.02 & 24\\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST + VFIO\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}}OPTI GUEST\end{tabular}    & 37.37 & 37.52 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}}DTID GUEST\end{tabular}    & 37.35 & 37.50 & 12\\ \hline
+%\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                          & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ & $24 \pm 5$\\ \hline
+%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                           & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ & $13 \pm 2$\\ \hline
+%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
+%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\\ + DTID\end{tabular} & $37.35 \pm 0.08$ & $37.50 \pm 0.23$ & $12 \pm 5$\\ \hline
 \end{tabular}
-\caption{Comparison of Network Bandwidth and Latency.}
+\caption{Comparison of Network Bandwidth and Latency Over the
+40Gbps Infiniband.}
 \label{tab:network_performance}
 \end{table}
+
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
 \hline
 & \%USER & \%SYSTEM & \%GUEST \\ \hline
-\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}                       & 0.64   & 80.98 & -- \\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                 & 68.6   & 84.36 & 68.6 \\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                  & 90.48  & 85.08 & 90.48 \\ \hline
-\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular} & 199.76 & 0.24  & 199.76 \\ \hline
-\begin{tabular}[c]{@{}l@{}}IN OPTI GUEST\end{tabular}                   & 0.66   & 81.7  & -- \\ \hline
-\begin{tabular}[c]{@{}l@{}}IN DTID GUEST\end{tabular}                   & 0.68   & 82.9  & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}BAREMETAL\end{tabular}       & 0.64   & 80.98 & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST + vHOST\end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
+\begin{tabular}[c]{@{}l@{}}GUEST + VFIO\end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
+\begin{tabular}[c]{@{}l@{}}OPTI GUEST\end{tabular}      & 199.76 & 0.24  & 199.76 \\ \hline \hline
+\begin{tabular}[c]{@{}l@{}}IN OPTI GUEST\end{tabular}   & 0.66   & 81.7  & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}}IN DTID GUEST\end{tabular}   & 0.68   & 82.9  & -- \\ \hline
 \end{tabular}
 \caption{Comparison of CPU Utilization. When the guest
 generates the TCP outgoing traffic, we measure the CPU
-utilization of 2 cores in the host. We also measure the CPU
-utilization in the OPTI and DTID guest. \%USER is the \%CPU
-time consumed in the user mode, \%SYSTEM is the \%CPU time
-consumed in the kernel mode and \%GUEST is the \%CPU time
-consumed by the guest.}
+utilization in the host. We also measure the CPU utilization
+in the OPTI and DTID guest. \%USER is the \%CPU time consumed
+in the user mode, \%SYSTEM is the \%CPU time consumed in the
+kernel mode and \%GUEST is the \%CPU time consumed by the
+guest.}
 \label{tab:cpu_utilization_40gbps}
 \end{table}
 

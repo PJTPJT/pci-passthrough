@@ -30,15 +30,15 @@ depending on the physical or virtual network device, CPU
 optimization and DTID.
 \begin{enumerate}[(a)]
   \item The guest uses the Virtio network device backed by the
-  vHost driver.
-  \item The guest uses the assigned network device.
+  vHost driver (Guest + vHost).
+  \item The guest uses the assigned network device (Guest +
+  VFIO).
   \item The guest uses the assigned network device. We also
-  apply the CPU optimization. It is labeled as OPTI guest.
-  There are no VM exits due to the network interrupt and HLT
-  instruction.
+  apply the CPU optimization (OPTI Guest). There are no VM
+  exits due to the network interrupt and HLT instruction.
   \item The guest uses the assigned network device. We apply
-  both the CPU optimization and DTID. It is labeled as DTID
-  guest. There are no VM exits due the network interrupts, HLT
+  both the CPU optimization and DTID (DTID Guest). guest.
+  There are no VM exits due the network interrupts, HLT
   instruction, local timer interrupts, direct timer updates or
   EPT violations when accessing the shared PID page.
   \end{enumerate}
