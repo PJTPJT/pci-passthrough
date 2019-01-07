@@ -10,21 +10,23 @@
 %\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
 
 \begin{table}[tbp]
-\begin{tabular}{|l|l|l|}
+\begin{tabular}{llll}
 \hline
-& \begin{tabular}[c]{@{}l@{}}Before \end{tabular} & \begin{tabular}[c]{@{}l@{}}After \end{tabular} \\ \hline
-HLT                & 4785929 & 0 \\ \hline
-External Interrupt & 13114   & 29881 \\ \hline
-IO Instruction     & 1110    & 1073 \\ \hline
-MSR Read           & 120     & 120 \\ \hline
-MSR Write          & 235121  & 269695 \\ \hline
-Pause Instruction  & 23      & 0 \\ \hline
-Preemption Timer   & 16260   & 36063 \\ \hline \hline
-Total              & 5051677 & 336832 \\ \hline
+& \begin{tabular}[c]{@{}l@{}}Guest \end{tabular} & \begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular} & \begin{tabular}[c]{@{}l@{}}DTID Guest\end{tabular}\\ \hline
+HLT                & 4362  & 0    & 0    \\ \hline
+External Interrupt & 15702 & 498  & 1    \\ \hline
+IO Instruction     & 18    & 18   & 19   \\ \hline
+MSR Read           & 2     & 2    & 2    \\ \hline
+MSR Write          & 2248  & 4495 & 2499 \\ \hline
+Pause Instruction  & 1266  & 0    & 0    \\ \hline
+Preemption Timer   & 406   & 601  & 0    \\ \hline
+Pending Interrupt  & 273   & 0    & 0    \\ \hline
+EPT Misconfig.     & 55071 & 0    & 0    \\ \hline \hline
+Total              & 79438 & 5614 & 2521 \\ \hline
 \end{tabular}
-\caption{Comparison of VM Exits Before and After the CPU
-Optimization. The VM exits are recorded when the guest with
-the passthrough NIC generates the TCP outgoing traffic.}
+\caption{Comparison of VM Exits per Second Among Busy Guests.
+The VM exits are recorded when the guest generates the TCP
+outgoing traffic.}
 \label{tab:vm_exit}
 \end{table}
 
