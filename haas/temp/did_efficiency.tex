@@ -61,10 +61,10 @@ iterations. The main thread of cyclictest runs on the core
 which is not being evaluated, whereas the test thread runs on
 the experiment core. We use the top 99\% of data to estimate
 the CDF. In Figure~\ref{fig:cyclictest}, we observe that the
-median of interrupt latency for the host, guest and DTID are
-1.2, 2.46 and 8.06 $\mu$s respectively. Using the DTID
-algorithm, we improve the timer interrupt latency by
-5.6$\mu$s.
+median of interrupt latency for the host, DTID guest and
+unmodified guest are 1.2, 2.46 and 13.93 $\mu$s respectively.
+Using the DTID and our CPU optimization, we improve the timer
+interrupt latency by 11.47$\mu$s.
 
 We measure the expected frequency of timer and network
 interrupts, when running the iperf benchmark over the 40Gbps
