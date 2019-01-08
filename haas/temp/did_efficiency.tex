@@ -14,29 +14,33 @@ Timer-Interrupt Latency.}
 &  & 1 & 0 & 348 \\ \hline
 \multirow{2}{*}{OPTI Guest} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 347 \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID Guest \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 255 \\ \cline{3-5}
+&  & 1 & 0 & 348 \\ \hline
 \end{tabular}
 \caption{Comparison of Network Interrupts Between Host and
 Guest. The interrupts are reported as the number of interrupts
-per second. OPTI guest uses the assigned NIC with the CPU
+per second. For the DTID guest, the numbers of spurious timer
+interrupts per second for core 0 and 1 are 100114 and 3933
+respectively. OPTI guest uses the assigned NIC with the CPU
 optimization. IB: 40Gbps infiniband. NIC: network interface
 card. INTR: interrupt. TMR: timer.}
 \label{tab:network_interrupts}
 \end{table}
 
-\begin{table}[tbp]
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline
-& IB & CPU & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID Guest \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6}
-&  & 1 & 0 & 3933 & 348 \\ \hline
-\end{tabular}
-\caption{Analysis of Spurious Timer Interrupts. The interrupts
-are reported as the number of interrupts per second. DTID
-guest uses the assigned NIC with the CPU optimization and DTID
-enabled. IB: 40Gbps infiniband. NIC: network interface card,
-INTR: interrupt, SPU TMR INTR: spurious timer interrupt.}
-\label{tab:spurious_timer_interrupt}
-\end{table}
+%\begin{table}[tbp]
+%\begin{tabular}{|l|l|l|l|l|l|}
+%\hline
+%& IB & CPU & \begin{tabular}[c]{@{}l@{}}NIC\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}SPU\\ TMR\\ INTR\end{tabular} & \begin{tabular}[c]{@{}l@{}}TMR\\ INTR\end{tabular} \\ \hline
+%\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}DTID Guest \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 100114 & 255 \\ \cline{3-6}
+%&  & 1 & 0 & 3933 & 348 \\ \hline
+%\end{tabular}
+%\caption{Analysis of Spurious Timer Interrupts. The interrupts
+%are reported as the number of interrupts per second. DTID
+%guest uses the assigned NIC with the CPU optimization and DTID
+%enabled. IB: 40Gbps infiniband. NIC: network interface card,
+%INTR: interrupt, SPU TMR INTR: spurious timer interrupt.}
+%\label{tab:spurious_timer_interrupt}
+%\end{table}
 
 In this experiment, we demonstrate that the guest improve its
 timer interrupt latency using the DTID mechanism. Typically,
@@ -72,23 +76,23 @@ handles the network interrupts, while the other core runs the
 iperf benchmark. In Table~\ref{tab:network_interrupts}, the
 host and guest both receive the expected frequency of timer
 and network interrupts and saturate the 40Gbps link.
+
 Nonetheless, DTID guest needs to handle the spurious timer
 interrupt before processing the network interrupts. This is
-the addition CPU overhead. In
-Table~\ref{tab:spurious_timer_interrupt}, the DTID guest
-matches the baremetal network bandwidth performance, while
-handling the additional spurious timer interrupts. Since the
-PIR timer-interrupt is almost always set, for each network
-interrupt, there is a spurious timer interrupt.  The frequency
-of network interrupt and spurious timer interrupts are 110856
-and 100114 respectively. The DTID algorithm simply ignores all
-the spurious timer interrupts. In
-Table~\ref{tab:network_performance} and
-Table~\ref{tab:cpu_utilization_40gbps}, the DTID guest is able
-to match the baremetal network bandwidth and latency, while
-having 1.2\% additional CPU overhead to handle the spurious
-timer interrupts. The spurious interrupt occurs on the core
-running the iperf benchmark, but there is no network
+the addition CPU overhead. Since the PIR timer-interrupt is
+almost always set, for each network interrupt, there is a
+spurious timer interrupt. The frequency of network interrupt
+and spurious timer interrupts are 110856 and 100114
+respectively. The DTID algorithm simply ignores all the
+spurious timer interrupts. The DTID guest is able to match the
+baremetal network bandwidth and latency, while having 1.2\%
+additional CPU overhead to handle the spurious timer
+interrupts as shown in Figure~\ref{fig:network_bandwidth},
+Figure~\ref{fig:network_latency}, and
+Table~\ref{tab:cpu_utilization_40gbps}.
+
+Moreover, we observe that the spurious interrupt occurs on the
+core running the iperf benchmark, but there is no network
 interrupts. Since the spurious timer interrupt also happens
 after the VM entry, the perf analysis suggests it is due to
 other type of VM exits such as IO instructions, MSR writes or

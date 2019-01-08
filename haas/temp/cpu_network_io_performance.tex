@@ -51,8 +51,8 @@ outgoing traffic.}
 
 % TODO: Put them together as the sub-figures.
 % TODO: May need to redo the figure and make the label clear.
-\figw{network_latency}{8}{Comparison of Network Latency over 40Gbps Link}
 \figw{network_bandwidth}{8}{Comparison of Network Bandwith over 40Gbps Link}
+\figw{network_latency}{8}{Comparison of Network Latency over 40Gbps Link}
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
@@ -80,18 +80,7 @@ In this experiment, we demonstrate that the guest using our
 optimization achieves near bare-metal performance with minimum
 CPU utilization and minimal hypervisor involvement. We use the
 macro benchmark and measure the performance in the following
-three metrics: network latency, bandwidth and CPU utilization.
-
-The network latency is measured by the round-trip delay using
-ping~\cite{ping}. For the gigabit link, the RTT for the host
-and guest using VFIO configuration is about 160$\mu$s, whereas
-the RTT of guest using vHost as the backend driver is
-173$\mu$s. For the 40Gbps infiniband, the guest using the VFIO
-out performs the guest using the vHost configuration by 50\%.
-As shown in Figure~\ref{fig:network_latency}, the RTT for the
-host and guest using VFIO configuration is about 13$\mu$s,
-whereas the RTT of guest using vHost as the backend driver is
-24$\mu$s.
+three metrics: network bandwidth, latency and CPU utilization.
 
 The network bandwidth is measure by the incoming and outgoing
 TCP traffic using iperf~\cite{iperf}. The bandwidth
@@ -103,6 +92,17 @@ differed. The guests using the VFIO configuration saturate the
 bandwidth and out perform the guest using the vHost
 configuration by 48\% as shown in
 Figure~\ref{fig:network_bandwidth}.
+
+The network latency is measured by the round-trip delay using
+ping~\cite{ping}. For the gigabit link, the RTT for the host
+and guest using VFIO configuration is about 160$\mu$s, whereas
+the RTT of guest using vHost as the backend driver is
+173$\mu$s. For the 40Gbps infiniband, the guest using the VFIO
+out performs the guest using the vHost configuration by 50\%.
+As shown in Figure~\ref{fig:network_latency}, the RTT for the
+host and guest using VFIO configuration is about 13$\mu$s,
+whereas the RTT of guest using vHost as the backend driver is
+24$\mu$s.
 
 Although the outgoing TCP throughput is about 37.4Gbps for the
 guest using the vHost as the backend driver or assigned NIC,
