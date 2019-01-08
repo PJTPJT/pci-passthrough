@@ -57,7 +57,7 @@ Developer Manual.
 
 \subsection{CPU Idleness Processing}
 
-When a CPU on a Linux-based physical machine does not have any applications to run and becomes idle,
+When a CPU on a Linux-based machine does not have any applications to run,
 Linux schedules a special idle task to run on the CPU. On X86 CPU, this idle task consists of a loop of {\tt HLT} instructions, 
 each of which places the CPU in the C1 energy-saving mode until an external interrupt occurs.
 Because {\tt HLT} is a privileged instruction, its execution inside a guest VM triggers a VM exit and causes the control to be transferred to KVM. 
@@ -70,7 +70,7 @@ Currently, KVM emulates a {\tt HLT} instruction using a busy waiting loop, which
 %on the CPU until the event arrival. 
 
 This polling-loop emulation of {\tt HLT} instruction incurs higher CPU utilization than that when {\tt HLT} instruction is executed natively. 
-To address this issue, \na prevents VM exit when executing a {\tt HLT} instruction inside a VM by modifying the VM-execution control fields 
+To address this issue, \na prevents VM exit when executing a {\tt HLT} instruction inside a HaaS VM by modifying the VM-execution control fields 
 in the VM's virtual machine control structure (VMCS).
 As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, the CPU lowers its clock frequency, and the total energy consumption is reduced. 
 %It is eliminated
@@ -94,10 +94,10 @@ As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, t
 
 \subsection{PID Sharing}
 
-In \sna, a CPU core's PID is accessible is accessible to the IOMMU (Interrupt Remapping Table), the hypervisor and the HaaS running on the CPU core. 
-Originally, the PID  is embedded within the
-\texttt{vcpu\_vmx} structure. To make a PID only accessible to the associated HaaS VM,
-when a vCPU is created, \na allocates a separate page for its PID, and places the PID's base address in the vCPU's VMCS, and in all the Interrupt Remapping Table entries for those interrupts that are destined to the vCPU.
+In \sna, a CPU core's PID is accessible to the IOMMU (Interrupt Remapping Table), the hypervisor and the HaaS VM running on the CPU core. 
+%Originally, the PID  is embedded within the HaaS VM's VMCS structure.
+To make a PID accessible to its associated HaaS VM,
+when a vCPU is created, \na allocates a separate page for its PID, and places the PID's base address in the vCPU's VMCS, and in all the Interrupt Remapping Table entries that target at  the vCPU.
 To enable the vCPU's associated VM to access this PID page, the VM's OS provides the address of a page in the guest physical address space to the hypervisor via a hypercall, and the hypervisor maps this address to the host physical address of the PID page in QEMU's page table and the Extended Page Table (EPT)~\cite{ept-wiki}, and updates the PID page's reference count accordingly.
    
 \mycomment{
@@ -123,29 +123,42 @@ PIR timer-interrupt bit, whenever it receives the timer
 interrupt. 
 }
 
-According to Intel IA-32 Intel Architecture Software Developer's
-Manual~\cite{sdm:2018}, all accesses to the PID
+%According to Intel IA-32 Intel Architecture Software Developer's Manual~\cite{sdm:2018} 
+Intel IA-32 Intel Architecture~\cite{sdm:2018}  requires that all accesses to the PIR bitmap in a PID
 must use the locked read-modify-write instruction to ensure mutual exclusion. 
-In \sna, when network packets come in at a high rate, a HaaS VM may repeatedly turn on the timer interrupt bit in the PIR to process spurious timer interrupts that come with NIC interrupts. However, these accesses to the PIR, being based on the atomic test-and-set instruction, may prevent the Interrupt Remapping Table from accessing the PIR on behalf of incoming packets, and cause some of these packets to be dropped and eventually degraded network performance.
+In \sna, when network packets come in at a high rate, a HaaS VM may repeatedly turn on the timer interrupt bit in the PIR to process spurious timer interrupts that come with NIC interrupts. However, these accesses to the PIR, being based on the atomic test-and-set instruction, may prevent the Interrupt Remapping Table from accessing the PIR on behalf of incoming packets, and cause some of these packets to be dropped, eventually degrading the network performance.
  
 \na solves this performance problem by requiring a HaaS VM to set the timer interrupt bit
-in the PIR using a non-atomic instruction, which immediately cuts down the lock contention
+in the PIR using a non-atomic instruction, which immediately cuts down the extent of lock contention
 and boosts the network performance. This lockless design is safe because the PIR bits that a HaaS VM and the Interrupt Remapping Table are guaranteed to be disjoint and thus do not need to be locked before being accessed.
 
 
 \subsection{NIC Bonding}
+
 Linux's bonding driver provides a \texttt{fail\_over\_mac} option to change 
 the MAC address of the bonded interface and broadcast ARP packets for the new MAC address when the Active slave fails. \na configures the bonding driver by setting   
 \texttt{fail\_over\_mac} to 1, and cuts down the
 network downtime due to hot unplug operations.
 
+To transition a NIC between the VFIO and Vhost mode, \na hot-plugs and hot-unplugs the corresponding devcices at the right times.  It uses the QEMU command \texttt{device\_add} to implement a hot plug operation, and the QEMU command \texttt{device\_del} to implement a hot unplug operation. 
 
-\na uses the QEMU command \texttt{device\_add} to implement a hot plug operation,
-and the QEMU command \texttt{device\_del} to implement a hot unplug operation. 
+
+
+\mycomment{
 \texttt{device\_add} transfers the control of NIC device from host to guest and.
-on \texttt{device\_del} command the NIC device control is transferred back to host 
+on \texttt{device\_del} command the NIC device control is transferred back to host. 
 In \na, the \texttt{device\_del} command itself is further broken down 
 into three commands \texttt{setup\_nic}, which sets up a software NIC object, 
 \texttt{realize\_vfio\_nic}, which configures a software NIC object, and \texttt{reset\_nic\_device}, which resets a software NIC object by setting the 
 BARs and redirecting the associated interrrupts. 
 The \texttt{setup\_nic} and \texttt{reset\_nic\_device} commands must be executed when the VM issuing them is paused. The \texttt{reset\_nic\_device} command is issued on VM resumption. 
+}
+
+\subsection{Code Change}
+
+The SVMV hypervisor takes up 80-120 MB of memory of the physical machine it runs on when it is idle.
+DTID requires modifications to the guest OS, and entails 387 lines of code changes: 43 lines are added to the timer subsystem, 110 lines adjusts the clock multiplication and shift factor, and 234 lines map/unmap/test the shared PID page and cleanup.
+
+
+
+

@@ -11,14 +11,15 @@
 %   - Direct interrupt delivery
 %   - Migration of bare-metal server
 %   - VM introspection for the security and better visibility
-
+\mycomment{
 Infrastructure as a service (IaaS), which was popularized by AWS's EC2 service~\cite{ec2}, has evolved and morphed into multiple forms over the last decade.
 The basic compute unit for IaaS began as a {\em virtual machine} (VM), which represents a slice of a physical machine carved out by a hardware-abstraction-layer, called the hypervisor.
 A {\em container} is another basic compute unit, where a common operating system (OS) delimits the addressable system resources (or namespaces) for a group of processes and enforces usage limits.
 A more recent IaaS compute unit is a {\em function}, which comes with a complete operating environment consisting of an OS and a middleware layer, and is created on demand.  
+}
 
-Lately, to avoid multi-tenancy and security issues, a physical machine itself is 
-treated as a basic compute unit in {\em bare-metal cloud service}~\cite{bms-wiki}.
+%Lately, to avoid multi-tenancy and security issues, a physical machine itself is 
+%treated as a basic compute unit in {\em bare-metal cloud service}~\cite{bms-wiki}.
 %or {\em hardware-as-a-service} (HaaS). 
 %Infrastructure as a service (IaaS), which was popularized by AWS's EC2 service, has evolved and morphed into multiple forms over the last decade.
 %In the beginning, the basic compute unit for IaaS was a {\em virtual machine}, which represents a slice of a physical machine carved out by a hardware-abstraction-layer hypervisor.
@@ -26,18 +27,21 @@ treated as a basic compute unit in {\em bare-metal cloud service}~\cite{bms-wiki
 %%A more recent option for IaaS's basic compute unit is a {\em function}, which comes with a complete operating environment constsing of an OS and a middleware layer, and is created on demand.  
 %Lately, even a physical machine could serve as the basic compute unit. This type of IaaS is known as {\em bare-metal cloud service} or {\em hardware as a service} (HaaS). In the past three years, we have been developing a HaaS operating system called {\em ITRI HaaS OS} or \sna.  
 %The focus of this paper is on \sna's virtualization support that enhances the manageability and serviceability required of a modern bare-metal cloud service. 
-In the case of traditional multi-tenant IaaS, cloud operators own and manage 
-the physical machines, which are shared among multiple users.
-In contrast, bare-metal cloud operators, 
-such as  IBM (SoftLayer)~\cite{softlayer} and Oracle~\cite{oracle},
-own the physical machines but users manage them. 
-Bare-metal cloud users prefer physical machines over VMs
-to assure stronger isolation than VMs in multi-tenant clouds and also 
+
+
+Whereas conventional IaaS allows a user to rent virtual machines or containers, 
+bare-metal cloud service or hardware as a service (HaaS), 
+%In the case of traditional multi-tenant IaaS, cloud operators own and manage 
+%the physical machines, which are shared among multiple users.
+%In contrast, bare-metal cloud operators, 
+such as  IBM (SoftLayer)~\cite{softlayer} and Oracle~\cite{oracle}, enables users to 
+rent physical machines and manage them on their own. 
+Bare-metal cloud service users prefer physical machines over VMs mainly
+%to assure stronger isolation than VMs in multi-tenant clouds and also 
 to maximize performance for resource intensive workloads 
 such as high-performance computing, big data analytics, and AI training.
-Other use cases of bare-metal clouds include running a preferred hypervisor 
-or OS which is not supported by cloud operators or
-when users need special hardware for which virtualization 
+Other use cases of bare-metal cloud services include a preferred hypervisor 
+or OS that is not supported by cloud operators or special hardware for which virtualization 
 is not sufficiently mature, such as ARM SOC-based micro-server and GPU/FPGA cluster.
 
 Bare-metal cloud operators provide a user with a physical data center instance (PDCI), which is 
@@ -71,8 +75,9 @@ Moreover, \na allows a HaaS tenant to {\em remotely} check, configure, and updat
 on them, in a way that minimizes human errors and the adverse side effects that come with these errors. 
 Finally, \na enables a HaaS tenant to monitor the hardware status of the physical servers and the network traffic among them with full visibility, without revealing anything associated with other co-located tenants. 
 
-For the HaaS use case in which a tenant installs an operating system (Linux or Windows) rather than a proprietary hypervisor on the physical servers of its PDCI, \na runs a specialized hypervisor on each physical server to enable migration of physical machine state and informed monitoring of application-level performance. This hypervisor, conceptually an extension of a physical server's BIOS, allows only one VM to run on each server and enables the VM's operating system to interact with all the server's devices as if it runs directly on a bare-metal server.
-More concretely, the functional requirements of this {\em single-VM} hypervisor are
+
+For the HaaS use case in which a tenant installs an operating system (Linux or Windows) rather than a proprietary hypervisor on the physical servers of its PDCI, \na runs a specialized hypervisor on each physical server to enable migration of running workloads and informed monitoring of application-level performance. This hypervisor, conceptually an extension of a physical server's BIOS, allows only one VM to run on each server and enables the VM's operating system to interact with all the server's devices as if it runs directly on a bare-metal server.
+The functional requirements of this {\em single-VM virtualization} (SVMV) hypervisor are
 \begin{itemize} 
 \setlength\itemsep{-0.04in}
 \item Direct pass-through of all PCIe devices without involving the hypervisor,

@@ -7,19 +7,20 @@ Common management functions available on virtualized servers offered
 by cloud platforms, such as workload migration and introspection-based 
 application performance management, are difficult to 
 duplicate on HaaS servers, because HaaS service providers typically 
-do not install any software on these bare-metal servers.
+do not install any software on these servers.
 To address this manageability gap of existing HaaS services, 
 we propose a special form of virtualization called Single Virtual Machine 
 Virtualization (SVMV) that is optimized to run a single VM on a 
 physical server and allow the VM's  guest OS to directly interact 
-with the I/O devices and timer hardware, as if it runs right on top 
+with I/O devices and local timer, as if it runs right on top 
 of the physical server. 
 This paper describes the design, implementation and evaluation of 
 a HaaS management system called the \fullname (\sna) that supports 
 SVMV without incurring any I/O performance penalty, and enables 
-seamless live migration of VMs with direct I/O device access and 
-direct timer access with low migration downtime.
+seamless live migration of VMs with direct I/O device and 
+timer access without degrading the migration-induced downtime.
 \end{abstract}
+
 
 %\begin{abstract}
 %Bare-metal cloud is an emerging cloud service model in which users
