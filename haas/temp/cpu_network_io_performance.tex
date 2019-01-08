@@ -16,11 +16,11 @@
 HLT                & 4362  & 79765 & 0    & 0    \\ \hline
 EPT Misconfig.     & 55071 & 0     & 0    & 0    \\ \hline
 External Interrupt & 15702 & 219   & 498  & 1    \\ \hline
+%Preemption Timer   & 406   & 271   & 601  & 0    \\ \hline
 %IO Instruction     & 18    & 19    & 18   & 19   \\ \hline
 %MSR Read           & 2     & 2     & 2    & 2    \\ \hline
 %MSR Write          & 2248  & 3919  & 4495 & 2499 \\ \hline
 %Pause Instruction  & 1266  & 0     & 0    & 0    \\ \hline
-%Preemption Timer   & 406   & 271   & 601  & 0    \\ \hline
 %Pending Interrupt  & 273   & 0     & 0    & 0    \\ \hline
 %Total              & 79438 & 84195 & 5614 & 2521 \\ \hline
 \end{tabular}
@@ -128,6 +128,23 @@ on isolated CPUs. As shown in
 exits along with dedicating cores to guest, reduces the CPU
 utilization in system mode to $0.24/200$ and increases the CPU
 Utilization in guest mode to $199.76/200$. It indicates that
-the guest occupies the CPUs for most of the time. In Table
-\ref{tab:vm_exit} we show that the number of VM exits due to
-HLT instruction is zero.
+the guest occupies the CPUs for most of the time.
+
+In Table \ref{tab:vm_exit}, we show the most relevant VM exits
+that has the significant impact on the CPU utilization. With
+the NIC assignment, the number of HLT exits per second
+increases from 4362 to 79765. Both the number of VM exits per
+second due to the EPT misconfiguration and external interrupts
+goes down. After disabling the HLT exit, we observes the
+increases number of VM exits frequency due to the timer
+interrupts. This is due to the time-slice expiration from both
+the host and guest. In our experiment, the host and guest has
+the time-slice of 4ms which triggers 250 timer interrupts per
+second. We examine the VM-exit qualification and find 498
+numbers of VM exits per second are due to the timer
+interrupts. This matches what we have expected with the
+sampling error. In contrast, if the HLT exiting is not
+disabled, some of the host timer interrupts are hidden by the
+time when the host is emulating HLT instruction. Furthermore,
+the timer interrupts are directly delivered to the guest
+without causing any VM exit.
