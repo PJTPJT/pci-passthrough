@@ -49,12 +49,13 @@ I/O operations and interrupt processing using traditional VMs incur higher overh
 I/O operations issued by a VM typically trap into the hypervisor via VM exits for emulation.
 Likewise, external device interrupts and local interrupts (such as timers and IPIs)
 to the CPU running a VM result in VM exits for emulating virtual interrupt delivery.
-Each VM exit in turn requires expensive saving and restoring of the VM's execution context,
-emulation of the exit reason, and subsequent re-entry into guest mode.
+Each VM exit is expensive, since it requires saving the VM's execution context upon exit,
+emulation of the exit reason in hypervisor mode, 
+and finally restoration of the VM's context before re-entry into guest mode.
+
 The main technical challenge of providing the guest OS with the illusion of running on 
 a bare-metal server is that its interactions with I/O devices, such as network 
 interface card (NIC) and disk controller, must be direct without going through any intermediary.
-
 \na allows the sole VM on physical machine to directly interact with PCIe I/O devices and 
 timer hardware by leveraging Intel VT-d~\cite{intelvtd-paper} and 
 Linux Virtual Function I/O (VFIO)~\cite{vfio} mechanisms. 
@@ -330,7 +331,7 @@ virtual interrupt.
 
 
 \subsection{Bare-Metal I/O Performance in \na}
-\figw{virtualization_overhead}{10}{Virtualization overhead}
+\figw{virtualization_overhead}{10}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O, and (c) optimized pass-through I/O in \sna.}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
 % 	VM Exit overhead
@@ -386,6 +387,10 @@ assigned devices.
 
 \subsection{Direct Local Interrupt Delivery in \na} 
 \label{subsubsec:shared_pid_dtid}
+\figw{dtid}{10}{Architecture for direct delivery of timer interrupts in \sna. 
+The SVMV hypervisor configures each guest LAPIC to transform the local timer 
+interrupt into a posted-interrupt notification (PIN) and allows the guest
+to directly update the posted interrupt descriptor (PID).}
 
 Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
