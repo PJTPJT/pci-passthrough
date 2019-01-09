@@ -17,8 +17,11 @@
 %   - NIC bonding with the hot plug/unplug operation migration
 %   - DTID during the migration
 
-\figw{architecture}{10}{Architecture of \na}
-\figw{virtualization_overhead}{10}{Virtualization overhead}
+\figw{architecture}{10}{Architecture of \na for single-VM virtualization (SVMV). 
+The SVMV hypervisor is restricted to a single CPU core and provides
+manageability services such as live migration and monitoring.
+The sole VM runs on all the remaining CPU cores with direct access to I/O devices 
+and local timers, including direct delivery of interrupts.}
 
 %The design goal of \na is to eliminate the hypervisor from
 %the guest I/O path while achieving bare-metal performance in
@@ -34,18 +37,20 @@
 
 To enhance the manageability of physical servers offered in a bare metal cloud service, \na intalls 
 a SVMV  hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
-a \na user then installs a preferred OS 
-%(called user OS hereafter) 
-and applications. 
+a \na user then installs a preferred OS and applications. 
+Figure~\ref{fig:architecture} shows the high-level architecture of \na.
 This  hypervisor is primarily meant to provide management functionalities, such as 
 physical machine migration and application performance monitoring, rather than virtualization 
 of server resources, and therefore is largely not involved in the I/O operations in which a HaaS VM participates.
 %This section describes in detail the main design issues of this SVMV hypervisor, 
 %which is based on Linux/KVM/QEMU, and our corresponding solutions.
 
-I/O operations using traditional VMs incur higher overheads than bare-metal execution. 
-I/O operations issued by a guest OS typically trap into the hypervisor via VM Exits. 
-Each VM exit in turn requires expensive saving and restoring of the VM's execution context.
+I/O operations and interrupt processing using traditional VMs incur higher overheads than bare-metal execution. 
+I/O operations issued by a VM typically trap into the hypervisor via VM exits for emulation.
+Likewise, external device interrupts and local interrupts (such as timers and IPIs)
+to the CPU running a VM result in VM exits for emulating virtual interrupt delivery.
+Each VM exit in turn requires expensive saving and restoring of the VM's execution context,
+emulation of the exit reason, and subsequent re-entry into guest mode.
 The main technical challenge of providing the guest OS with the illusion of running on 
 a bare-metal server is that its interactions with I/O devices, such as network 
 interface card (NIC) and disk controller, must be direct without going through any intermediary.
@@ -53,14 +58,24 @@ interface card (NIC) and disk controller, must be direct without going through a
 \na allows the sole VM on physical machine to directly interact with PCIe I/O devices and 
 timer hardware by leveraging Intel VT-d~\cite{intelvtd-paper} and 
 Linux Virtual Function I/O (VFIO)~\cite{vfio} mechanisms. 
-Additionally, \na also implements optimizations for reducing the hypervisor's CPU, I/O, and memory 
-footprint during runtime, to minimize interference with guest operations.
+To match bare-metal I/O performance, \na implements mechanisms 
+for reducing the hypervisor's CPU, I/O, and memory 
+footprint during runtime to minimize interference with guest operations.
+In addition \na also enables direct delivery of both device interrupts
+and timer interrupts to a HaaS VM by leveraging
+the posted interrupt mechanism in Intel VT-d.
+Direct interrupt delivery greatly reduces the interrupt processing latency and is
+particularly useful for real-time applications running on bare-metal servers. 
+When the VM must be live migrated, \na temorarily switches the VM to use
+para-virtual I/O and virtualized timer, completes the migration
+and, at the destination, switches the VM back to direct I/O device and direct 
+timer access, all with minimal disruption of VM's workload.
 
 In this section, we first  provide background on direct device access using 
 Intel VT-d and Linux KVM/QEMU~\cite{kvm}, followed by the description of design challenges 
-in a SVMV hypervisor and our solutions.
+and our solutions for achieving bare-metal performance while supporting live migration.
 
-\subsection{Background}
+\subsection{Background: Intel VT-d and VFIO}
 %\subsection{Direct Interactions with PCI Devices}
 Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
 and safe access to hardware I/O devices by VMs running in non-root mode.
@@ -85,7 +100,7 @@ Except the probe/enumeration operations,
 \na enables a guest OS to interact directly (without VM exits) with NICs and disk controllers
 for the other three types of device interactions. 
 
-{\bf Direct DMA Operations Using VT-d and VFIO:} 
+\subsubsection{Direct DMA Operations Using VT-d and VFIO} 
 Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
 memory-mapped I/O (MMIO) operations against the memory areas associated with to the device. 
 Essentially, VFIO makes the configuration register space and the memory regions of
@@ -180,7 +195,142 @@ signaling path way. It enables the direct interrupt delivery
 from the assigned device to its VM without a VM exit.
 }
 
+
+\subsubsection{Posted Interrupts}
+
+{\bf Conventional Interrupt Delivery:}
+\mycomment{
+Our design uses the hardware-assisted posted interrupt
+mechanism and achieves the direct interrupt delivery of
+assigned devices and local timers without the intervention of
+hypervisor. It reduces the hypervisor CPU utilization and
+dedicates the CPU time to the guest. Under the normal
+circumstances, the guest can not handle physical interrupts
+without the hypervisor. 
+}
+In the conventional architecture, when an interrupt is delivered to a CPU core,
+it triggers a VM exit if the CPU core is not in the root mode and control is transferred to the hypervisor. 
+%Saving and loading the execution context between the root and
+%non-root mode waste the CPU cycles. Second, the host needs to
+Then the hypervisor examines the cause of the interrupt. 
+If the interrupt is meant for a VM scheduled on the CPU core,
+the hypervisor delivers this interrupt as a virtual interrupt to the target VM
+next time when it is scheduled on the CPU core; otherwise the hypervisor handles
+the interrupt on its own.
+After a VM completes servicing an interrupt, it writes to the EOI (End of Interrupt)  register 
+to signal to the hardware that the interrupt in question has been handled. Because the EOI register is 
+a privileged resource, every EOI register write causes a VM exit.
+Therefore, processing of each physical interrupt costs at least two VM exits.
+This per-interrupt overhead is too expensive for network-intensive applications that 
+are designed to process multi-million packets per second. 
+
+\mycomment{
+and handle the physical interrupt. If the physical
+interrupt is meant for the guest, the host needs to deliver it
+as the virtual interrupt upon the next VM entry. Otherwise,
+the host handles it and schedules the next VM entry. Third,
+when the guest's interrupt handler finishes, it writes to the
+EOI register. Such write operation may induce the VM exit.
+Since the guest is not aware of the distinction between the
+physical and virtual interrupt, it signals the completion of
+interrupt in the same way. After the guest handles the virtual
+interrupt, its EOI update is normally emulated by the host.
+Fourth, the host may need to use CPU cache and reduce the time
+to handle the physical interrupt. This introduces the CPU
+cache pollution.
+}
+
+%In the X86 architecture, 
+A VM may experience two types of interrupts: {\em external} and {\em local} interrupts.
+External interrupts originate from external I/O devices, such as network card or disk controller.
+When these I/O devices generate a hardware interrupt, this signal first goes to an IOAPIC, which, through an {\em Interrupt Redirection Table}, 
+converts the hardware interrupt into an interrupt message that contains a vector number and is sent to a particular CPU core.
+There is a local APIC associated with each CPU core to field interrupts sent to the CPU core.
+In the Intel VT-d architecture, all interrupts sent to any local APIC are intercepted by  an {\em Interrupt Remapping Table} in the IOMMU unit, 
+which provides a similar functionality to that of an Interrupt Redirection Table
+to those external interrupts that do not come from an IOAPIC, e.g., message signaled interrupts from PCI devices.
+
+{\bf Posted Interrupt Delivery:}
+The Posted Interrupt mechanism~\cite{intelvtd-paper,intelvtd-manual} allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
+(Post Interrupt Notification or PIN vector) directly without involving the hypervisor.
+When a CPU core handles a PIN interrupt, it examines a bitmap data structure associated with the CPU core called {\em Virtual Interrupt Request Register} (vIRR),
+which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of an PIN interrupt delivery,  
+to determine the vectors of the interrupts behind the PIN interrupt, and processes these interrupts one by one according to their vectors and priorities.
+The PIR bitmap is part of a per-VCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.  
+The address of the PID and the PIN vector associated with a CPU core are both contained in the Virtual Machine Control Structure (VMCS) associated with the VCPU running on the CPU core.
+
+%\subsubsection{Direct External Interrupt Delivery}
+To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
+First , it sets the IRT entry's IM bit to 1, which means that any interrupt matching this entry is to be delivered via the posted interrupt mechanism.  
+Then, it ses the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
+When an external interrupt arrives at the IOMMU and matches an IRT entry, the 
+hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
+converts this interrupt into an interrupt labelled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
+Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
+
+When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the 
+associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
+would normally requires a VM exit, which would add to the interrupt processing overhead. 
+Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
+%To allow a VM to avoid a VM exit due to clearing the EOI register after handling an interrupt of vector X,  KVM clears X's corresponding bit in 
+%the {\em EOI exit bitmap} in the VM's VMCS. As a result, at run time after this VM completes servicing an interrupt of vector X and clears the EOI register via a memory mapped 
+%intreface (called APIC-access page), no VM exit occurs.   
+%Helped with the posted interrupt and EOI virtualization mechanism, a HaaS VM is now able to process any external interrupt directly without triggering any VM exit.
+
+ 
+\mycomment{
+VT-d supports the posted-interrupt capability and deliver the
+external interrupts directly from the I/O devices and external
+controllers without the cost of VM exits and the hypervisor
+intervention. Before utilizing such feature, the system
+software needs to define the posted interrupt notification
+vector. The PIN signifies the incoming external interrupt from
+the assigned device is subjected to the posted-interrupt
+processing. The processing is achieved by updating the
+posted-interrupt descriptor dynamically. When the VMCS is
+actively used by the logical processor in the non-root mode,
+it is prohibited to update its data structures. The PID is the
+exception. Nonetheless, there is one requirement that the PID
+modifications must be done using locked read-modify-write
+instructions. Here is another benefit of posted-interrupt
+support. When the virtual processor is scheduled on another
+VCPU, the VMM can co-migrate its interrupts from the assigned
+devices by setting the corresponding bits in posted-interrupt
+register of PID.
+
+The posted-interrupt support is accomplished in three general
+steps. First, the VMM programs the interrupt-remapping
+hardware with the mapping between the external interrupt and
+virtual interrupt. Second, when the external interrupt is
+delivered to the interrupt-remapping hardware, it sets the
+outstanding bit and corresponding bit of virtual interrupt in
+the posted-interrupt register of PID. It generates the PIN.
+The IOAPIC delivers the PIN to the appropriate LAPIC. Third,
+PIN notifies the logical processor that it is the
+posted-interrupt event. The logical processor starts the
+posted interrupt processing and delivers the virtual interrupt
+without any VM exit.
+
+The posted-interrupt processing is described in the following
+steps. First, when the external interrupt is delivered to the
+guest's processor, it is acknowledged by the LAPIC. LAPIC
+provides the processor core the interrupt number. Second, if
+the physical interrupt is equal to the PIN, the logical
+processor starts the posted interrupt processing. Third, the
+processor clears the outstanding notification bit from the
+posted-interrupt descriptor. Fourth, the processor
+acknowledges the EOI. Fifth, the processor updates the vIRR by
+synchronizing it with the PIR. Sixth, the processor acquires
+the next request virtual interrupt. It updates RVI by the
+maximum of previous RVI and highest index of bits set in PIR,
+before it clears PIR. Seventh, the processor evaluates the
+pending virtual interrupt. Eighth, the processor delivers the
+virtual interrupt.
+}
+
+
 \subsection{Bare-Metal I/O Performance in \na}
+\figw{virtualization_overhead}{10}{Virtualization overhead}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
 % 	VM Exit overhead
@@ -234,154 +384,8 @@ but also reduces the degrees of interrupt routing from the
 assigned devices.
 
 
-\subsection{Direct Interrupt Delivery}
-
-\subsubsection{Conventional Interrupt Delivery}
-
-In addition to direct access to PCIe devices,
-\na also enables all interrupts, including external interrupts, timer interrupts and 
-virtual interrupts, to be directly delivered to a HaaS VM by leveraging
-the posted interrupt mechanism in Intel VT-d~\cite{postedinterrupt}.
-Direct interrupt delivery (DID) greatly reduces the interrupt processing latency and is
-particularly useful for real-time applications running on rented physical servers. 
-
-
-\mycomment{
-Our design uses the hardware-assisted posted interrupt
-mechanism and achieves the direct interrupt delivery of
-assigned devices and local timers without the intervention of
-hypervisor. It reduces the hypervisor CPU utilization and
-dedicates the CPU time to the guest. Under the normal
-circumstances, the guest can not handle physical interrupts
-without the hypervisor. 
-}
-In the conventional non-DID architecture, when an interrupt is delivered to a CPU core,
-it triggers a VM exit if the CPU core is not in the root mode and control is transferred to the hypervisor. 
-%Saving and loading the execution context between the root and
-%non-root mode waste the CPU cycles. Second, the host needs to
-Then the hypervisor examines the cause of the interrupt. 
-If the interrupt is meant for a VM scheduled on the CPU core,
-the hypervisor delivers this interrupt as a virtual interrupt to the target VM
-next time when it is scheduled on the CPU core; otherwise the hypervisor handles
-the interrupt on its own.
-After a VM completes servicing an interrupt, it writes to the EOI (End of Interrupt)  register 
-to signal to the hardware that the interrupt in question has been handled. Because the EOI register is 
-a privileged resource, every EOI register write causes a VM exit.
-Therefore, processing of each physical interrupt costs at least two VM exits.
-This per-interrupt overhead is too expensive for network-intensive applications that 
-are designed to process multi-million packets per second. 
-
-\mycomment{
-and handle the physical interrupt. If the physical
-interrupt is meant for the guest, the host needs to deliver it
-as the virtual interrupt upon the next VM entry. Otherwise,
-the host handles it and schedules the next VM entry. Third,
-when the guest's interrupt handler finishes, it writes to the
-EOI register. Such write operation may induce the VM exit.
-Since the guest is not aware of the distinction between the
-physical and virtual interrupt, it signals the completion of
-interrupt in the same way. After the guest handles the virtual
-interrupt, its EOI update is normally emulated by the host.
-Fourth, the host may need to use CPU cache and reduce the time
-to handle the physical interrupt. This introduces the CPU
-cache pollution.
-}
-
-
-\subsubsection{Posted Interrupt Mechanism}
-
-In the X86 architecture, a VM may experience two types of interrupts: {\em external} and {\em local} interrupts.
-External interrupts originate from external I/O devices such as NIC or SAS controller.
-When these I/O devices generate a hardware interrupt, this signal first goes to an IOAPIC, which, through an {\em Interrupt Redirection Table}, 
-converts the hardware interrupt into an interrupt message that contains a vector number and is sent to a particular CPU core.
-There is a local APIC associated with each CPU core to field interrupts sent to the CPU core.
-In the Intel VT-d architecture, all interrupts sent to any local APIC are intercepted by  an {\em Interrupt Remapping Table} in the IOMMU unit, 
-which provides a similar functionality to that of an Interrupt Redirection Table
-to those external interrupts that do not come from an IOAPIC, e.g., message signaled interrupts from PCI devices.
-
-The Posted Interrupt mechanism~\cite{intelvtd-paper,intelvtd-manual} allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
-(Post Interrupt Notification or PIN vector) directly without involving the hypervisor.
-When a CPU core handles a PIN interrupt, it examines a bitmap data structure associated with the CPU core called {\em Virtual Interrupt Request Register} (vIRR),
-which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of an PIN interrupt delivery,  
-to determine the vectors of the interrupts behind the PIN interrupt, and processes these interrupts one by one according to their vectors and priorities.
-The PIR bitmap is part of a per-vCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.  
-The address of the PID and the PIN vector associated with a CPU core are both contained in the VMCS associated with the vCPU running on the CPU core.
-
-\subsubsection{Direct External Interrupt Delivery}
-
-To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
-First , it sets the IRT entry's IM bit to 1, which means that any interrupt matching this entry is to be delivered via the posted interrupt mechanism.  
-Then, it ses the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
-When an external interrupt arrives at the IOMMU and matches an IRT entry, the 
-hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
-converts this interrupt into an interrupt labelled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
-Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
-
-When a VM completes the service of an interrupt, it needs to clear the EOI (End of Interrupt) register to indicate to the 
-associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
-requires a VM exit. To allow a VM to avoid a VM exit due to clearing the EOI register after handling an interrupt of vector X,  KVM clears X's corresponding bit in 
-the {\em EOI exit bitmap} in the VM's VMCS. As a result, at run time after this VM completes servicing an interrupt of vector X and clears the EOI register via a memory mapped 
-intreface (called APIC-access page), no VM exit occurs.   
-Helped with the posted interrupt and EOI virtualization mechanism, a HaaS VM is now able to process any external interrupt directly without triggering any VM exit.
-
-
-
- 
-
- 
-\mycomment{
-VT-d supports the posted-interrupt capability and deliver the
-external interrupts directly from the I/O devices and external
-controllers without the cost of VM exits and the hypervisor
-intervention. Before utilizing such feature, the system
-software needs to define the posted interrupt notification
-vector. The PIN signifies the incoming external interrupt from
-the assigned device is subjected to the posted-interrupt
-processing. The processing is achieved by updating the
-posted-interrupt descriptor dynamically. When the VMCS is
-actively used by the logical processor in the non-root mode,
-it is prohibited to update its data structures. The PID is the
-exception. Nonetheless, there is one requirement that the PID
-modifications must be done using locked read-modify-write
-instructions. Here is another benefit of posted-interrupt
-support. When the virtual processor is scheduled on another
-vCPU, the VMM can co-migrate its interrupts from the assigned
-devices by setting the corresponding bits in posted-interrupt
-register of PID.
-
-The posted-interrupt support is accomplished in three general
-steps. First, the VMM programs the interrupt-remapping
-hardware with the mapping between the external interrupt and
-virtual interrupt. Second, when the external interrupt is
-delivered to the interrupt-remapping hardware, it sets the
-outstanding bit and corresponding bit of virtual interrupt in
-the posted-interrupt register of PID. It generates the PIN.
-The IOAPIC delivers the PIN to the appropriate LAPIC. Third,
-PIN notifies the logical processor that it is the
-posted-interrupt event. The logical processor starts the
-posted interrupt processing and delivers the virtual interrupt
-without any VM exit.
-
-The posted-interrupt processing is described in the following
-steps. First, when the external interrupt is delivered to the
-guest's processor, it is acknowledged by the LAPIC. LAPIC
-provides the processor core the interrupt number. Second, if
-the physical interrupt is equal to the PIN, the logical
-processor starts the posted interrupt processing. Third, the
-processor clears the outstanding notification bit from the
-posted-interrupt descriptor. Fourth, the processor
-acknowledges the EOI. Fifth, the processor updates the vIRR by
-synchronizing it with the PIR. Sixth, the processor acquires
-the next request virtual interrupt. It updates RVI by the
-maximum of previous RVI and highest index of bits set in PIR,
-before it clears PIR. Seventh, the processor evaluates the
-pending virtual interrupt. Eighth, the processor delivers the
-virtual interrupt.
-}
-
-
-
-\subsubsection{Direct Local Interrupt Delivery} \label{subsubsec:shared_pid_dtid}
+\subsection{Direct Local Interrupt Delivery in \na} 
+\label{subsubsec:shared_pid_dtid}
 
 Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
