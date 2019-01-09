@@ -33,94 +33,63 @@
 %migration of virtual machine with directly assigned devices.
 
 To enhance the manageability of physical servers offered in a bare metal cloud service, \na intalls 
-on each physical server a SVMV  hypervisor to creates a single VM (called HaaS VM), on which 
-a \na user then installs its preferred OS
- %(called user OS hereafter)
- and applications. 
-This  hypervisor is meant to provide more management functionalities, such as 
-physical machine migration and application performance monitoring, rather than virtualization of server resources, and therefore is largely not involved in the I/O operations in which a HaaS VM participates.
-This section describes in detail the main design issues of this SVMV hypervisor, 
-which is based on Linux/KVM/QEMU, and our corresponding solutions.
-
-\subsection{Direct Interactions with PCI Devices}
+a SVMV  hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
+a \na user then installs a preferred OS 
+%(called user OS hereafter) 
+and applications. 
+This  hypervisor is primarily meant to provide management functionalities, such as 
+physical machine migration and application performance monitoring, rather than virtualization 
+of server resources, and therefore is largely not involved in the I/O operations in which a HaaS VM participates.
+%This section describes in detail the main design issues of this SVMV hypervisor, 
+%which is based on Linux/KVM/QEMU, and our corresponding solutions.
 
 I/O operations using traditional VMs incur higher overheads than bare-metal execution. 
-I/O operations issued by guest OS typically trap into the hypervisor via VM Exits. 
-Each VM Exit in turn requires expensive saving and restoring of the VM's execution context.
-The main technical challenge of providing the user's OS with the illusion of running on 
-a bare metal server is that its interactions with I/O devices as network 
-interface card (NIC) and disk controller must be direct without going through any intermediary.
+I/O operations issued by a guest OS typically trap into the hypervisor via VM Exits. 
+Each VM exit in turn requires expensive saving and restoring of the VM's execution context.
+The main technical challenge of providing the guest OS with the illusion of running on 
+a bare-metal server is that its interactions with I/O devices, such as network 
+interface card (NIC) and disk controller, must be direct without going through any intermediary.
+
+\na allows the sole VM on physical machine to directly interact with PCIe I/O devices and 
+timer hardware by leveraging Intel VT-d~\cite{intelvtd-paper} and 
+Linux Virtual Function I/O (VFIO)~\cite{vfio} mechanisms. 
+Additionally, \na also implements optimizations for reducing the hypervisor's CPU, I/O, and memory 
+footprint during runtime, to minimize interference with guest operations.
+
+In this section, we first  provide background on direct device access using 
+Intel VT-d an Linux VFIO mechanisms, followed by description of design challenges 
+in a SVMV hypervisor and our solutions.
+
+\subsection{Background: Direct Device Access Using Intel VT-d and VFIO}
+%\subsection{Direct Interactions with PCI Devices}
+Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
+and safe access to hardware I/O devices by VMs running in non-root mode.
+Virtual function I/O (VFIO)~\cite{vfio} is a Linux software framework that enables user-space
+device drivers to interact with PCIe devices directly without involving the Linux kernel. 
 In general, there are four types of interactions between an OS and the PCIe 
 I/O devices under its management:
-
 \begin{enumerate} 
-\setlength\itemsep{-0.04in}
-\item At the system start-up time, the OS probes and enumerates the PCIe devices existing in the system, and assigns a device number, configuration space address range, and interrupt to each discovered PCIe device.
+\parskip 0mm
+\itemsep 0mm
+%\setlength\itemsep{-0.04in}
+\item At the system start-up time, the OS probes and enumerates the PCIe devices existing in the system, and assigns a device number, configuration space address range, and interrupt to each discovered device.
 
-\item The OS reads and writes a PCIe device's configuration register space and the memory regions specified in its base address registers (BAR), including setting up DMA operations.
+\item The OS reads and writes a device's configuration register space and the memory regions specified in its base address registers (BAR), including setting up DMA operations.
 
 \item A DMA engine moves data blocks between main memory and PCIe devices according to the DMA commands set up by the OS.
 
-\item A PCIe device interrupts the OS for its attention to certain hardware events, e.g., completion of a packet's transmission or expiration of a timer.
+\item A device interrupts the OS for its attention to certain hardware events, such as new packet arrival or transmision completion.
 
 \end{enumerate}   
-Except the probe/enumeration operations, \na allows a user's OS to interact directly, i.e. without VM Exits,
-with NICs and disk controllers for the other three types of PCIe interactions.
+Except the probe/enumeration operations, 
+\na enables a guest OS to interact directly (without VM exits) with NICs and disk controllers
+for the other three types of device interactions. 
 
-\mycomment{
-The hardware-assisted direct device assignment helps the guest
-achieve the baremetal I/O performance without the additional
-virtualization overhead using the VT-x and VT-d support.
-After proper VMCS and EPT configuration, the guest gains
-the control of assigned device
-by MMIO/PIO without the help of hypervisor. The VT-x APIC
-virtualization permits the guest to write to the
-end-of-interrupt register without a VM exit. With the VT-d
-support, the guest performs DMA with the enhanced security and
-eliminates the VM exit overhead due to the device interrupts by using 
-the posted-interrupt mechanism. In addition to the hardware
-support, VFIO provides the software framework for the
-userspace device drivers. It works with VT-d and QEMU and sets
-up the direct PCI device assignment. Although it is expected
-to move the hypervisor out of the guest I/O path, the
-hypervisor still induces high CPU utilization due to the
-HLT emulation. This greatly deviates our goal of guest having
-its own dedicated cores. Nonetheless, our CPU optimization
-strategies remedy such a problem.
-}
-
-%\subsubsection{Virtual Function I/O}
-
-Virtual function I/O (VFIO)~\cite{vfio} is a Linux software framework that enables user-space
-device drivers to interact with PCIe devices directly without involving the Linux kernel. 
-Essentially, VFIO makes the configuration register space and the memory regions specified in the BARs of
+{\bf DMA Operations using VFIO and Intel VT-d}
+Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
+memory-mapped I/O (MMIO) operations against the memory areas associated with to the device. 
+Essentially, VFIO makes the configuration register space and the memory regions of
 each PCIe device accessible to user-space programs. 
-
-\mycomment{
-It does not only support the direct PCI device
-assignment to the userspace processes of VM, but also the
-platform devices. Why do we need to allow the userspace
-programs to gain the control of physical devices? For the
-field of high performance computing, the I/O performances has
-a great impact on the overall system performance. The
-performance congestion comes, When the rate of data being read
-is slower than the rate of data being consumed. Or it happens,
-when the rate of data being written is slower than the rate of
-data being computed and produced.
-
-The VFIO needs to fulfill the three requirements of device
-assignment to a userspace process. First, the userspace driver
-can access to the device resources such as I/O ports. Second,
-the userspace driver can perform the DMA securely. This is
-provided by the IOMMU protection mechanism. Third, the device
-interrupts is delivered to the device owner in the userspace.
-The way how the VFIO fulfills the three requirements and
-applies them with QEMU is briefly described below.
-}
-
-
-Typically, a PCIe device driver communicates with its device using PIO or
-MMIO operations against the memory areas associated with to the device. 
 VFIO retrieves a PCIe device's device-specifc information such as BARs from its
 configuration register space, and maps them into distinct regions in a special file. 
 By reading and writing specific regions of this special file, a user-space program 
@@ -772,3 +741,48 @@ cycles.
 Before the migration starts, both host and guest need to tear
 down the DTID. In the host, it
 } 
+
+\mycomment{
+It does not only support the direct PCI device
+assignment to the userspace processes of VM, but also the
+platform devices. Why do we need to allow the userspace
+programs to gain the control of physical devices? For the
+field of high performance computing, the I/O performances has
+a great impact on the overall system performance. The
+performance congestion comes, When the rate of data being read
+is slower than the rate of data being consumed. Or it happens,
+when the rate of data being written is slower than the rate of
+data being computed and produced.
+
+The VFIO needs to fulfill the three requirements of device
+assignment to a userspace process. First, the userspace driver
+can access to the device resources such as I/O ports. Second,
+the userspace driver can perform the DMA securely. This is
+provided by the IOMMU protection mechanism. Third, the device
+interrupts is delivered to the device owner in the userspace.
+The way how the VFIO fulfills the three requirements and
+applies them with QEMU is briefly described below.
+}
+
+\mycomment{
+The hardware-assisted direct device assignment helps the guest
+achieve the baremetal I/O performance without the additional
+virtualization overhead using the VT-x and VT-d support.
+After proper VMCS and EPT configuration, the guest gains
+the control of assigned device
+by MMIO/PIO without the help of hypervisor. The VT-x APIC
+virtualization permits the guest to write to the
+end-of-interrupt register without a VM exit. With the VT-d
+support, the guest performs DMA with the enhanced security and
+eliminates the VM exit overhead due to the device interrupts by using 
+the posted-interrupt mechanism. In addition to the hardware
+support, VFIO provides the software framework for the
+userspace device drivers. It works with VT-d and QEMU and sets
+up the direct PCI device assignment. Although it is expected
+to move the hypervisor out of the guest I/O path, the
+hypervisor still induces high CPU utilization due to the
+HLT emulation. This greatly deviates our goal of guest having
+its own dedicated cores. Nonetheless, our CPU optimization
+strategies remedy such a problem.
+}
+
