@@ -259,7 +259,7 @@ When a CPU core handles a PIN interrupt, it examines a bitmap data structure ass
 which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of an PIN interrupt delivery,  
 to determine the vectors of the interrupts behind the PIN interrupt, and processes these interrupts one by one according to their vectors and priorities.
 The PIR bitmap is part of a per-VCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.  
-The address of the PID and the PIN vector associated with a CPU core are both contained in the Virtual Machine Control Structure (VMCS) associated with the VCPU running on the CPU core.
+The address of the PID and the PIN vector associated with a CPU core are both contained in the virtual machine control structure (VMCS) associated with the VCPU running on the CPU core.
 
 %\subsubsection{Direct External Interrupt Delivery}
 To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
@@ -331,67 +331,109 @@ virtual interrupt.
 }
 
 
-\subsection{Bare-Metal I/O Performance in \na}
+\subsection{Achieving Bare-metal I/O Performance in \na}
 \figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O, and (c) optimized pass-through I/O in \sna.}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
 % 	VM Exit overhead
+While using the VT-d and posted-interrupt mechanisms removes 
+the hypervisor of from I/O data plane path of the VM, these alone are
+not sufficient to reduce hypervisor overheads. 
 To ensure that a VM using VT-d and VFIO can achieve bare-metal 
 I/O performance and with least overheads, \na implements 
-the following optimizations.
+the following overhead reduction mechanisms
 
-First, the direct assigned network card and disk drive under
-the VFIO framework removes the host from the forward I/O path.
-The guest has the control over the assigned devices and avoids
-the virtualization overhead, when accessing the device control
-registers and performing the
-DMA~\cite{sdm:2018,intelvtd-manual,williamson:2016}. After the
-assigned device services the request, it delivers the
-interrupt to the guest and triggers the VM exits due to the
-external interrupts and EOI respectively. Using the VT-d
-posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
-the guest handles the device interrupt and updates the EOI
-without any VM exit. Thus, the host is completed removed from
-the guest I/O path for the passthrough devices. Nonetheless,
-utilizing the hardware posted-interrupt support is not enough
-to reduce the system CPU utilization, especially when the
-guest is idle.
+{\bf Dedicated CPUs:}
+First, the hypervisor is assigned one dedicated physical CPU core
+(CPU 0 in our implementation)
+where it executes all of VM management operations. 
+The HaaS VM is assigned all the remaining physical 
+CPU cores by pinning the guest VCPUs to 
+dedicated physical cores one-to-one~\cite{amit:2015}. 
+This prevents the hypervisor's threads 
+from competing with the VM's VCPU threads and 
+also reduces the need to re-route interrupts
+from the VM's assigned devices.
+To avoid unnecessary VM exits on the HaaS VM's CPUs,
+all external interrupts which are not directly handled
+by the Haas VM, are delivered to the hypervisor's physical 
+CPU by the IOAPIC.
 
-Second, the VM exit due to the HLT instruction is disabled.
-When the guest is idle, it issues the privileged HLT
-instruction and yields the processor for other processes. It
-induces the VM exit and transfers the control to KVM. KVM is
-busy waiting for the incoming events before blocking the
-virtual processor. This induces the high CPU overhead. There
-are two solutions. We can either set the polling delay to 0 or
-disable the VM exit due to the HLT instruction. After setting
-the delay to 0, the host does not wait in the busy loop but
-make a trip to the scheduler, which is costly. The latter
-solution is chosen to further prevent the host from
-intervening how the guest uses the logical processor. It
-results in that the idle guest remains on its processor even
-when it is idle. There is no VM exit due to the HLT
-instruction. One of side effects of disabling the HLT exiting
-is that the guest receives the increase number of interrupts
-from the assigned device. The virtualization overhead of
-direct interrupt delivery are handled by the posted-interrupt
-hardware.
+{\bf Disabling  HLT-triggered VM exits:}
+The second optimization relates to reducing hypervisor's CPU utilization
+under the following scenario.
+When handling frequent I/O operations, 
+a guest VCPU  may become idle for brief intervals, and 
+run a special idle thread.
+On X86, this idle thread consists of a loop of {\tt HLT} instructions, 
+each of which is {\em intended} to place the CPU in the C1 energy-saving mode 
+until an external interrupt occurs.
+However, since {\tt HLT} is a privileged instruction, it triggers a 
+VM exit when executed by the guest.
+To emulate the {\tt HLT} instruction, currently, the KVM hypervisor
+polls (busy waits) for external events for a short time 
+(adaptively between 0-200ns). If no events occur during this 
+polling period, the guest VCPU is blocked and the physical CPU 
+is placed in the low-power state.
 
-Third, the guest has a dedicated set of logical
-processors~\cite{amit:2015}. This is done by pinning the
-virtual processors to the isolated logical processors in the
-one-to-one relationship. Doing so not only prevents the host
-processes from competing with the guest's virtual processors,
-but also reduces the degrees of interrupt routing from the
-assigned devices.
+The problem we observe is that, when the VM sends or receives network packets
+at a high rate, the hypervisor-level CPU utilization increases
+dramatically. This is because frequent {\tt HLT}-triggered VM exits
+result in frequent invocation of the event polling loop in the hypervisor. 
+Often, the physical CPU re-enters the guest mode directly 
+from the polling loop as soon as the next network packet 
+or interrupt arrives for the VM, without ever entering the low-power mode.
+
+Although peak network throughput is not reduced when 
+using VFIO (see Figure~\ref{fig:network_bandwidth}), 
+both VM exits and polling loop cause significant 
+CPU utilization by the hypervisor 
+(see Figure~\ref{tab:cpu_utilization_40gbps}).
+{\em Ironically, this overhead occurs even when using pass-through I/O and 
+posted interrupts which were meant to reduce hypervisor overheads.}
+Eliminating this event polling alone is insufficient because {\tt HLT}-triggered VM exits 
+are also expensive by themselves; the guest VCPU thread is blocked and
+must make a trip through the hypervisor's CPU scheduler before 
+re-entry into guest mode.
+
+Since \na is designed for a single VM setting, {\em we choose to
+disable {\tt HLT}-triggred exits altogether}
+by modifying the corresponding execution control fields in the VM's VMCS.
+As a result, whenever a CPU becomes idle, no {\tt HLT}-triggered
+VM exits occur, the CPU lowers its clock frequency while in guest mode, 
+the total energy consumption is reduced, and importantly, 
+hypervisor code is not invoked in I/O data path. 
+
+Another interesting side effect of disabling {\tt HLT}-triggered VM exits
+is that the HaaS VM is observed to receive more interrupts
+from its direct-assigned device, possibly due to 
+faster EOI response and hence less interrupt coalescing by 
+the hardware, similar to the behavior on a bare-metal OS.
+
+%
+%First, the direct assigned network card and disk drive under
+%the VFIO framework removes the host from the forward I/O path.
+%%The guest has the control over the assigned devices and avoids
+%the virtualization overhead, when accessing the device control
+%registers and performing the
+%DMA~\cite{sdm:2018,intelvtd-manual,williamson:2016}. After the
+%assigned device services the request, it delivers the
+%interrupt to the guest and triggers the VM exits due to the
+%external interrupts and EOI respectively. Using the VT-d
+%posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
+%the guest handles the device interrupt and updates the EOI
+%without any VM exit. Thus, the host is completed removed from
+%the guest I/O path for the passthrough devices. Nonetheless,
+%
 
 
 \subsection{Direct Local Interrupt Delivery in \na} 
 \label{subsubsec:shared_pid_dtid}
 \figw{dtid}{9}{Architecture for direct delivery of timer interrupts in \sna. 
+%TODO: mention disabling WRMSR VM Exits.
 The SVMV hypervisor configures each guest LAPIC to transform the local timer 
-interrupt into a posted-interrupt notification (PIN) and allows the guest
-to directly update the posted interrupt descriptor (PID).}
+interrupt into a PIN interrupt and allows the guest
+to directly update the PID page.}
 
 Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
@@ -411,19 +453,38 @@ If the PIR bit associated with a timer interrupt is set way ahead of the interru
 the interrupt's target VM may receive spurious timer interrupts. 
 For example, suppose the next expiration time of a timer interrupt is $T_1$, and a NIC interrupt is delivered via the posted interrupt mechanism to the target VM at $T_2$, where ${T_2} < {T_1}$.
 When the target  VM processes the PIN interrupt triggered by the NIC interrupt, it sees in the vIRR bitmap two bits are turned on, one for the timer interrupt and the other for the NIC
-interrupt, even though the timer interrupt is spurious because its expiration time is not reached yet.
+interrupt, {\em even though the timer interrupt is spurious}
+because its expiration time is not reached yet.
 
 To solve this spurious timer interrupt problem, a HaaS VM's guest OS is modified to keep track of the next expiration time of every timer interrupt, ignore an ostensible timer interrupt when  
-the current time is substantially smaller than the next expiration time, and set the timer interrupt bit in the PIR because the PIR bitmap is cleared after a PIN interrupt is delivered.
+the current time is substantially smaller than the next expiration time, 
+and set the timer interrupt bit in the PIR because the PIR bitmap is cleared 
+after a PIN interrupt is delivered.
 The last step is required to ensure that a timer interrupt that is considered spurious and thus ignored because of an external interrupt,  still has a chance to be delivered directly when the timer truly expires.  
-To avoid VM exit when a HaaS VM modifies the PIR of the CPU core it runs on, \na allocates a separate page to house the PIR and makes the page accessible to the VM.
-With this set-up, a HaaS VM could write to the PIR of the CPU core it runs on without triggering any VM exit.
 
-After a timer interrupt service routine services a timer interrupt, it may need to set the next time-out value by updating the initial counter (TMICT) register of the local APIC timer, 
-which causes a VM exit. To avoid this VM exit, \na leverages VT-d's hardware-assisted APIC virtualization by properly configuring the MSR bitmap in the associated VMCS. 
+To avoid VM exit when a HaaS VM modifies the PIR of the CPU core it runs on, 
+\na allocates a separate page to house the PIR and makes the page accessible to the VM.
+With this set-up, a HaaS VM can write to the PIR of the CPU core it runs on without triggering any VM exit.
+
+After a timer interrupt handler services a timer interrupt, it may need to configure the next timer expiry by updating the initial counter (TMICT) register of the local APIC timer, 
+which would normally cause a VM exit. To avoid this VM exit, \na leverages VT-d's hardware-assisted APIC virtualization by properly configuring the MSR bitmap in the associated VMCS. 
 As a result, the KVM's  intercept of any TMICT MSR update is disabled. When a VM writes to the TMICT, the change is written to the associated register directly without triggering any VM exit.     
 
-Combining all the above techniques, \na is able to deliver local timer interrupts directly to a HaaS VM and have them properly serviced, all without causing any VM exit.  
+Finally, from a security viewpoint, control over the timer interrupt is considered important for a hypervisor or OS to maintain control over all physical CPUs.
+In \na, although the sole VM can directly control the timer hardware on its assigned CPUs, the SVMV hypervisor can still regain 
+control over the CPUs when needed, such as before live migration. 
+The hypervisor always controls the CPU0 and its local timer. 
+To regain control over other physical CPUs assigned to the VM, the hypervisor 
+simply disables direct timer access for the VM by reconfiguring the IOMMU and VMCS to 
+disable PIN and trigger VM exits for timer interrupts; the hypervisor then delivers
+emulated virtual interrupts to the guest.
+
+Combining all the above techniques, \na is able to deliver local timer interrupts 
+directly to a HaaS VM and have them properly serviced, 
+all without causing any VM exits and while maintaining control over all physical CPUs.
+
+
+
 
 
 \mycomment{
@@ -503,47 +564,6 @@ virtual timer interrupt is earlier than the expected
 expiration, the guest ignores it and processes the next
 interrupt. Thus, the CPU overhead is reduced in comparison
 with the full timer interrupt processing. 
-
-
-
-
-
-\subsection{CPU Idleness Processing}
-
-When a CPU on a Linux-based physical machine does not have any applications to run and becomes idle,
-Linux schedules a special idle task to run on the CPU. On X86 CPU, this idle task consists of a loop of {\tt HLT} instructions, 
-each of which places the CPU in the C1 energy-saving mode until an external interrupt occurs.
-Because {\tt HLT} is a privileged instruction, its execution inside a guest VM triggers a VM exit and causes the control to be transferred to KVM. 
-Currently, KVM emulates a {\tt HLT} instruction using a busy waiting loop, which polls the CPU until the associated external interrupt comes along. 
-%One of our design goals is to let the guest stay on its CPU as
-%long as it can. We encounter two different types of
-%virtualization overheads. First, the idle guest issues the
-%privileged HLT instruction. Such an instruction induces the VM
-%exit and transfers the control to the KVM which starts to poll
-%on the CPU until the event arrival. 
-
-This polling-loop emulation of {\tt HLT} instruction incurs higher CPU utilization than that when {\tt HLT} instruction is executed natively. 
-To address this issue, \na prevents VM exit when executing a {\tt HLT} instruction inside a VM by modifying the VM-execution control fields 
-in the VM's virtual machine control structure (VMCS).
-As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, the CPU lowers its clock frequency, and the total energy consumption is reduced. 
-%It is eliminated
-%by updating the primary processor-based VM execution control
-%and disabling the VM exit due to the HLT instruction. It
-%allows the idle guest to stay on its CPU without polling
-%and results in the CPU clock frequency remains at minimal.
-%Thus, disabling HLT-induced VM exit helps to reduce the CPU
-%power consumption of idle guest. 
-%Second, the local timer
-%interrupt fires and causes the VM exit, when the guest's time
-%quantum is expired. The longer the guest stays on its CPU, the
-%higher number of physical timer interrupt it receives. 
-
-%To support our objective, our work utilizes the posted-interrupt
-%mechanism and directly deliver the interrupt into the guest
-%without triggering any VM exit. This feature is discussed in
-%Interrupts that wake a CPU up from the {\tt HLT}-induced energy-saving mode used to go through the hypervisor and thus may incur additional VM exits.
-%As disucussed in the~\nameref{subsubsec:shared_pid_dtid}, we leverage X86's {\em posted interrupt} mechanism to deliver these interrupts directly to a VM in the energy-saving mode.
-%Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare metal server.
 
 }
 % Currently, 3.4 is under the review.

@@ -1,9 +1,13 @@
-\section{Implementation Details}
+\subsection{Implementation-specific Details}
 % Low-level implementation details include the hypervisor
 % modifications.
 % - Disable the HLT existing: KVM
 % - DTID: KVM and timer-interrupt handler
 % - Seamless VM migration: QEMU
+
+{\bf Code Changes:}
+The SVMV hypervisor takes up 80-120 MB of memory of the physical machine it runs on when it is idle.
+DTID requires modifications to the guest OS, and entails 387 lines of code changes: 43 lines are added to the timer subsystem, 110 lines adjusts the clock multiplication and shift factor, and 234 lines map/unmap/test the shared PID page and cleanup.
 
 \mycomment{
 %MOSTLY REDUNDANT
@@ -44,7 +48,8 @@ device to the running guest.
 
 \subsection{Disable HLT Exiting and Update the MSR Bitmap}
 To disable HLT-related VM exit, the HLT-exiting bit of
-processor-based VM-execution control of VMCS is cleared. Our
+processor-based VM-execution control of VMCS is cleared. 
+Our
 implementation uses the existing KVM function to set or unset
 the HLT-exiting bit. The function is \texttt{vmcs\_write64}.
 To update the MSR bitmap, we disable the VM exit due to TMICT
@@ -53,7 +58,6 @@ WRMSR. The function is
 function as the prototype and enable the TMICT WRMSR VM exits,
 while consulting the MSR bitmap from the Intel Software
 Developer Manual.
-}
 
 \subsection{CPU Idleness Processing}
 
@@ -91,14 +95,24 @@ As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, t
 %Interrupts that wake a CPU up from the {\tt HLT}-induced energy-saving mode used to go through the hypervisor and thus may incur additional VM exits.
 %As disucussed in the~\nameref{subsubsec:shared_pid_dtid}, we leverage X86's {\em posted interrupt} mechanism to deliver these interrupts directly to a VM in the energy-saving mode.
 %Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare metal server.
+}
 
-\subsection{PID Sharing}
-
-In \sna, a CPU core's PID is accessible to the IOMMU (Interrupt Remapping Table), the hypervisor and the HaaS VM running on the CPU core. 
+{\bf Gues OS access to the PIR bitmap:}
+The Posted-Interrupt Descriptor (PID) contains the PIR bitmap 
+which the guest OS must access for direct timer interrupt delivery in \sna.
+A CPU core's PID is accessible to the IOMMU (Interrupt Remapping Table), 
+the hypervisor, and (in \sna) to  the HaaS VM running on the CPU core. 
 %Originally, the PID  is embedded within the HaaS VM's VMCS structure.
-To make a PID accessible to its associated HaaS VM,
-when a vCPU is created, \na allocates a separate page for its PID, and places the PID's base address in the vCPU's VMCS, and in all the Interrupt Remapping Table entries that target at  the vCPU.
-To enable the vCPU's associated VM to access this PID page, the VM's OS provides the address of a page in the guest physical address space to the hypervisor via a hypercall, and the hypervisor maps this address to the host physical address of the PID page in QEMU's page table and the Extended Page Table (EPT)~\cite{ept-wiki}, and updates the PID page's reference count accordingly.
+To make a PID accessible to the HaaS VM's guest OS,
+when a VCPU is created, \na allocates a separate page for its PID, 
+and places the PID's base address in the VCPU's VMCS, and 
+in all the Interrupt Remapping Table entries that target at the vCPU.
+%To enable the VCPU's associated VM to access this PID page, 
+The guest OS provides the address of a page in the guest physical address 
+space to the hypervisor via a hypercall, and the hypervisor maps this address 
+to the host physical address of the PID page in QEMU's page table and 
+the Extended Page Table (EPT)~\cite{ept-wiki}, and updates the 
+PID page's reference count accordingly.
    
 \mycomment{
 and extended page table entry to the physical location of
@@ -126,17 +140,24 @@ interrupt.
 %According to Intel IA-32 Intel Architecture Software Developer's Manual~\cite{sdm:2018} 
 Intel IA-32 Intel Architecture~\cite{sdm:2018}  requires that all accesses to the PIR bitmap in a PID
 must use the locked read-modify-write instruction to ensure mutual exclusion. 
-In \sna, when network packets come in at a high rate, a HaaS VM may repeatedly turn on the timer interrupt bit in the PIR to process spurious timer interrupts that come with NIC interrupts. However, these accesses to the PIR, being based on the atomic test-and-set instruction, may prevent the Interrupt Remapping Table from accessing the PIR on behalf of incoming packets, and cause some of these packets to be dropped, eventually degrading the network performance.
+In \sna, when network packets come in at a high rate, a HaaS VM may repeatedly turn 
+on the timer interrupt bit in the PIR bitmap to ignore  spurious timer interrupts that 
+accompany the NIC interrupts. However, these accesses to the PIR, being based on the
+atomic test-and-set instruction, may prevent the Interrupt Remapping Table from 
+accessing the PIR on behalf of incoming packets, and cause some of these 
+packets to be dropped, eventually degrading the network performance.
  
 \na solves this performance problem by requiring a HaaS VM to set the timer interrupt bit
 in the PIR using a non-atomic instruction, which immediately cuts down the extent of lock contention
-and boosts the network performance. This lockless design is safe because the PIR bits that a HaaS VM and the Interrupt Remapping Table are guaranteed to be disjoint and thus do not need to be locked before being accessed.
+and boosts the network performance. This lockless design is safe because the PIR bits 
+that the HaaS VM and the Interrupt Remapping Table access are guaranteed to be 
+disjoint and thus do not need to be locked before being accessed.
 
 
-\subsection{NIC Bonding}
-
+{\bf NIC Bonding}
 Linux's bonding driver provides a \texttt{fail\_over\_mac} option to change 
-the MAC address of the bonded interface and broadcast ARP packets for the new MAC address when the Active slave fails. \na configures the bonding driver by setting   
+the MAC address of the bonded interface and broadcast ARP packets for the new MAC address 
+when the Active slave fails. \na configures the bonding driver by setting   
 \texttt{fail\_over\_mac} to 1, and cuts down the
 network downtime due to hot unplug operations.
 
@@ -153,11 +174,6 @@ into three commands \texttt{setup\_nic}, which sets up a software NIC object,
 BARs and redirecting the associated interrrupts. 
 The \texttt{setup\_nic} and \texttt{reset\_nic\_device} commands must be executed when the VM issuing them is paused. The \texttt{reset\_nic\_device} command is issued on VM resumption. 
 }
-
-\subsection{Code Change}
-
-The SVMV hypervisor takes up 80-120 MB of memory of the physical machine it runs on when it is idle.
-DTID requires modifications to the guest OS, and entails 387 lines of code changes: 43 lines are added to the timer subsystem, 110 lines adjusts the clock multiplication and shift factor, and 234 lines map/unmap/test the shared PID page and cleanup.
 
 
 
