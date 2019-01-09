@@ -57,10 +57,10 @@ Additionally, \na also implements optimizations for reducing the hypervisor's CP
 footprint during runtime, to minimize interference with guest operations.
 
 In this section, we first  provide background on direct device access using 
-Intel VT-d an Linux VFIO mechanisms, followed by description of design challenges 
+Intel VT-d and Linux KVM/QEMU~\cite{kvm}, followed by the description of design challenges 
 in a SVMV hypervisor and our solutions.
 
-\subsection{Background: Pass-Through I/O Using Intel VT-d and VFIO}
+\subsection{Background}
 %\subsection{Direct Interactions with PCI Devices}
 Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
 and safe access to hardware I/O devices by VMs running in non-root mode.
@@ -85,17 +85,17 @@ Except the probe/enumeration operations,
 \na enables a guest OS to interact directly (without VM exits) with NICs and disk controllers
 for the other three types of device interactions. 
 
-{\bf DMA Operations using VFIO and Intel VT-d}
+{\bf Direct DMA Operations Using VT-d and VFIO:} 
 Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
 memory-mapped I/O (MMIO) operations against the memory areas associated with to the device. 
 Essentially, VFIO makes the configuration register space and the memory regions of
-each PCIe device accessible to user-space programs. 
-VFIO retrieves a PCIe device's device-specifc information such as BARs from its
-configuration register space, and maps them into distinct regions in a special file. 
-By reading and writing specific regions of this special file, a user-space program 
-is able to directly interact a particular PCIe device. 
-VFIO provides user-space programs a PCIe device read/write API, and converts these API calls
-into file read/write operations against the special PCIe device file.
+each PCIe device accessible to user-space processes.
+%VFIO retrieves a PCIe device's device-specifc information such as BARs from its
+%configuration register space, and maps them into distinct regions in a special file. 
+%By reading and writing specific regions of this special file, a user-space program 
+%is able to directly interact a particular PCIe device. 
+%VFIO provides user-space programs a PCIe device read/write API, and converts these API calls
+%into file read/write operations against the special PCIe device file.
 %
 %The userspace driver uses
 %the device file descriptor and offset to access each region
@@ -104,20 +104,24 @@ into file read/write operations against the special PCIe device file.
 %interface is turned into the assigned device by QEMU.
 %Essentially, the device read and write handler in the QEMU
 %memory API is forwarded to the VFIO read and write handler.
-
-Not all accesses to a PCIe device's associated memory regions by user-space programs are direct, 
-because some parts of a PCIe configuration register space are privileged, such as MSI, BARs, and ROM,  and accesses to them 
+%Not all accesses to a PCIe device's associated memory regions by user-space processes are direct, 
+%because some parts of a PCIe configuration register space are privileged, such as 
+%message signalled interrupts (MSI), BARs, and ROM,  and accessing them 
+%requires KVM's or QEMU's emulation. 
+%
 %Nonetheless, accessing some parts of PCI configuration
-thus require KVM's or QEMU's emulation. 
 %PCI configuration space is
 %not handled as memory regions in QEMU. Some of the accesses to
 %the PCI configuration space is passthroughed directly, while
 %others, such as MSI, BARs, and ROM, need to be emulated.
-
-VFIO allows a DMA operation to move data between a PCIe device and 
-a region of a user-space program's virtual address space.
-The address of the source or destination buffer of a DMA operation resides in the {\em device or IO address space} of the PCIe device involved in the DMA operation.
-Intel's VT-d architecture provides an IOMMU~\cite{ben:2006}, that maps a PCIe operation's per-device {\em device address} into a {\em physical address}, which is used to access main memory.
+%
+Thus a user-space processe can use DMA operations to move data directly between a PCIe device and 
+a region of its virtual address space.
+The address of the source or destination buffer of a DMA operation resides in 
+the {\em device address space} of the PCIe device involved in the DMA operation.
+Intel's VT-d architecture provides an IOMMU~\cite{ben:2006}, that maps a 
+PCIe operation's {\em device address} into a {\em physical address}, 
+which is used to access main memory. 
 \mycomment{
 When a user-space program sets up a DMA operation, it only knows the virtual address of the associated buffer and thus places
 this address in the DMA command, essentially treating this virtual address as a device address. 
@@ -131,12 +135,17 @@ Therefore, a machine's IOMMU may map the same device address into different phys
 By controlling which user-space programs can access which PCIe devices, VFIO is able to leverage IOMMU to effectively prevent a user-space program 
 from using DMA operations to corrupt the physical memory areas owned by other user-space programs.
 
-To KVM, a VM runs as a user-space program.
-Therefore, VFIO allows a VM running on KVM to directly interact with the memory regions associated with 
-such PCIe devices as NIC and SAS controller without involving KVM.
-In contrast, in the Vhost~\cite{vhost-net} architecture, each incoming or outgoing I/O operation (network or block I/O) must goes through 
-a special kernel thread (called the vhost worker thread), which emulates a virtio~\cite{russell:2008} device in the kernel and therefore keeps QEMU out of the data plane.
-However, QEMU still is responsible for such control plane processing as setting up, configuring and negotiating features for an in-kernel virtio device.  
+To KVM, a VM runs as part of a user-space process  called QEMU~\cite{qemu},
+specifically, as guest-mode threads within QEMU's virtual address space..
+QEMU uses VFIO to configure a VM to directly access the device address space 
+its assigned PCIe devices without emulation via KVM or QEMU.
+In contrast, in para-virtual Vhost~\cite{vhost-net} I/O architecture, 
+each incoming or outgoing I/O operation (network or block I/O) must go through 
+a special hypervisor-level thread (called the vhost worker thread), 
+which emulates a virtio~\cite{russell:2008} device in the kernel and 
+therefore keeps QEMU out of the data plane.
+However, QEMU still is responsible for such control plane processing as setting up, 
+configuring, and negotiating features for an in-kernel virtio device.  
 
 
 
@@ -169,11 +178,15 @@ in the host kernel without exiting to the userspace QEMU.
 Using the VT-d, the KVM and QEMU is completed removed from the
 signaling path way. It enables the direct interrupt delivery
 from the assigned device to its VM without a VM exit.
+}
 
-\subsubsection{CPU Optimization}
-To ensure the guest have the bare-metal I/O performance and
-reduced system CPU utilization, our design utilizes the
-following optimization.
+\subsection{Bare-Metal I/O Performance in \na}
+%TODO: Describe I/O challenges here
+%	Why CPU utilization increases
+% 	VM Exit overhead
+To ensure that a VM using VT-d and VFIO can achieve bare-metal 
+I/O performance and with least overheads, \na implements 
+the following optimizations.
 
 First, the direct assigned network card and disk drive under
 the VFIO framework removes the host from the forward I/O path.
@@ -219,7 +232,6 @@ one-to-one relationship. Doing so not only prevents the host
 processes from competing with the guest's virtual processors,
 but also reduces the degrees of interrupt routing from the
 assigned devices.
-}
 
 
 \subsection{Direct Interrupt Delivery}
