@@ -3,8 +3,9 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
-\figw{cyclictest}{8}{Cumulative Probability Distribution of
+\figw{cyclictest}{9}{Cumulative Probability Distribution of
 Timer-Interrupt Latency.}
+\figw{kernbench}{9}{Comparison of Kernbench execution time with baremetal}
 
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
@@ -112,4 +113,5 @@ expected number of timer interrupts. When the DTID guest uses
 the periodic timer of 250Hz, each vCPU receives around 250
 interrupts per second. To see how well the DTID guest performs
 the parallel processing, we run Kernbench~\cite{kernbench} or
-PARSEC~\cite{bienia:2008} benchmark. The result shows ....
+PARSEC~\cite{bienia:2008} benchmark. The result shows
+~\ref{fig:kernbench}....

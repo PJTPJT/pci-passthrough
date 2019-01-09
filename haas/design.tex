@@ -17,7 +17,7 @@
 %   - NIC bonding with the hot plug/unplug operation migration
 %   - DTID during the migration
 
-\figw{architecture}{10}{Architecture of \na for single-VM virtualization (SVMV). 
+\figw{architecture}{9}{Architecture of \na for single-VM virtualization (SVMV). 
 The SVMV hypervisor is restricted to a single CPU core and provides
 manageability services such as live migration and monitoring.
 The sole VM runs on all the remaining CPU cores with direct access to I/O devices 
@@ -77,6 +77,7 @@ Intel VT-d and Linux KVM/QEMU~\cite{kvm}, followed by the description of design 
 and our solutions for achieving bare-metal performance while supporting live migration.
 
 \subsection{Background: Intel VT-d and VFIO}
+
 %\subsection{Direct Interactions with PCI Devices}
 Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
 and safe access to hardware I/O devices by VMs running in non-root mode.
@@ -331,7 +332,7 @@ virtual interrupt.
 
 
 \subsection{Bare-Metal I/O Performance in \na}
-\figw{virtualization_overhead}{10}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O, and (c) optimized pass-through I/O in \sna.}
+\figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O, and (c) optimized pass-through I/O in \sna.}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
 % 	VM Exit overhead
@@ -387,7 +388,7 @@ assigned devices.
 
 \subsection{Direct Local Interrupt Delivery in \na} 
 \label{subsubsec:shared_pid_dtid}
-\figw{dtid}{10}{Architecture for direct delivery of timer interrupts in \sna. 
+\figw{dtid}{9}{Architecture for direct delivery of timer interrupts in \sna. 
 The SVMV hypervisor configures each guest LAPIC to transform the local timer 
 interrupt into a posted-interrupt notification (PIN) and allows the guest
 to directly update the posted interrupt descriptor (PID).}
@@ -591,7 +592,7 @@ are reverted after the guest starts up at the destination.
 }
 
 \subsubsection{NIC State Migration}
-\figh{nic_bonding}{6}{NIC bonding}
+\figh{nic_bonding}{5}{NIC bonding}
 
 We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
 which provides one physical function and multiple virtual functions, each with its own MAC address.
