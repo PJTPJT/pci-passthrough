@@ -16,7 +16,7 @@
 \begin{tabular}{|l|l|l|l|}
 \hline
 & \begin{tabular}[c]{@{}l@{}}Outbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}} {\bf Baremetal}\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf Bare-metal}\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf VHOST} \end{tabular} & 37.39 & 37.10 & 18\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf VFIO}\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf OPTI} \end{tabular}    & 37.37 & 37.52 & 13\\ \hline
@@ -39,7 +39,7 @@
 \begin{tabular}{|c|c|c|c|} \hline
 {\bf Configuration} & {\bf Outbound} & {\bf Inbound}  & {\bf Round-Trip} \\ 
  & {\bf (Gbps)} & {\bf (Gbps)} & {\bf Delay ($\mu$s)} \\ \hline
- {\bf Baremetal}  & 37.39 & 37.52 & 12\\ \hline
+ {\bf Bare-metal}  & 37.39 & 37.52 & 12\\ \hline
  {\bf VHOST} & 37.39 & 19.02/37.10 & 24/18\\ \hline
 {\bf VFIO}  & 37.45 & 37.58 & 13\\ \hline
  {\bf OPTI} & 37.37 & 37.52 & 13\\ \hline
@@ -106,7 +106,7 @@ The extra delay arises beause, when a HaaS VM runs in the VHOST configuration, V
 \begin{tabular}{|l|l|l|l|}
 \hline
 & \%User & \% System & \%Guest \\ \hline
-\begin{tabular}[c]{@{}l@{}} {\bf Baremetal}\end{tabular}     & 0.64   & 80.98 & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf Bare-metal}\end{tabular}     & 0.64   & 80.98 & -- \\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf vHost} \end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf VFIO} \end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf OPTI}\end{tabular}    & 199.76 & 0.24  & 199.76 \\ \hline \hline
@@ -210,7 +210,7 @@ without causing any VM exit.
 \begin{tabular}{|c|c|c|c|c|} \hline
 {\bf Configuration} & {\bf Host } & {\bf Host } & {\bf Guest} & {\bf Guest} \\ 
 {\bf } & {\bf  User } & {\bf System } & {\bf  User} & {\bf System} \\ \hline
- {\bf Baremetal}    & 0.64\%   & 80.98\% & NA & NA\\ \hline
+ {\bf Bare-metal}    & 0.64\%   & 80.98\% & NA & NA\\ \hline
  {\bf VHOST} & 68.6\%   & 84.36\% & 0.67\% & 91.23\% \\ \hline
 {\bf VFIO}   & 90.48\%  & 85.08\% & 0.62\% & 83.77\% \\ \hline
  {\bf OPTI}  & 199.76\% & 0.24\%  & 0.66\% & 81.7\% \\ \hline 
@@ -227,15 +227,15 @@ when the evaluated configurations send out TCP traffic over a
 We measured the percentage of a \na server's run time spent in the host OS ({\em Host System}),
 in the HaaS VM ({\em Host User}), in the kernel mode of the HaaS VM ({\em Guest System})
 and in the user model  of the HaaS VM ({\em Guest User}).
-Because  the Baremetal configuration is not virtualized, its Host User percentage is due to 
+Because  the Bare-metal configuration is not virtualized, its Host User percentage is due to 
 the user-level test program, in this case iperf, and it does not have Guest System or 
 Guest User percentage.
-As shown in Table~\ref{tab:cpu_utilization_40gbps}, compared with the Baremetal configuration, 
+As shown in Table~\ref{tab:cpu_utilization_40gbps}, compared with the Bare-metal configuration, 
 the VHOST and VFIO configuration both have a higher Host System percentage because of additional 
 processing costs associated with VM exits and entries that result from HLT instructions, EPT faults and interrupts.
 
 The VHOST configuration's Guest User percentage is significantly higher than 
-that of  the Baremetal configuration, because the kernel of the HaaS VM is responsible for {\em virtual} NIC 
+that of  the Bare-metal configuration, because the kernel of the HaaS VM is responsible for {\em virtual} NIC 
 interaction and interrupt processing, and TCP protocol processing.
 The VFIO configuration's Guest User percentage is significantly higher than 
 that of  the VHOST configuration, because the kernel of the HaaS VM is responsible for {\em physical} NIC 
@@ -247,7 +247,7 @@ Guest System percentage is only 83.3\%. The gap between the two is due to HLT in
 That is, when a HaaS VM becomes idle and issues HLT instructions, these instructions put the VM in a lower power
 idle mode. However, to the hypervisor, the HaaS VM remains active because it takes up the CPU.
 In the end, the fact that the Guest User and Guest System percentage of the OPTI configuration are almost 
-identical to the Host User and Host System percentage of the Baremetal configuration suggests that \na is successful in enabling a HaaS server
+identical to the Host User and Host System percentage of the Bare-metal configuration suggests that \na is successful in enabling a HaaS server
 to perform very closely to a bare-metal server.
 
 \mycomment{

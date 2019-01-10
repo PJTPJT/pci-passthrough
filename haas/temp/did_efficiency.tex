@@ -4,7 +4,7 @@
 % - Evaluate the performance and see if it match our goal.
 
 \figw{cyclictest}{9}{The cumulative distribution function of timer interrupt latency measured using the Cyclictest benchmark
-for bare-metal OS, VHOST guest, optimized non-DTID HaaS guest (OPTI), and DTID HaaS guest}
+for Bare-metal , VHOST, OPTI, and DTID configurations.}
 %\figw{kernbench}{9}{Comparison of Kernbench execution time with bare-metal}
 
 \mycomment{
@@ -80,7 +80,7 @@ iterations.
 %the experiment core. 
 We used the top 99\% of the measurements to compute a cumulative distribution function (CDF)
 for the timer interrupt latency. As shown in Figure~\ref{fig:cyclictest}, the 
-median timer interrupt latency for the bare-metal, DTID, OPTI and
+median timer interrupt latency for the Bare-metal, DTID, OPTI and
 VHOST configuration are 1.2, 2.46, 8.06 and 13.93 $\mu$s, respectively.
 That is, the a DTID HaaS VM reduces the median timer interrupt latency by
 more than five times over a VHOST HaaS VM.
@@ -97,12 +97,12 @@ we measured the number of network and timer interrupts per second that a DTID Ha
 experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf.
 In this test, CPU core 0 is configured to process NIC interrupts and 250Hz timer interrupts, whereas CPU core 1 is only for 250Hz timer interrupts.
 As shown in Table~\ref{tab:network_interrupts},
-the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the bare-metal configuration, 
+the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Bare-metal configuration, 
 demonstrating that \sna's spurious timer interrupt filtering mechnaim works correctly. 
 Even though the DTID configuration may incur additional filter processing overhead for every NIC interrupt,
-this overhead has negligible impact on its network bandwidth performance, which is comparable to that of the bare-metal 
+this overhead has negligible impact on its network bandwidth performance, which is comparable to that of the Bare-metal 
 configuration.   
-The NIC interrupt rate of CPU core 0 of the DTID configuration is slightly lower than that of the bare-metal configuration, 
+The NIC interrupt rate of CPU core 0 of the DTID configuration is slightly lower than that of the Bare-metal configuration, 
 because some of NIC interrupts are processed as part of timer interrupt processing.
 The timer interrupt rate of CPU core 1 is higher than that of CPU core 0 in both configurations because iperf sets up aperiodic
 timers in addition to the system's periodic timers. 

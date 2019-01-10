@@ -10,17 +10,17 @@
 %migration. Top: Guest sends the outgoing traffic. Bottom:
 %guest receives the incoming traffic.}
 
-\figw{seamless_migration_default}{9}{Seamless migration
-without \na}
+\figw{seamless_migration_default}{9}{Live VM migration without \sna.}
 
 \begin{table}[]
 \begin{tabular}{|l|l|l|l|}
 \hline
- & \begin{tabular}[c]{@{}l@{}}Unplug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Plug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}OPTI. Plug\\ (ms)\end{tabular} \\ \hline
+ & \begin{tabular}[c]{@{}l@{}}Unplug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Plug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Optimized Plug\\ (ms)\end{tabular} \\ \hline
 UDP Sender   & 4.6 & 300 & 0 \\ \hline
 UDP Receiver & 1.8 & 300 & 0 \\ \hline
 \end{tabular}
-\caption{Network Downtime}
+\caption{Network downtime experienced by iPerf UDP traffic during VM migration due to Unplug, Plug, and Optimized Plug operations of the HaaS VM's VFIO network device.}
+\label{tab:downtime}
 \end{table}
 
 In this section, we show the network service disruption
@@ -31,11 +31,10 @@ We also demonstrate the average
 number of missed local timer interrupts in guest, 
 when we disable the DTID.
 
-\figw{seamless_migration_haas}{9}{Seamless
-migration with \na}
+\figw{seamless_migration_haas}{9}{Live VM migration with \na.}
 
-The guest is configured with bonding driver in active-
-backup mode where the pass-through NIC acts as 
+The guest is configured with bonding driver in 
+active-backup mode where the pass-through NIC acts as 
 active slave and Virtio network device as 
 backup slave. The bonding driver accepts 
 \texttt{fail\_over\_mac} as parameter. The 
@@ -48,13 +47,15 @@ Virtio NIC as the active slave. \texttt{fail\_over\_mac}
 switches the network 
 traffic to the Virtio network interface by broadcasting
 ARP packets notifying the change in MAC address of the bond.
+
 In Figure~\ref{fig:seamless_migration_default}, we measure 
-the bandwidth of 1Gbps network card using iperf benchmark. 
-The guest sends the network traffic at 940Mbps bandwidth 
-during regular runtime. When the network traffic is 
-switched by bonding driver from pass-through device to 
-Virtio network device on hot-unplug of assigned device, 
-the guest experiences 0.1second network service disruption.
+the bandwidth achieved by a HaaS VM during live migration
+when running the iPerf benchmark over a 1Gbps network;
+The VM sends the network traffic at 940Mbps bandwidth 
+during regular execution. Just before migration, when the network traffic is 
+switched by the bonding driver from the VFIO device to 
+the Virtio network device using  hot-unplug of the VFIO device, 
+the guest experiences 0.1 second network service disruption.
 As shown in Figure~\ref{fig:seamless_migration_haas} with
 \texttt{fail\_over\_mac} the downtime due to hot unplug reduces 
 to 80ms.
@@ -87,15 +88,16 @@ downtime due to hotplug passthrough NIC is zero
 as the first two steps are executed when the guest is
 paused. The total migration time remains unaffected.
 
-In Table~\ref{tab:migration_network_downtime}, when switching
-from the assigned to Virtio network device, the network downtime
-is 4.6 and 1.8ms for the UDP sender and receiver respectively. When
-switching back from the Virtio to assigned network device, the
-network is 300ms for both the UDP sender and receiver. 
-After we hide the overhead of assigned NIC
-creation during the VM migration, the network downtime is
-reduced to zero for the UDP sender and receiver
-respectively.
+In Table~\ref{tab:downtime}, when switching
+from the VFIO (pass-through) network device to Virtio network device
+at the source machine, the network downtime (in the ``Unplug'' column)
+is observed to be 4.6ms for the UDP sender case and 1.8ms for the  UDP receiver case. 
+When switching back from the Virtio to  VFIO network device at the destination
+machine, the network downtime (in the ``Plug'' column)
+is measured to be 300ms for both the UDP sender and receiver cases. 
+After we mask the overhead of VFIO NIC
+initialization at the destination machine,
+the network downtime (in the ``Optimized Plug'' column) reduces to zero for both sender and receiver cases.
 
 % TODO: Analysis of DTID algorithm in the guest shows the
 % guest does not miss the next timer interrupt.
