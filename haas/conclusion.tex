@@ -1,18 +1,20 @@
 \section{Conclusion}
 
-In this paper, we propose a virtualization technique SVMV
-for HaaS or bare-metal cloud computing which enables
-HaaS operators to manage and migrate customer workloads.
-In SVMV, a virutal machine solely runs on a 
-physical server and has direct access to all the PCIe devices. 
-In \sna, the VM achieves bare-metal performance with 
-directly assigned devices without any hypervisor 
-intervention. \sna supports direct delivery of all I/O 
-and timer interrupts using posted interrupt
-delivery mechanism as demonstrated by our implementation.
-For load balancing and 
-fault-tolerance, \sna demonstrates how 
-to migrate a VM with passthrough devices without incurring 
-additional downtime. Further, we also maximize the 
-resource utilization by guest, by limiting 
-the core and memory usage of hypervisor to minimal.
+In this paper, we presented a single VM virtualization 
+mechanism, called \na, for hardware as a service (HaaS) cloud platforms
+that provides both bare-metal server performance for customers
+and manageability benefits for cloud operators.
+\na enables a HaaS VM to directly interact with I/O devices and 
+local timer hardware, including direct delivery of device and 
+timer interrupts, without hypervisor intervention.
+%\sna supports direct delivery of all I/O 
+%and timer interrupts using posted interrupt
+%delivery mechanism as demonstrated by our implementation.
+Our prototype implementation of \na over KVM/QEMU platform 
+demonstrated close-to bare-metal I/O performance and
+timer interrupt delivery latencies for HaaS VMs along with the
+ability to live migrate a HaaS VM without incurring 
+additional downtime. 
+Future work includes further reducing virtualization overheads
+for HaaS VMs via direct delivery of IPIs and reduction of
+memory virtualization costs.
