@@ -13,6 +13,8 @@
 % - Service disruption time for the baremetal guest migration
 %   - Network downtime
 %   - The required time to set up or tear down the VFIO and DTID
+
+\mycomment{
 In this section we present our solutions using macro
 and micro-benchmarks. We demonstrate the following.
 \begin{itemize}
@@ -46,11 +48,13 @@ to the host configuration. The module consumes 16KB of RAM.
 Third, the kernel module of 234 lines is used to map or unmap
 the shared PID page. The module consumes 16KB of RAM plus $n$
 shared PID pages, where each page is 4KB.
+}
+
 
 \subsection{Evaluation Testbed and Methodology}
 \input{temp/evaluation_testbed}
 
-\subsection{Performance of assigned NIC and CPU utilization}
+\subsection{Network Performance}
 \input{temp/cpu_network_io_performance}
 % Excel: cpu_network_io_performance.xlsx
 % network bandwidth performance: 1 gbps and 40 gbps.

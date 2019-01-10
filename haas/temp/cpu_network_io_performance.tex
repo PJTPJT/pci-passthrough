@@ -9,59 +9,113 @@
 %\figw{iperf}{10}{Place holder for iperf performance}
 %\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
 
-\begin{table}[tbp]
-\begin{tabular}{lllll}
-\hline
-& \begin{tabular}[c]{@{}l@{}}Guest\\ + vHost\end{tabular} & \begin{tabular}[c]{@{}l@{}}Guest\\ + VFIO\end{tabular} & \begin{tabular}[c]{@{}l@{}}OPTI\\ Guest\end{tabular} & \begin{tabular}[c]{@{}l@{}}DTID\\ Guest\end{tabular}\\ \hline
-HLT                & 4362  & 79765 & 0    & 0    \\ \hline
-EPT Misconfig.     & 55071 & 0     & 0    & 0    \\ \hline
-External Interrupt & 15702 & 219   & 498  & 1    \\ \hline
-%Preemption Timer   & 406   & 271   & 601  & 0    \\ \hline
-%IO Instruction     & 18    & 19    & 18   & 19   \\ \hline
-%MSR Read           & 2     & 2     & 2    & 2    \\ \hline
-%MSR Write          & 2248  & 3919  & 4495 & 2499 \\ \hline
-%Pause Instruction  & 1266  & 0     & 0    & 0    \\ \hline
-%Pending Interrupt  & 273   & 0     & 0    & 0    \\ \hline
-%Total              & 79438 & 84195 & 5614 & 2521 \\ \hline
-\end{tabular}
-\caption{Comparison of VM Exits per Second Among Busy Guests.
-The VM exits are recorded when the guest generates the TCP
-outgoing traffic.}
-\label{tab:vm_exit}
-\end{table}
 
+
+\mycomment{
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
 \hline
 & \begin{tabular}[c]{@{}l@{}}Outbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}}Baremetal\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
-\begin{tabular}[c]{@{}l@{}}Guest + vHOST\end{tabular} & 37.39 & 19.02 & 24\\ \hline
-\begin{tabular}[c]{@{}l@{}}Guest + VFIO\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
-\begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular}    & 37.37 & 37.52 & 13\\ \hline
-\begin{tabular}[c]{@{}l@{}}DTID Guest\end{tabular}    & 37.35 & 37.50 & 12\\ \hline
-%\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                          & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ & $24 \pm 5$\\ \hline
-%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                           & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ & $13 \pm 2$\\ \hline
-%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
-%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\\ + DTID\end{tabular} & $37.35 \pm 0.08$ & $37.50 \pm 0.23$ & $12 \pm 5$\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf Baremetal}\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf VHOST} \end{tabular} & 37.39 & 19.02 & 24\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf VFIO}\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf OPTI} \end{tabular}    & 37.37 & 37.52 & 13\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf DTID} \end{tabular}    & 37.35 & 37.50 & 12\\ \hline
+%%\begin{tabular}[c]{@{}l@{}}GUEST\\ + vHOST\end{tabular}                          & $37.39 \pm 0.04$ & $19.02 \pm 0.50$ & $24 \pm 5$\\ \hline
+%%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\end{tabular}                           & $37.45 \pm 0.08$ & $37.58 \pm 0.15$ & $13 \pm 2$\\ \hline
+%%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
+%%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\\ + DTID\end{tabular} & $37.35 \pm 0.08$ & $37.50 \pm 0.23$ & $12 \pm 5$\\ \hline
 \end{tabular}
-\caption{Comparison of Network Bandwidth and Latency Over the
-40Gbps Infiniband.}
+\caption{Comparison of network bandwidth and packet latency over a
+40Gbps Infiniband link for the five configurations evaluated.}
 \label{tab:network_performance}
 \end{table}
+}
+
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline
+{\bf Configuration} & {\bf Outbound} & {\bf Inbound}  & {\bf Round-Trip} \\ 
+ & {\bf (Gbps)} & {\bf (Gbps)} & {\bf Delay ($\mu$s)} \\ \hline
+ {\bf Baremetal}  & 37.39 & 37.52 & 12\\ \hline
+ {\bf VHOST} & 37.39 & 19.02 & 24\\ \hline
+{\bf VFIO}  & 37.45 & 37.58 & 13\\ \hline
+ {\bf OPTI} & 37.37 & 37.52 & 13\\ \hline
+ {\bf DTID} & 37.35 & 37.50 & 12\\ \hline
+\end{tabular}
+\end{center}
+%\vspace{-0.05in}
+\caption{Comparison of network bandwidth and round-trip packet delay over a
+40Gbps Infiniband link for the five evaluated configurations.}
+\label{tab:network_performance}
+\vspace{-0.06in}
+\end{table}
+
+
+In this experiment, we demonstrate that, with all  the proposed optimizations applied,  a HaaS VM performs 
+essentially the same as a bare-metal host in terms of network throughput, network packet latency and 
+CPU utilization.
+
+
+%the guest using our
+%optimization achieves near bare-metal performance with minimum
+%CPU utilization and minimal hypervisor involvement. We use the
+%macro benchmark and measure the performance in the following
+%three metrics: network bandwidth, latency and CPU utilization.
+
+We use  iperf~\cite{iperf} to measure the network bandwidth of 
+incoming and outgoing TCP traffic on an infiniband link.
+As shown in Table~\ref{tab:network_performance}, for outgoing TCP traffic, 
+all five evaluated configurations are able to saturate the infiniband link and 
+thus produce almost identical network bandwidth results. 
+%performance for the gigabit link is not shown here. All the
+%configurations are able to saturate the 1Gbps NIC and 40 Gbps
+%infiniband for the outgoing TCP throughput. 
+However, for incoming TCP  traffic, the network bandwidth of the VHSOT configuration 
+is about 52\% of that of the other four configurations, whose network bandwidth performances
+are comparable to each other.
+
+
+We use ping~\cite{ping} to measure the round-trip delay and use the results to
+evaluate the network packet latency of these configurations. 
+As shown in Table~\ref{tab:network_performance}, the round-trip delay between 
+two ends of an infiniband link in the 
+VHOST configuration is 24$\mu$s, which is about twice as much as that of the other four configurations,
+between 12-13$\mu$s.
+This extra delay arises beause, when a HaaS VM runs in the VHOST configuration, VM exists occur whenever it
+access virtual I/O devices and receives interrupts from these devices.
+
+
+
+
+%For the gigabit link, the RTT for the host
+%and guest using VFIO configuration is about 160$\mu$s, whereas
+%the RTT of guest using vHost as the backend driver is
+%173$\mu$s. For the 40Gbps infiniband, the guest using the VFIO
+%out performs the guest using the vHost configuration by 50\%.
+%As shown in 
+%Figure~\ref{fig:network_latency}, 
+%the RTT for the
+%host and guest using VFIO configuration is about 13$\mu$s,
+%whereas the RTT of guest using vHost as the backend driver is
+%24$\mu$s.
 
 % TODO: Put them together as the sub-figures.
 % TODO: May need to redo the figure and make the label clear.
 %\figw{network_bandwidth}{9}{Comparison of Network Bandwith over 40Gbps Link}
 %\figw{network_latency}{9}{Comparison of Network Latency over 40Gbps Link}
 
+\mycomment{
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|}
 \hline
-& \%User & \%System & \%Guest \\ \hline
-\begin{tabular}[c]{@{}l@{}}Baremetal\end{tabular}     & 0.64   & 80.98 & -- \\ \hline
-\begin{tabular}[c]{@{}l@{}}Guest + vHOST\end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
-\begin{tabular}[c]{@{}l@{}}Guest + VFIO\end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
-\begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular}    & 199.76 & 0.24  & 199.76 \\ \hline \hline
+& \%User & \% System & \%Guest \\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf Baremetal}\end{tabular}     & 0.64   & 80.98 & -- \\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf vHost} \end{tabular} & 68.6   & 84.36 & 68.6 \\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf VFIO} \end{tabular}  & 90.48  & 85.08 & 90.48 \\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf OPTI}\end{tabular}    & 199.76 & 0.24  & 199.76 \\ \hline \hline
 \begin{tabular}[c]{@{}l@{}}In OPTI Guest\end{tabular} & 0.66   & 81.7  & -- \\ \hline
 \begin{tabular}[c]{@{}l@{}}In DTID Guest\end{tabular} & 0.68   & 82.9  & -- \\ \hline
 \end{tabular}
@@ -75,35 +129,134 @@ kernel mode and \%Guest is the \%CPU time consumed by the
 guest. \%Idle is not shown.}
 \label{tab:cpu_utilization_40gbps}
 \end{table}
+}
 
-In this experiment, we demonstrate that the guest using our
-optimization achieves near bare-metal performance with minimum
-CPU utilization and minimal hypervisor involvement. We use the
-macro benchmark and measure the performance in the following
-three metrics: network bandwidth, latency and CPU utilization.
 
-The network bandwidth is measure by the incoming and outgoing
-TCP traffic using iperf~\cite{iperf}. The bandwidth
-performance for the gigabit link is not shown here. All the
-configurations are able to saturate the 1Gbps NIC and 40 Gbps
-infiniband for the outgoing TCP throughput. For the incoming
-traffic, the bandwidth performance of 40Gbps infiniband is
-differed. The guests using the VFIO configuration saturate the
-bandwidth and out perform the guest using the vHost
-configuration by 48\% as shown in
-Figure~\ref{fig:network_bandwidth}.
 
-The network latency is measured by the round-trip delay using
-ping~\cite{ping}. For the gigabit link, the RTT for the host
-and guest using VFIO configuration is about 160$\mu$s, whereas
-the RTT of guest using vHost as the backend driver is
-173$\mu$s. For the 40Gbps infiniband, the guest using the VFIO
-out performs the guest using the vHost configuration by 50\%.
-As shown in Figure~\ref{fig:network_latency}, the RTT for the
-host and guest using VFIO configuration is about 13$\mu$s,
-whereas the RTT of guest using vHost as the backend driver is
-24$\mu$s.
 
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+{\bf Exit Cause} & {\bf VHOST } & {\bf VFIO} & {\bf OPTI} & {\bf DTID} \\ \hline
+ {\bf HLT Inst}    & 4362  & 79765 & 0    & 0    \\ \hline
+ {\bf EPT Fault}  & 55071 & 0     & 0    & 0    \\ \hline
+{\bf Interrupt}   & 15702 & 219   & 498  & 1    \\ \hline
+\end{tabular}
+\end{center}
+%\vspace{-0.05in}
+\caption{Comparison of number of VM exits per second when the evaluated 
+configurations send out TCP traffic over a
+40Gbps Infiniband link at full speed. }
+\label{tab:vm_exit}
+\vspace{-0.06in}
+\end{table}
+
+Because the number of VM exits significantly impacts the CPU utilization, 
+let's first examine the number of VM exits per second for each of the five 
+evaluated configurations. 
+Table \ref{tab:vm_exit}  lists the number of VM exists per second a HaaS VM experiences 
+when it sends out TRCP traffic over an infiniband link in one of the four virtualized 
+configurations. 
+The VHOST configuration incurs a VM exit whenever a HaaS VM executes an HLT instruction,
+accesses a NIC and triggers an EPT fault, or gets interrupted. 
+
+In contrast, a HaaS VM running in the VFIO configuration does not trigger any VM exit when
+accessing a NIC or receiving a NIC interrupt.
+The only interrupts that cause a VM exit for such a HaaS VM are internal interrupts, such
+as timer and IPI interrupts.
+This is why the numbers of VM exits per second due to EPT faulst and interrupts  for the VFIO 
+configuration are significantly lower than those of the VHOST configuration.
+On the other hand, the number of VM exits per second due to HLT instructions for the VFIO configuration
+is drastically larger than that of the VHOST instruction, because 
+the percentage of run time spent inside a HaaS VM running in the VFIO configuration 
+is higher than that inside a HaaS VM running in the VHOST configuration.
+When a HaaS VM occupies the CPU longer, it is more likely for the VM to be idle and issue HLT instructions.
+
+ Compared with the VFIO configuration, the OPTI configuration further eliminates VM exits due to HLT instructions.
+ The only VM exits for a HaaS VM running in the OPTI configuration are caused by local interrupts.
+ In our test, because both the hypervisor and the test HaaS VM set a timer 
+ resolution of 4 msec or 250Hz and they expiration times
+ are not synchronized, about 500 hardware timer interrupts are generated every second.
+ These interrupts are all delivered through the hypervisor to the HaaS VM. That's why the OPTI configuration 
+ experiences roughly 498 VM exits per second, most of which are attributed to timer interrupts.
+ In the VFIO configuration , because of the large number of VM exits due to HLT instructions, a timer interrupt could arrive when the hypervisor is in control of the interrupted CPU, and triggers no additional VM exit.
+ This is why the VFIO configuration's number of  VM exits  due to interrupts (219) is substantially lower than 500. 
+  
+In the DTID configuration, the only interrupt that triggers a VM exit for a HaaS VM is IPI interrupt. 
+During our test, because IPIs do not occur frequently,  the resulting interrupt rate becomes very low, about 1 per second. 
+
+
+
+\mycomment{
+we show the most relevant VM exits
+that has the significant impact on the CPU utilization. With
+the NIC assignment, the number of HLT exits per second
+increases from 4362 to 79765. Both the number of VM exits per
+second due to the EPT misconfiguration and external interrupts
+goes down. After disabling the HLT exit, we observes the
+increases number of VM exits frequency due to the timer
+interrupts. This is due to the time-slice expiration from both
+the host and guest. In our experiment, the host and guest has
+the time-slice of 4ms which triggers 250 timer interrupts per
+second. We examine the VM-exit qualification and find 498
+numbers of VM exits per second are due to the timer
+interrupts. This matches what we have expected with the
+sampling error. In contrast, if the HLT exiting is not
+disabled, some of the host timer interrupts are hidden by the
+time when the host is emulating HLT instruction. Furthermore,
+the timer interrupts are directly delivered to the guest
+without causing any VM exit.
+}
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+{\bf Configuration} & {\bf Host } & {\bf Host } & {\bf Guest} & {\bf Guest} \\ 
+{\bf } & {\bf  User } & {\bf System } & {\bf  User} & {\bf System} \\ \hline
+ {\bf Baremetal}    & 0.64\%   & 80.98\% & NA & NA\\ \hline
+ {\bf VHOST} & 68.6\%   & 84.36\% &  &  \\ \hline
+{\bf VFIO}   & 90.48\%  & 85.08\% &  &  \\ \hline
+ {\bf OPTI}  & 199.76\% & 0.24\%  & 0.66\% & 81.7\% \\ \hline 
+\end{tabular}
+\end{center}
+%\vspace{-0.05in}
+\caption{Comparison of the total CPU utilization percentage and its breakdown 
+when the evaluated configurations send out TCP traffic over a
+40Gbps Infiniband link at full speed. The total is 200\% because two CPU cores are used.}
+\label{tab:cpu_utilization_40gbps}
+%\vspace{-0.06in}
+\end{table}
+
+We measured the percentage of a \na server's run time spent in the host OS ({\em Host System}),
+in the HaaS VM ({\em Host User}), in the kernel mode of the HaaS VM ({\em Guest System})
+and in the user model  of the HaaS VM ({\em Guest User}).
+Because  the Baremetal configuration is not virtualized, its Host User percentage is due to 
+the user-level test program, in this case iperf, and it does not have Guest System or 
+Guest User percentage.
+As shown in Table~\ref{tab:cpu_utilization_40gbps}, compared with the Baremetal configuration, 
+the VHOST and VFIO configuration both have a higher Host System percentage because of additional 
+processing costs associated with VM exits and entries that result from HLT instructions, EPT faults and interrupts.
+
+The VHOST configuration's Guest User percentage is significantly higher than 
+that of  the Baremetal configuration, because the kernel of the HaaS VM is responsible for {\em virtual} NIC 
+interaction and interrupt processing, and TCP protocol processing.
+The VFIO configuration's Guest User percentage is significantly higher than 
+that of  the VHOST configuration, because the kernel of the HaaS VM is responsible for {\em physical} NIC 
+interaction and interrupt processing, and TCP protocol processing.
+
+In the OPTI configuration, the Host User pecentage is close to 0\%, indicating that the hypervisor is almost 
+completely out of the picture. Although the Host User percentage is 199.76\%, the sum of the Guest User and
+Guest System percentage is only 83.3\%. The gap between the two is due to HLT instructions.
+That is, when a HaaS VM becomes idle and issues HLT instructions, these instructions put the VM in a lower power
+idle mode. However, to the hypervisor, the HaaS VM remains active because it takes up the CPU.
+In the end, the fact that the Guest User and Guest System percentage of the OPTI configuration are almost 
+identical to the Host User and Host System percentage suggests that \na is successful in enabling a HaaS server
+to behave like a bare-metal server.
+
+\mycomment{
 Although the outgoing TCP throughput is about 37.4Gbps for the
 guest using the vHost as the backend driver or assigned NIC,
 the guest using the assigned NIC has higher CPU utilization.
@@ -129,22 +282,29 @@ exits along with dedicating cores to guest, reduces the CPU
 utilization in system mode to $0.24/200$ and increases the CPU
 Utilization in guest mode to $199.76/200$. It indicates that
 the guest occupies the CPUs for most of the time.
+}
 
-In Table \ref{tab:vm_exit}, we show the most relevant VM exits
-that has the significant impact on the CPU utilization. With
-the NIC assignment, the number of HLT exits per second
-increases from 4362 to 79765. Both the number of VM exits per
-second due to the EPT misconfiguration and external interrupts
-goes down. After disabling the HLT exit, we observes the
-increases number of VM exits frequency due to the timer
-interrupts. This is due to the time-slice expiration from both
-the host and guest. In our experiment, the host and guest has
-the time-slice of 4ms which triggers 250 timer interrupts per
-second. We examine the VM-exit qualification and find 498
-numbers of VM exits per second are due to the timer
-interrupts. This matches what we have expected with the
-sampling error. In contrast, if the HLT exiting is not
-disabled, some of the host timer interrupts are hidden by the
-time when the host is emulating HLT instruction. Furthermore,
-the timer interrupts are directly delivered to the guest
-without causing any VM exit.
+
+\mycomment{
+\begin{table}[tbp]
+\begin{tabular}{lllll}
+\hline
+& \begin{tabular}[c]{@{}l@{}}Guest\\ + vHost\end{tabular} & \begin{tabular}[c]{@{}l@{}}Guest\\ + VFIO\end{tabular} & \begin{tabular}[c]{@{}l@{}}OPTI\\ Guest\end{tabular} & \begin{tabular}[c]{@{}l@{}}DTID\\ Guest\end{tabular}\\ \hline
+HLT                & 4362  & 79765 & 0    & 0    \\ \hline
+EPT Misconfig.     & 55071 & 0     & 0    & 0    \\ \hline
+External Interrupt & 15702 & 219   & 498  & 1    \\ \hline
+%Preemption Timer   & 406   & 271   & 601  & 0    \\ \hline
+%IO Instruction     & 18    & 19    & 18   & 19   \\ \hline
+%MSR Read           & 2     & 2     & 2    & 2    \\ \hline
+%MSR Write          & 2248  & 3919  & 4495 & 2499 \\ \hline
+%Pause Instruction  & 1266  & 0     & 0    & 0    \\ \hline
+%Pending Interrupt  & 273   & 0     & 0    & 0    \\ \hline
+%Total              & 79438 & 84195 & 5614 & 2521 \\ \hline
+\end{tabular}
+\caption{Comparison of VM Exits per Second Among Busy Guests.
+The VM exits are recorded when the guest generates the TCP
+outgoing traffic.}
+\label{tab:vm_exit}
+\end{table}
+}
+

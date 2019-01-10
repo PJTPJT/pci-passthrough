@@ -3,24 +3,11 @@
 % - Include tables and figures.
 % - Evaluate the performance and see if it match our goal.
 
-\figw{cyclictest}{9}{Cumulative Probability Distribution of
-Timer-Interrupt Latency.}
+\figw{cyclictest}{9}{The cumulative distribution function of the timer interrupt latency of the 
+Baremetal, VHOST and DTID configuration}
 %\figw{kernbench}{9}{Comparison of Kernbench execution time with baremetal}
 
-%Kernbench performance
-\begin{table}[tbp]
-\begin{tabular}{|l|l|}
-\hline
-& \begin{tabular}[c]{@{}l@{}}Execution Time\\ (seconds)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}l@{}}Baremetal\end{tabular}     & 88.4   \\ \hline
-\begin{tabular}[c]{@{}l@{}}Guest\end{tabular} 	      & 95.32  \\ \hline
-\begin{tabular}[c]{@{}l@{}}OPTI Guest\end{tabular}    & 95.08  \\ \hline
-\begin{tabular}[c]{@{}l@{}}DTID Guest\end{tabular}    & 94.82  \\ \hline
-\end{tabular}
-\caption{Comparison of Kernbench performance}
-\label{tab:kernbench_performance}
-\end{table}
-
+\mycomment{
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
@@ -41,6 +28,31 @@ optimization. IB: 40Gbps infiniband. NIC: network interface
 card. INTR: interrupt. TMR: timer.}
 \label{tab:network_interrupts}
 \end{table}
+}
+
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+& {\bf Net BW} & {\bf CPU} & {\bf NIC INTRs} & {\bf Timer INTRs} \\
+& {\bf (Gpbs)} & {\bf Core} & {\bf per sec} & {\bf per sec}  \\ \hline 
+\multirow{2}{*}{\bf Baremetal} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
+&  & 1 & 0 & 348 \\ \hline
+%\multirow{2}{*}{\bf OPTI} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}
+%&  & 1 & 0 & 347 \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}} {\bf DTID} \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 255 \\ \cline{3-5}
+&  & 1 & 0 & 348 \\ \hline
+\end{tabular}
+\end{center}
+\vspace{-0.05in}
+\caption{Comparison of the number of network and timer interrupts per second experienced
+by a Baremetal server, an OPTI HaaS VM and a DTID HaaS VM, when thet send out 
+TCP traffic over an infiniband link using iperf}
+\label{tab:network_interrupts}
+\vspace{-0.06in}
+\end{table}
+
 
 %\begin{table}[tbp]
 %\begin{tabular}{|l|l|l|l|l|l|}
@@ -57,33 +69,47 @@ card. INTR: interrupt. TMR: timer.}
 %\label{tab:spurious_timer_interrupt}
 %\end{table}
 
-In this experiment, we demonstrate that the guest improve its
-timer interrupt latency using the DTID mechanism. Typically,
-the host virtualizes the timer and the time interrupt by its
-high-resolution timer subsystem and the delivery of virtual
-timer interrupts. DTID reduces the overheads by directly
-delivering the timer interrupts and allowing the guest to
-configure TMICT directly. We measure the timer-interrupt
-latency using the cyclictest~\cite{cyclictest} in (a) host,
-(b) guest and (c) DTID guest. For (b) and (c), we also apply
-our CPU optimization. (c) has DTID enabled whereas (b) has
-DTID disabled. We also show the additional cost to handle the
-spurious timer interrupts in the DTID guest.
+To evaluate the usefulness of direct timer interrupt delivery, we 
+measured the timer interrupt latency using cyclictest~\cite{cyclictest}, which 
+measures the interrupt latency by comparing the time taken when a sleep 
+call i smade and the corresponding wakeup time,  in the Baremetal, VHOST and DTID configuration.
+We ran the cyclictest program with the sleep time of 200$\mu$s for $10^7$
+iterations. 
+%The main thread of cyclictest runs on the core
+%which is not being evaluated, whereas the test thread runs on
+%the experiment core. 
+We used the top 99\% of the measurements to compute a cumulative distribution function (CDF)
+for the timer interrupt latency. As shown in Figure~\ref{fig:cyclictest}, the 
+median of the timer interrupt latency for the Baremetal, DTID and
+VHOST configuration are 1.2, 2.46 and 13.93 $\mu$s, respectively.
+That is, the average timer interrupt latency of a DTID HaaS VM is 
+more than five times smaller than that of a VHOST HaaS VM.
+Because a DTID HaaS VM still experiences VM exits due to reasons such as privileged instructions,
+its average timer interrupt latency is still larger than that of a bare-metal server.
 
-To estimate the cumulative probability distribution, we
-collect the timer-interrupt latency by
-cyclictest~\cite{cyclictest}. It measures the latency by
-comparing the time taken the sleep and wakeup time. We run the
-cyclictest with the sleep time of 200$\mu$s for $10^7$
-iterations. The main thread of cyclictest runs on the core
-which is not being evaluated, whereas the test thread runs on
-the experiment core. We use the top 99\% of data to estimate
-the CDF. In Figure~\ref{fig:cyclictest}, we observe that the
-median of interrupt latency for the host, DTID guest and
-unmodified guest are 1.2, 2.46 and 13.93 $\mu$s respectively.
-Using the DTID and our CPU optimization, we improve the timer
-interrupt latency by 11.47$\mu$s.
+%Using the DTID and our CPU optimization, we improve the timer
+%interrupt latency by 11.47$\mu$s.
 
+To determine if a DTID HaaS VM indeed performs like a bare-metal server,
+we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
+experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf 
+In this test, CPU core 0 is configured to process NIC interrupts and 250Hz timer interrupts, whereas CPU core 1 is only for 
+250Hz timer interrupts.
+As shown in Table~\ref{tab:network_interrupts},
+the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Baremetal configuration, 
+demonstrating that \sna's spurious timer interrupt filtering mechnaim works correctly. 
+Even though the DTID configuration may incur additional filter processing overhead for every NIC interrupt,
+this overhead has negligible impact on its network bandwidth performance, which is comparable to that of the Baremetal 
+configuration.   
+The NIC interrupt rate of CPU core 0 of the DTID configuration is slightly lower than that of the Baremetal configuration, 
+because some of NIC interrupts are processed as part of timer interrupt processing.
+The timer interrupt rate of CPU core 1 is higher than that of CPU core 0 in both configurations because iperf sets up aperiodic
+timers in addition to the system's periodic timers. 
+
+
+
+
+\mycomment{
 We measure the expected frequency of timer and network
 interrupts, when running the iperf benchmark over the 40Gbps
 infiniband. Both the host and guest uses two cores. One core
@@ -113,24 +139,20 @@ after the VM entry, the perf analysis suggests it is due to
 other type of VM exits such as IO instructions, MSR writes or
 IPIs.
 
+% TODO: atopsar and micro-benchmark
 Furthermore, We measure the overhead of handling spurious
-interrupt. It takes 28.26ns, while the typical handling of
-timer interrupt is 366.69ns. The data suggests our algorithm
+interrupt. It takes --$\mu$s, while the typical handling of
+timer interrupt is --$\mu$s. The data suggests our algorithm
 works efficiently to deliver the timer interrupt and ignore
 the spurious timer interrupts.
 
+% DTID scalability parallel processing Kernbench
 We are able to scale the DTID algorithm to all the 9 cores,
 while the host has 1 dedicated core. Each vCPU receives the
 expected number of timer interrupts. When the DTID guest uses
 the periodic timer of 250Hz, each vCPU receives around 250
-interrupts per second. Furthermore, we measure the CPU
-throughput using kernbench. The kernbench compiles the Linux
-4.10.1 in the ramdisk. It minimize the virtualization overhead
-due to the disk I/O activities. In comparison to the
-unmodified guest, the CPU optimization along improves the CPU
-throughput by 240ms. The CPU optimization plus DTID improves
-the CPU throughput by 500ms. Nonetheless, the guests of
-different configuration still have the additional 6-second
-overhead than the baremetal. Our analysis of VM exits
-indicates the number of VM exits per second due to CPUID is
-around 3357 for all guest configurations.
+interrupts per second. To see how well the DTID guest performs
+the parallel processing, we run Kernbench~\cite{kernbench} or
+PARSEC~\cite{bienia:2008} benchmark. The result shows
+~\ref{fig:kernbench}....
+}
