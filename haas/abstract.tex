@@ -6,20 +6,21 @@ and make the best of the server's raw hardware capabilities.
 Common management functions available on virtualized servers offered 
 by cloud platforms, such as live migration and introspection-based 
 application performance management, are difficult to 
-duplicate on HaaS servers, because HaaS service providers typically 
+duplicate on HaaS servers, because HaaS providers typically 
 do not install any software on these servers.
-To address this manageability gap of existing HaaS services, 
-we propose a special form of virtualization called Single Virtual Machine 
+To address this manageability gap of existing HaaS platforms, 
+we propose a special form of virtualization called the Single Virtual Machine 
 Virtualization (SVMV) that is optimized to run a single VM (or HaaS VM)
 on a physical server such that the VM's guest OS directly interacts 
-with I/O devices and local timer hardware, as if it runs on
+with physical I/O devices and timer hardware, as if it runs on
 a bare-metal physical server. 
 This paper describes the design, implementation, and evaluation of 
-%a HaaS management system called the \fullname (\sna) 
-a \na hypervisor that supports a HaaS VM 
-having direct access to I/O devices and local timer hardware
-without incurring any I/O performance penalty. The \na hypervisor 
-also provides seamless live migration of a HaaS VM
+a HaaS management system, called 
+%\fullname (\sna) 
+\sna, to support a HaaS VM 
+that can process I/O and timer-related operations 
+with close to bare-metal performance.
+\na also provides seamless live migration of a HaaS VM
 without degrading the migration-induced downtime.
 \end{abstract}
 
