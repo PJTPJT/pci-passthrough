@@ -95,7 +95,8 @@ is part of our future work.
 To determine if a DTID HaaS VM indeed performs like a bare-metal server,
 we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
 experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf.
-In this test, CPU core 0 is configured to process NIC interrupts and 250Hz timer interrupts, whereas CPU core 1 is only for 250Hz timer interrupts.
+In this test, CPU core 0 is configured to process NIC interrupts and 250Hz local timer interrupts, whereas CPU core 1 runs the 
+iPerf TCP benchmark and processes 250Hz local timer interrupts.
 As shown in Table~\ref{tab:network_interrupts},
 the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Bare-metal configuration, 
 demonstrating that \sna's spurious timer interrupt filtering mechnaim works correctly. 
@@ -104,8 +105,8 @@ this overhead has negligible impact on its network bandwidth performance, which 
 configuration.   
 The NIC interrupt rate of CPU core 0 of the DTID configuration is slightly lower than that of the Bare-metal configuration, 
 because some of NIC interrupts are processed as part of timer interrupt processing.
-The timer interrupt rate of CPU core 1 is higher than that of CPU core 0 in both configurations because iperf sets up aperiodic
-timers in addition to the system's periodic timers. 
+The timer interrupt rate of CPU core 1 is higher than that of CPU core 0 in both configurations because CPU core 1 runs
+the iPerf benchmark process which sets up aperiodic timers in addition to the system's periodic 250Hz timers. 
 
 
 
