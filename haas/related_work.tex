@@ -1,6 +1,6 @@
 
 \section{Related Work}
-% Baremetal service
+% Bare-metal service
 % - IBM SoftLayer
 % - Oracle
 % - Zenlayer
@@ -39,7 +39,7 @@ source server just before migration and re-privileges it
 at the destination after migration. However, this approach 
 requires the hypervisor to fully trust the OS being migrated, 
 the OS having full access to the hypervisor's memory and code.
-Such lack of isolation rules out the use of many hypervior-level
+Such lack of isolation rules out the use of many hypervisor-level
 cloud services that require strong isolation, such as VM introspection
 and SLA enforcement. In contrast, with \na, the guest OS 
 cannot access or modify hypervisor code or memory.
@@ -138,7 +138,7 @@ on LAPIC and receive timer interrupts, all without VM Exits.
 %partitioning design indicates the jailhouse does not emulate
 %the devices or manage resources for the guests.
 %
-%To passthrough the devices, the jailhouse requires the
+%To pass-through the devices, the jailhouse requires the
 %hardware-assisted virtualization. On the x86, it is the VT-x
 %and VT-d. For the LAPIC registers, the jailhouse handles the
 %accesses differently depending on whether the host supports

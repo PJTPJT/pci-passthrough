@@ -106,7 +106,7 @@ Typically, a PCIe device driver communicates with its device using programmed I/
 memory-mapped I/O (MMIO) operations against the memory areas associated with the device. 
 Essentially, VFIO makes the configuration register space and the memory regions of
 each PCIe device accessible to user-space processes.
-%VFIO retrieves a PCIe device's device-specifc information such as BARs from its
+%VFIO retrieves a PCIe device's device-specific information such as BARs from its
 %configuration register space, and maps them into distinct regions in a special file. 
 %By reading and writing specific regions of this special file, a user-space program 
 %is able to directly interact a particular PCIe device. 
@@ -157,7 +157,7 @@ QEMU uses VFIO to configure a VM to directly access the device address space of
 its assigned PCIe devices without emulation via KVM or QEMU.
 In contrast, in para-virtual Vhost~\cite{vhost-net} I/O architecture, 
 each incoming or outgoing I/O operation (network or block I/O) must go through 
-a special hypervisor-level thread (called the vhost worker thread), 
+a special hypervisor-level thread (called the Vhost worker thread), 
 which emulates a virtio~\cite{russell:2008} device in the kernel and 
 therefore keeps QEMU out of the data plane.
 However, QEMU is still responsible for such control plane processing as setting up, 
@@ -266,7 +266,7 @@ First , it sets the IRT entry's IM bit to 1, which means that any interrupt matc
 Then, it sets the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
 When an external interrupt arrives at the IOMMU and matches an IRT entry, the 
 hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
-converts this interrupt into an interrupt labelled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
+converts this interrupt into an interrupt labeled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
 Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
 
 When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the 
@@ -275,7 +275,7 @@ would normally requires a VM exit, which would add to the interrupt processing o
 Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
 %To allow a VM to avoid a VM exit due to clearing the EOI register after handling an interrupt of vector X,  KVM clears X's corresponding bit in 
 %the {\em EOI exit bitmap} in the VM's VMCS. As a result, at run time after this VM completes servicing an interrupt of vector X and clears the EOI register via a memory mapped 
-%intreface (called APIC-access page), no VM exit occurs.   
+%interface (called APIC-access page), no VM exit occurs.   
 %Helped with the posted interrupt and EOI virtualization mechanism, a HaaS VM is now able to process any external interrupt directly without triggering any VM exit.
 
  
@@ -331,7 +331,7 @@ virtual interrupt.
 
 
 \subsection{Achieving Bare-metal I/O Performance}
-%\figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) passthrough I/O without posted interrupt, and (c) optimized passthrough I/O in \sna.}
+%\figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O without posted interrupt, and (c) optimized pass-through I/O in \sna.}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
 % 	VM Exit overhead
@@ -388,7 +388,7 @@ using VFIO (see Table~\ref{tab:network_performance}),
 both VM exits and polling loop cause significant 
 CPU utilization by the hypervisor 
 (see Table~\ref{tab:cpu_utilization_40gbps}).
-Ironically, this overhead occurs even when using passthrough I/O and 
+Ironically, this overhead occurs even when using pass-through I/O and 
 posted interrupts which were meant to reduce hypervisor overheads.
 Eliminating this event polling alone is insufficient because {\tt HLT}-triggered VM exits 
 are also expensive by themselves; the guest VCPU thread is blocked and
@@ -396,7 +396,7 @@ must make a trip through the hypervisor's CPU scheduler before
 re-entry into guest mode.
 
 Since \na is designed for a single VM setting, {\em we choose to
-disable {\tt HLT}-triggred exits altogether}
+disable {\tt HLT}-triggered exits altogether}
 by modifying the corresponding execution control fields in the VM's VMCS.
 As a result, whenever a CPU becomes idle, no {\tt HLT}-triggered
 VM exits occur, the CPU lowers its clock frequency while in guest mode, 
@@ -422,7 +422,7 @@ the hardware, similar to the behavior on a bare-metal OS.
 %posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
 %the guest handles the device interrupt and updates the EOI
 %without any VM exit. Thus, the host is completed removed from
-%the guest I/O path for the passthrough devices. Nonetheless,
+%the guest I/O path for the pass-through devices. Nonetheless,
 %
 
 
@@ -554,7 +554,7 @@ higher priority than the network interrupt does. The timer
 interrupt is delivered before the network interrupt. Although
 the guest should have only processed the network interrupt, it
 first processes the timer and then network interrupt. Second,
-upon the VM entry, the PIR is synced to the virtual
+upon the VM entry, the PIR is synchronized to the virtual
 interrupt-request register because of the KVM implementation.
 One of time points to evaluate the virtual interrupt delivery
 is at the VM entry time. If the PIR timer-interrupt bit is
@@ -591,13 +591,13 @@ migration, it is possible that the previously-assigned devices
 may not be available at the destination. Even if the assigned
 device is available, the internal state of device may not be
 readable or still on its way to the destination. The host at
-the destination has a hard time to passthrough the device
+the destination has a hard time to pass-through the device
 without the device-specific knowledge. Moreover, some devices
 have the unique hardware information that cannot be
 transferred, such as the MAC address of network interface
 card. In the case of guest-controlled timer, it depends on the
 VT-x availability at the destination. Our design takes the
-approach of alternating the usage of passthrough and
+approach of alternating the usage of pass-through and
 respective virtual device with the acceptable service downtime
 or number of missed time interrupts. We assume that the
 devices and hardware supports are available. For the network
@@ -618,31 +618,31 @@ are reverted after the guest starts up at the destination.
 We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
 which provides one physical function and multiple virtual functions, each with its own MAC address.
 As shown in Figure~\ref{fig:nic_bonding}, 
-\na sets up a directly accessed passthrough NIC using one of the virtual functions
+\na sets up a directly accessed pass-through NIC using one of the virtual functions
 and an indirectly accessed para-virtual NIC using another virtual function.
-A NIC bonding driver~\cite{bond-dri} in the guest OS teams up the passthrough and para-virtual NICs in an active-backup mode.
+A NIC bonding driver~\cite{bond-dri} in the guest OS teams up the pass-through and para-virtual NICs in an active-backup mode.
 The HaaS VM running on every \na physical server sends and receives network packets through such a bonded interface. 
 
-During normal execution, the passthrough NIC is the Active slave and the para-virtual NIC is the Backup slave,
+During normal execution, the pass-through NIC is the Active slave and the para-virtual NIC is the Backup slave,
 so that a HaaS VM can make full use of the underlying physical NIC's capability.
-Before a HaaS VM is to be migrated, \na hot-unplugs the passthrough NIC so as to fail the current Active slave.
+Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
 Upon detecting the Active slave's failure, the bonding driver immediately switches network traffic to the Backup slave.
 % to be the Active slave.
 From this point on, all network traffic goes through the para-virtual NIC. 
-KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a passthrough NIC.
+KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
 Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its NIC-related state.
 %During the migration, \na . 
 After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the para-virtual NIC.
-In the mean time, \na hot-plugs the passthrough NIC on the destination  server 
+In the mean time, \na hot-plugs the pass-through NIC on the destination  server 
 %to make it the Backup slave, and then hot-unplugs the virtual NIC so that the current Backup slave or 
-so that the passthrough NIC becomes the new Active slave.
+so that the pass-through NIC becomes the new Active slave.
 
 
 \mycomment{
 In this section we describe the mechanism of migrating a guest
 with direct NIC assignment. As shown in Figure
 \ref{fig:nic_bonding} the guest is configured with virtio
-network device backed by the vhost driver and a passthrough
+network device backed by the Vhost driver and a pass-through
 network interface card~\cite{zhai:2008}. Using SR-IOV
 ~\cite{dong:2008} the physical NIC is presented as virtual NIC
 through virtual functions. For the purpose of simplicity, we
@@ -688,14 +688,14 @@ plugged.
 
 The most important performance metric for VM migration is the service disruption time.
 The additional service disruption time that \na introduces is attributed to the transition from
-the passthrough NIC to the para-virtual NIC on the source server, and the transition from
-the para-virtual NIC to the passthrough NIC on the destination server.
+the pass-through NIC to the para-virtual NIC on the source server, and the transition from
+the para-virtual NIC to the pass-through NIC on the destination server.
 Measurements on a earlier \na prototype suggested that the transition from the 
-para-virtual to the passthrough NIC introduces non-trivial service disruption time (about 300ms), 
-when hot-plugging the passthrough NIC on the destination server. 
+para-virtual to the pass-through NIC introduces non-trivial service disruption time (about 300ms), 
+when hot-plugging the pass-through NIC on the destination server. 
 
 A deeper analysis shows that the hot-plug operation consists of three steps:
-(1) QEMU prepares a software object to represent the passthrough
+(1) QEMU prepares a software object to represent the pass-through
 NIC, (2) then It populates this software object with parameter values extracted 
 from the PCIe configuration space of the NIC, (3) and finally it
 resets the software NIC object to set up the BAR and interrupt forwarding
@@ -703,7 +703,7 @@ information. The first and third steps must take place in QEMU's main event
 loop when the entire HaaS VM requesting the hot-plug operation must be paused.
 
 To minimize this service disruption time due to hot-plug, 
-\na performs the first and second steps of the hot-plugging the passthrough NIC
+\na performs the first and second steps of the hot-plugging the pass-through NIC
 on the destination server while the HaaS VM is being migrated and before it is resumed, 
 and performs the third step after the HaaS VM is migrated and resumed. 
 %This brings the service disruption time due to hot-plug to TODO second.
@@ -721,7 +721,7 @@ destination host, the network service in guest drops until for
 0.3seconds. Further, we investigate the reason for the network
 packet loss in the guest. The hot plug mechanism of assigned
 NIC consists of the following three steps. First, QEMU
-prepares a software object that represents the passthrough
+prepares a software object that represents the pass-through
 NIC. It then realizes the QEMU software object by getting a
 copy of configuration space from the NIC device. Finally, it
 resets the software NIC object and setup the BAR and interrupt
