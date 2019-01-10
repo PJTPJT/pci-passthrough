@@ -439,7 +439,7 @@ Unlike an external interrupt, a local interrupt is delivered to a CPU core's loc
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
 In this section, we describe how to achieve direct delivery of two types of local interrupts, {\em timer interrupt} and {\em inter-processor interrupt} (IPI).
 
-{\bf Timer Interrupts:}To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
+{\bf Timer Interrupts:} To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
 \na first leverages the {\em local vector table} in the local APIC to turn each timer interrupt into a PIN interrupt, and 
 then programmatically sets a particular bit in the CPU core's PIR bitmap to indicate to the target VM that underlying the PIN interrupt is a timer interrupt.
 
@@ -477,7 +477,7 @@ directly to a HaaS VM and have them properly serviced,
 all without causing any VM exits and while maintaining control over all physical CPUs.
 
 
-{\bf Direct IPI Delivery:} 
+{\bf Inter-processor Interrupts (IPI):} 
 Just as with direct delivery of timer interrupts, the posted interrupt mechanism can be used for direct delivery of inter-core IPIs.
 Here we describe the design of direct IPI delivery mechanism which is currently under development in our prototype.
 When a source CPU core sends an IPI to a destination CPU core, the source CPU core configures the Interrupt Command Register (ICR) in its local APIC, 
