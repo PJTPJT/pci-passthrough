@@ -20,7 +20,7 @@
 \figw{architecture}{9}{Architecture of \na for single-VM virtualization (SVMV). 
 The SVMV hypervisor is restricted to a single CPU core and provides
 manageability services such as live migration and monitoring.
-The sole VM runs on all the remaining CPU cores with direct access to I/O devices 
+The HaaS VM runs on all the remaining CPU cores with direct access to I/O devices 
 and local timers, including direct delivery of interrupts.}
 
 %The design goal of \na is to eliminate the hypervisor from
@@ -35,7 +35,7 @@ and local timers, including direct delivery of interrupts.}
 %without causing any VM exits. Finally, we present the
 %migration of virtual machine with directly assigned devices.
 
-To enhance the manageability of physical servers offered in a bare metal cloud service, \na intalls 
+To enhance the manageability of physical servers offered in a bare-metal cloud service, \na intalls 
 a SVMV  hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
 a \na user then installs a preferred OS and applications. 
 Figure~\ref{fig:architecture} shows the high-level architecture of \na.
@@ -47,7 +47,7 @@ of server resources, and therefore is largely not involved in the I/O operations
 
 I/O operations and interrupt processing using traditional VMs incur higher overheads than bare-metal execution. 
 I/O operations issued by a VM typically trap into the hypervisor via VM exits for emulation.
-Likewise, external device interrupts and local interrupts (such as timers and IPIs)
+Likewise, external device interrupts and local timer interrupts 
 to the CPU running a VM result in VM exits for emulating virtual interrupt delivery.
 Each VM exit is expensive, since it requires saving the VM's execution context upon exit,
 emulation of the exit reason in hypervisor mode, 
@@ -56,7 +56,7 @@ and finally restoration of the VM's context before re-entry into guest mode.
 The main technical challenge of providing the guest OS with the illusion of running on 
 a bare-metal server is that its interactions with I/O devices, such as network 
 interface card (NIC) and disk controller, must be direct without going through any intermediary.
-\na allows the sole VM on physical machine to directly interact with PCIe I/O devices and 
+\na allows the sole VM on the physical machine to directly interact with PCIe I/O devices and 
 timer hardware by leveraging Intel VT-d~\cite{intelvtd-paper} and 
 Linux Virtual Function I/O (VFIO)~\cite{vfio} mechanisms. 
 To match bare-metal I/O performance, \na implements mechanisms 
@@ -331,7 +331,7 @@ virtual interrupt.
 }
 
 
-\subsection{Achieving Bare-metal I/O Performance in \na}
+\subsection{Achieving Bare-metal I/O Performance}
 \figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O, and (c) optimized pass-through I/O in \sna.}
 %TODO: Describe I/O challenges here
 %	Why CPU utilization increases
@@ -427,7 +427,7 @@ the hardware, similar to the behavior on a bare-metal OS.
 %
 
 
-\subsection{Direct Local Interrupt Delivery in \na} 
+\subsection{Direct Local Interrupt Delivery} 
 \label{subsubsec:shared_pid_dtid}
 \figw{dtid}{9}{Architecture for direct delivery of timer interrupts in \sna. 
 %TODO: mention disabling WRMSR VM Exits.
@@ -437,24 +437,17 @@ to directly update the PID page.}
 
 Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
-In this section, we describe how to achieve direct delivery of two types of local interrupts, {\em inter-processor interrupt} (IPI) and {\em timer interrupt}. 
+In this section, we describe how to achieve direct delivery of two types of local interrupts, {\em timer interrupt} and {\em inter-processor interrupt} (IPI).
 
-When a source CPU core sends an IPI to a destination CPU core, the source CPU core configures the Interrupt Command Register (ICR) in its local APIC, 
-and, after the low double-word of the ICR is written to, triggers an interrupt message to be sent to the destination CPU core's local APIC through an inter-APIC system bus.
-To enable an IPI to be delivered directly, \na configures the source CPU core's ICR so that the resulting interrupt message carries a PIN vector,
-and then sets a certain bit in the PIR of the destination CPU core to indicate that the interrupt behind the PIN interrupt is an IPI.
- 
-
-To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
+{\bf Timer Interrupts:} To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
 \na first leverages the {\em local vector table} in the local APIC to turn each timer interrupt into a PIN interrupt, and 
 then programmatically sets a particular bit in the CPU core's PIR bitmap to indicate to the target VM that underlying the PIN interrupt is a timer interrupt.
 
 If the PIR bit associated with a timer interrupt is set way ahead of the interrupt's next expiration time, 
 the interrupt's target VM may receive spurious timer interrupts. 
 For example, suppose the next expiration time of a timer interrupt is $T_1$, and a NIC interrupt is delivered via the posted interrupt mechanism to the target VM at $T_2$, where ${T_2} < {T_1}$.
-When the target  VM processes the PIN interrupt triggered by the NIC interrupt, it sees in the vIRR bitmap two bits are turned on, one for the timer interrupt and the other for the NIC
-interrupt, {\em even though the timer interrupt is spurious}
-because its expiration time is not reached yet.
+When the target  VM processes the PIN interrupt triggered by the NIC interrupt, it finds in the vIRR bitmap that two bits are turned on, one for the timer interrupt and the other for the NIC
+interrupt, {\em even though the timer interrupt is spurious} because the real local timer has not yet expired.
 
 To solve this spurious timer interrupt problem, a HaaS VM's guest OS is modified to keep track of the next expiration time of every timer interrupt, ignore an ostensible timer interrupt when  
 the current time is substantially smaller than the next expiration time, 
@@ -471,7 +464,7 @@ which would normally cause a VM exit. To avoid this VM exit, \na leverages VT-d'
 As a result, the KVM's  intercept of any TMICT MSR update is disabled. When a VM writes to the TMICT, the change is written to the associated register directly without triggering any VM exit.     
 
 Finally, from a security viewpoint, control over the timer interrupt is considered important for a hypervisor or OS to maintain control over all physical CPUs.
-In \na, although the sole VM can directly control the timer hardware on its assigned CPUs, the SVMV hypervisor can still regain 
+In \na, although the HaaS VM can directly control the timer hardware on its assigned CPUs, the SVMV hypervisor can still regain 
 control over the CPUs when needed, such as before live migration. 
 The hypervisor always controls the CPU0 and its local timer. 
 To regain control over other physical CPUs assigned to the VM, the hypervisor 
@@ -484,6 +477,15 @@ directly to a HaaS VM and have them properly serviced,
 all without causing any VM exits and while maintaining control over all physical CPUs.
 
 
+{\bf Inter-processor Interrupts (IPI):} 
+Just as with direct delivery of timer interrupts, the posted interrupt mechanism can be used for direct delivery of inter-core IPIs.
+Here we describe the design of direct IPI delivery mechanism which is currently under development in our prototype.
+When a source CPU core sends an IPI to a destination CPU core, the source CPU core configures the Interrupt Command Register (ICR) in its local APIC, 
+and, after the low double-word of the ICR is written to, triggers an interrupt message to be sent to the destination CPU core's local APIC through an inter-APIC system bus.
+To enable an IPI to be delivered directly to the HaaS VM, \na configures the source CPU core's ICR so that the resulting interrupt message carries a PIN vector,
+and then sets a certain bit in the PIR of the destination CPU core to indicate that the interrupt behind the PIN interrupt is an IPI.
+
+ 
 
 
 
