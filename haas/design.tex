@@ -18,10 +18,10 @@
 %   - DTID during the migration
 
 \figw{architecture}{9}{Architecture of \na for single-VM virtualization (SVMV). 
-The SVMV hypervisor is restricted to a single CPU core and provides
-manageability services such as live migration and monitoring.
+The hypervisor runs on a single CPU core and provides
+manageability services such as live migration and VM monitoring.
 The HaaS VM runs on all the remaining CPU cores with direct access to I/O devices 
-and local timers, including direct delivery of interrupts.}
+and local timers, including direct delivery of device and timer interrupts.}
 
 %The design goal of \na is to eliminate the hypervisor from
 %the guest I/O path while achieving bare-metal performance in
@@ -36,13 +36,13 @@ and local timers, including direct delivery of interrupts.}
 %migration of virtual machine with directly assigned devices.
 
 To enhance the manageability of physical servers offered in a bare-metal cloud service, \na intalls 
-a SVMV  hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
+a thin hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
 a \na user then installs a preferred OS and applications. 
 Figure~\ref{fig:architecture} shows the high-level architecture of \na.
 This  hypervisor is primarily meant to provide management functionalities, such as 
 physical machine migration and application performance monitoring, rather than virtualization 
 of server resources, and therefore is largely not involved in the I/O operations in which a HaaS VM participates.
-%This section describes in detail the main design issues of this SVMV hypervisor, 
+%This section describes in detail the main design issues of this hypervisor, 
 %which is based on Linux/KVM/QEMU, and our corresponding solutions.
 
 I/O operations and interrupt processing using traditional VMs incur higher overheads than bare-metal execution. 
@@ -431,7 +431,7 @@ the hardware, similar to the behavior on a bare-metal OS.
 \label{subsubsec:shared_pid_dtid}
 \figw{dtid}{9}{Architecture for direct delivery of timer interrupts in \sna. 
 %TODO: mention disabling WRMSR VM Exits.
-The SVMV hypervisor configures each guest LAPIC to transform the local timer 
+The hypervisor in \na configures each guest LAPIC to transform the local timer 
 interrupt into a PIN interrupt and allows the guest
 to directly update the PID page.}
 
@@ -464,7 +464,7 @@ which would normally cause a VM exit. To avoid this VM exit, \na leverages VT-d'
 As a result, the KVM's  intercept of any TMICT MSR update is disabled. When a VM writes to the TMICT, the change is written to the associated register directly without triggering any VM exit.     
 
 Finally, from a security viewpoint, control over the timer interrupt is considered important for a hypervisor or OS to maintain control over all physical CPUs.
-In \na, although the HaaS VM can directly control the timer hardware on its assigned CPUs, the SVMV hypervisor can still regain 
+In \na, although the HaaS VM can directly control the timer hardware on its assigned CPUs, the hypervisor can still regain 
 control over the CPUs when needed, such as before live migration. 
 The hypervisor always controls the CPU0 and its local timer. 
 To regain control over other physical CPUs assigned to the VM, the hypervisor 

@@ -6,7 +6,7 @@
 % - Seamless VM migration: QEMU
 
 {\bf Code Changes:}
-The SVMV hypervisor takes up 80-120 MB of memory of the physical machine it runs on when it is idle.
+The hypervisor in \na takes up 80-120 MB of memory of the physical machine it runs on when it is idle.
 DTID requires modifications to the guest OS, and entails 387 lines of code changes: 43 lines are added to the timer subsystem, 110 lines adjusts the clock multiplication and shift factor, and 234 lines map/unmap/test the shared PID page and cleanup.
 
 \mycomment{
