@@ -97,7 +97,7 @@ As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, t
 %Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare-metal server.
 }
 
-{\bf Gues OS access to the PIR bitmap:}
+{\bf Guest OS access to the PIR bitmap:}
 The Posted-Interrupt Descriptor (PID) contains the PIR bitmap 
 which the guest OS must access for direct timer interrupt delivery in \sna.
 A CPU core's PID is accessible to the IOMMU (Interrupt Remapping Table), 

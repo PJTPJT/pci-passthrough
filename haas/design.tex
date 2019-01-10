@@ -751,7 +751,7 @@ and shift factor of the calibrated timer, etc., which are provided by the hyperv
 During the normal run time, timer interrupts are delivered to a HaaS VM directly. 
 Before a HaaS VM is to be migrated, \na notifies the HaaS VM to stop the 
 durect timer interrupt delivery (DTID) mechanism, unmaps the PIR page, 
-enables the TMICT WRMSR VM exit, configures the LVT in the local APIC to 
+enables the TMICT WRMSR VM exit, configures the local vector table in the local APIC to 
 fire timer interrupts as they are rather than as posted-interrupt notification interrupts. 
 Upon receving this notification, the HaaS VM uses a different set of 
 multiplication and shift parameters to compute the next timer value, 
