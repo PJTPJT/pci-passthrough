@@ -123,7 +123,14 @@ We are able to scale the DTID algorithm to all the 9 cores,
 while the host has 1 dedicated core. Each vCPU receives the
 expected number of timer interrupts. When the DTID guest uses
 the periodic timer of 250Hz, each vCPU receives around 250
-interrupts per second. To see how well the DTID guest performs
-the parallel processing, we run Kernbench~\cite{kernbench} or
-PARSEC~\cite{bienia:2008} benchmark. The result shows
-~\ref{fig:kernbench}....
+interrupts per second. Furthermore, we measure the CPU
+throughput using kernbench. The kernbench compiles the Linux
+4.10.1 in the ramdisk. It minimize the virtualization overhead
+due to the disk I/O activities. In comparison to the
+unmodified guest, the CPU optimization along improves the CPU
+throughput by 240ms. The CPU optimization plus DTID improves
+the CPU throughput by 500ms. Nonetheless, the guests of
+different configuration still have the additional 6-second
+overhead than the baremetal. Our analysis of VM exits
+indicates the number of VM exits per second due to CPUID is
+around 3357 for all guest configurations.
