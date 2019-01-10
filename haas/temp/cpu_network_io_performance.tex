@@ -7,7 +7,7 @@
 % gives me the compilation error. We temporarily comment it
 % out.
 %\figw{iperf}{10}{Place holder for iperf performance}
-%\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utiliztion}
+%\figw{cpu_util_iperf}{10}{Place holder for iperf CPU utilization}
 
 
 
@@ -67,11 +67,11 @@ We use  iPerf~\cite{iperf} to measure the network throughput of
 incoming and outgoing TCP traffic on a 40Gbps Infiniband link.
 As shown in Table~\ref{tab:network_performance}, for outgoing TCP traffic, 
 all five evaluated configurations are able to saturate the Infiniband link and 
-have almost identical network throughputs. 
+have almost identical network throughput. 
 %performance for the gigabit link is not shown here. All the
 %configurations are able to saturate the 1Gbps NIC and 40 Gbps
-%infiniband for the outgoing TCP throughput. 
-For incoming TCP  traffic, all five configurations except the VHOST configuration have roughly the same network throughput; however, the VHSOT configuration's network throughput 
+%Infiniband for the outgoing TCP throughput. 
+For incoming TCP  traffic, all five configurations except the VHOST configuration have roughly the same network throughput; however, the VHOST configuration's network throughput 
 is about 52\% of that of the other four configurations when two CPU cores are used, and is comparable to that of the other four configurations only when three CPU cores are used. 
 
 
@@ -79,26 +79,26 @@ is about 52\% of that of the other four configurations when two CPU cores are us
 We use ping~\cite{ping} to measure the round-trip delays over a 40Gbps Infiniband link and use them to compare the network packet latency of the evaluated configuration. 
 As shown in Table~\ref{tab:network_performance}, when two CPU cores are used, the round-trip delay over an Infiniband link in the 
 VHOST configuration is 24$\mu$s, which is about twice as much as that of the other four configurations, between 12-13$\mu$s.
-The extra delay arises beause, when a HaaS VM runs in the VHOST configuration, VM exists occur whenever it access virtual I/O devices and receives interrupts from these devices.
+The extra delay arises because, when a HaaS VM runs in the VHOST configuration, VM exists occur whenever it access virtual I/O devices and receives interrupts from these devices.
 
 
 
 
 %For the gigabit link, the RTT for the host
 %and guest using VFIO configuration is about 160$\mu$s, whereas
-%the RTT of guest using vHost as the backend driver is
-%173$\mu$s. For the 40Gbps infiniband, the guest using the VFIO
-%out performs the guest using the vHost configuration by 50\%.
+%the RTT of guest using VHOST as the backend driver is
+%173$\mu$s. For the 40Gbps Infiniband, the guest using the VFIO
+%out performs the guest using the VHOST configuration by 50\%.
 %As shown in 
 %Figure~\ref{fig:network_latency}, 
 %the RTT for the
 %host and guest using VFIO configuration is about 13$\mu$s,
-%whereas the RTT of guest using vHost as the backend driver is
+%whereas the RTT of guest using VHOST as the backend driver is
 %24$\mu$s.
 
 % TODO: Put them together as the sub-figures.
 % TODO: May need to redo the figure and make the label clear.
-%\figw{network_bandwidth}{9}{Comparison of Network Bandwith over 40Gbps Link}
+%\figw{network_bandwidth}{9}{Comparison of Network Bandwidth over 40Gbps Link}
 %\figw{network_latency}{9}{Comparison of Network Latency over 40Gbps Link}
 
 \mycomment{
@@ -151,7 +151,7 @@ Because the number of VM exits significantly impacts the CPU utilization,
 let's first examine the number of VM exits per second for each of the five 
 evaluated configurations. 
 Table \ref{tab:vm_exit}  lists the number of VM exists per second a HaaS VM experiences 
-when it sends out TRCP traffic over an infiniband link in one of the four virtualized 
+when it sends out TCP traffic over an Infiniband link in one of the four virtualized 
 configurations. 
 The VHOST configuration incurs a VM exit whenever a HaaS VM executes an HLT instruction,
 accesses a NIC and triggers an EPT fault, or gets interrupted. 
@@ -160,7 +160,7 @@ In contrast, a HaaS VM running in the VFIO configuration does not trigger any VM
 accessing a NIC or receiving a NIC interrupt.
 The only interrupts that cause a VM exit for such a HaaS VM are internal interrupts, such
 as timer and IPI interrupts.
-This is why the numbers of VM exits per second due to EPT faulst and interrupts  for the VFIO 
+This is why the numbers of VM exits per second due to EPT faults and interrupts  for the VFIO 
 configuration are significantly lower than those of the VHOST configuration.
 On the other hand, the number of VM exits per second due to HLT instructions for the VFIO configuration
 is drastically larger than that of the VHOST instruction, because 
@@ -241,7 +241,7 @@ The VFIO configuration's Guest User percentage is significantly higher than
 that of  the VHOST configuration, because the kernel of the HaaS VM is responsible for {\em physical} NIC 
 interaction and interrupt processing, and TCP protocol processing.
 
-In the OPTI configuration, the Host User pecentage is close to 0\%, indicating that the hypervisor is almost 
+In the OPTI configuration, the Host User percentage is close to 0\%, indicating that the hypervisor is almost 
 completely out of the picture. Although the Host User percentage is 199.76\%, the sum of the Guest User and
 Guest System percentage is only 83.3\%. The gap between the two is due to HLT instructions.
 That is, when a HaaS VM becomes idle and issues HLT instructions, these instructions put the VM in a lower power

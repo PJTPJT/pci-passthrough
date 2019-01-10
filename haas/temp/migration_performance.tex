@@ -42,13 +42,13 @@ backup slave. The bonding driver accepts a
 ensures that the
 MAC address of the bond is always the same as the active
 slave. 
-%Before migrtion, \na hot-unplugs the assigned
+%Before migration, \na hot-unplugs the assigned
 %NIC. The bonding driver detects hot-unplug event as failure
-%of pass-through NIC and choses
+%of pass-through NIC and chooses
 %Virtio NIC as the active slave. 
 %\texttt{fail\_over\_mac} switches the network 
 %traffic to the Virtio NIC by broadcasting
-%gratituous ARP packets notifying the change in MAC address of the bond.
+%gratuitous ARP packets notifying the change in MAC address of the bond.
 
 In Figure~\ref{fig:seamless_migration_haas}, we measure 
 the bandwidth achieved by a HaaS VM 
@@ -68,7 +68,7 @@ less than 100ms network disruption.
 %During live migration, the iPerf benchmark continues 
 %to send traffic over the Virtio network interface
 %with the network bandwidth of 940Mbps.
-%The VM experiences another network dowtime of 
+%The VM experiences another network downtime of 
 %0.1 seconds during the last phase of migration 
 %when the guest is paused on source server
 %to transfer the CPU and I/O state to destination server 

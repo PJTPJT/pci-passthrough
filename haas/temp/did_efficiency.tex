@@ -24,7 +24,7 @@ Guest. The interrupts are reported as the number of interrupts
 per second. For the DTID guest, the numbers of spurious timer
 interrupts per second for core 0 and 1 are 100114 and 3933
 respectively. OPTI guest uses the assigned NIC with the CPU
-optimization. IB: 40Gbps infiniband. NIC: network interface
+optimization. IB: 40Gbps Infiniband. NIC: network interface
 card. INTR: interrupt. TMR: timer.}
 \label{tab:network_interrupts}
 \end{table}
@@ -64,7 +64,7 @@ TCP traffic over a 40Gbps Infiniband link at full speed using iPerf}
 %\caption{Analysis of Spurious Timer Interrupts. The interrupts
 %are reported as the number of interrupts per second. DTID
 %guest uses the assigned NIC with the CPU optimization and DTID
-%enabled. IB: 40Gbps infiniband. NIC: network interface card,
+%enabled. IB: 40Gbps Infiniband. NIC: network interface card,
 %INTR: interrupt, SPU TMR INTR: spurious timer interrupt.}
 %\label{tab:spurious_timer_interrupt}
 %\end{table}
@@ -94,12 +94,12 @@ is part of our future work.
 
 To determine if a DTID HaaS VM indeed performs like a bare-metal server,
 we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
-experiences when they send out TCP traffic over a 40Gbps infiniband link using iPerf.
+experiences when they send out TCP traffic over a 40Gbps Infiniband link using iPerf.
 In this test, CPU core 0 is configured to process NIC interrupts and 250Hz local timer interrupts, whereas CPU core 1 runs the 
 iPerf TCP benchmark and processes 250Hz local timer interrupts.
 As shown in Table~\ref{tab:network_interrupts},
 the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Bare-metal configuration, 
-demonstrating that \sna's spurious timer interrupt filtering mechnaim works correctly. 
+demonstrating that \sna's spurious timer interrupt filtering mechanism works correctly. 
 Even though the DTID configuration may incur additional filter processing overhead for every NIC interrupt,
 this overhead has negligible impact on its network bandwidth performance, which is comparable to that of the Bare-metal 
 configuration.   
@@ -114,7 +114,7 @@ the iPerf benchmark process which sets up aperiodic timers in addition to the sy
 \mycomment{
 We measure the expected frequency of timer and network
 interrupts, when running the iPerf benchmark over the 40Gbps
-infiniband. Both the host and guest uses two cores. One core
+Infiniband. Both the host and guest uses two cores. One core
 handles the network interrupts, while the other core runs the
 iPerf benchmark. In Table~\ref{tab:network_interrupts}, the
 host and guest both receive the expected frequency of timer
@@ -137,7 +137,7 @@ Table~\ref{tab:cpu_utilization_40gbps}.
 Moreover, we observe that the spurious interrupt occurs on the
 core running the iPerf benchmark, but there is no network
 interrupts. Since the spurious timer interrupt also happens
-after the VM entry, the perf analysis suggests it is due to
+after the VM entry, the  analysis suggests it is due to
 other type of VM exits such as IO instructions, MSR writes or
 IPIs.
 
