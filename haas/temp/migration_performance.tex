@@ -13,15 +13,14 @@
 \figw{seamless_migration_default}{9}{Seamless migration
 without \na}
 
-\begin{table}[tbp]
+\begin{table}[]
 \begin{tabular}{|l|l|l|l|}
 \hline
-& UNPLUG & PLUG & OPTI. PLUG \\ \hline
-UDP SENDER & 4.6 & 300 & 0 \\ \hline
-UDP RECEIVER & 1.8 & 300 & 0 \\ \hline
+ & \begin{tabular}[c]{@{}l@{}}Unplug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Plug\\ (ms)\end{tabular} & \begin{tabular}[c]{@{}l@{}}OPTI. Plug\\ (ms)\end{tabular} \\ \hline
+UDP Sender   & 4.6 & 300 & 0 \\ \hline
+UDP Receiver & 1.8 & 300 & 0 \\ \hline
 \end{tabular}
 \caption{Network Downtime}
-\label{tab:migration_network_downtime}
 \end{table}
 
 In this section, we show the network service disruption
@@ -89,13 +88,13 @@ as the first two steps are executed when the guest is
 paused. The total migration time remains unaffected.
 
 In Table~\ref{tab:migration_network_downtime}, when switching
-from the assigned to Virtio network device, the network is --
-and -- ms for the UDP sender and receiver respectively. When
+from the assigned to Virtio network device, the network downtime
+is 4.6 and 1.8ms for the UDP sender and receiver respectively. When
 switching back from the Virtio to assigned network device, the
-network is -- and -- ms for the UDP sender and receiver
-respectively. After we hide the overhead of assigned NIC
+network is 300ms for both the UDP sender and receiver. 
+After we hide the overhead of assigned NIC
 creation during the VM migration, the network downtime is
-reduced to -- and -- ms for the UDP sender and receiver
+reduced to zero for the UDP sender and receiver
 respectively.
 
 % TODO: Analysis of DTID algorithm in the guest shows the
