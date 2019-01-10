@@ -35,7 +35,7 @@ and local timers, including direct delivery of device and timer interrupts.}
 %without causing any VM exits. Finally, we present the
 %migration of virtual machine with directly assigned devices.
 
-To enhance the manageability of physical servers offered in a bare-metal cloud service, \na intalls 
+To enhance the manageability of physical servers offered in a bare-metal cloud service, \na installs 
 a thin hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
 a \na user then installs a preferred OS and applications. 
 Figure~\ref{fig:architecture} shows the high-level architecture of \na.
@@ -67,7 +67,7 @@ and timer interrupts to a HaaS VM by leveraging
 the posted interrupt mechanism in Intel VT-d.
 Direct interrupt delivery greatly reduces the interrupt processing latency and is
 particularly useful for real-time applications running on bare-metal servers. 
-When the VM must be live migrated, \na temorarily switches the VM to use
+When the VM must be live migrated, \na temporarily switches the VM to use
 para-virtual I/O and virtualized timer, completes the migration
 and, at the destination, switches the VM back to direct I/O device and direct 
 timer access, all with minimal disruption of VM's workload.
@@ -94,7 +94,7 @@ In general, there are four types of interactions between an OS and its PCIe I/O 
 
 \item A DMA engine moves data blocks between main memory and PCIe devices according to the DMA commands set up by the OS.
 
-\item A device interrupts the OS for its attention to certain hardware events, such as new packet arrival or transmision completion.
+\item A device interrupts the OS for its attention to certain hardware events, such as new packet arrival or transmission completion.
 
 \end{enumerate}   
 Except the probe/enumeration operations, 
@@ -103,7 +103,7 @@ for the other three types of device interactions.
 
 \subsubsection{Direct DMA Operations Using VT-d and VFIO} 
 Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
-memory-mapped I/O (MMIO) operations against the memory areas associated with to the device. 
+memory-mapped I/O (MMIO) operations against the memory areas associated with the device. 
 Essentially, VFIO makes the configuration register space and the memory regions of
 each PCIe device accessible to user-space processes.
 %VFIO retrieves a PCIe device's device-specifc information such as BARs from its
@@ -131,7 +131,7 @@ each PCIe device accessible to user-space processes.
 %the PCI configuration space is passthroughed directly, while
 %others, such as MSI, BARs, and ROM, need to be emulated.
 %
-Thus a user-space processe can use DMA operations to move data directly between a PCIe device and 
+Thus a user-space process can use DMA operations to move data directly between a PCIe device and 
 a region of its virtual address space.
 The address of the source or destination buffer of a DMA operation resides in 
 the {\em device address space} of the PCIe device involved in the DMA operation.
@@ -152,15 +152,15 @@ By controlling which user-space programs can access which PCIe devices, VFIO is 
 from using DMA operations to corrupt the physical memory areas owned by other user-space programs.
 
 To KVM, a VM runs as part of a user-space process  called QEMU~\cite{qemu},
-specifically, as guest-mode threads within QEMU's virtual address space..
-QEMU uses VFIO to configure a VM to directly access the device address space 
+specifically, as guest-mode threads within QEMU's virtual address space.
+QEMU uses VFIO to configure a VM to directly access the device address space of 
 its assigned PCIe devices without emulation via KVM or QEMU.
 In contrast, in para-virtual Vhost~\cite{vhost-net} I/O architecture, 
 each incoming or outgoing I/O operation (network or block I/O) must go through 
 a special hypervisor-level thread (called the vhost worker thread), 
 which emulates a virtio~\cite{russell:2008} device in the kernel and 
 therefore keeps QEMU out of the data plane.
-However, QEMU still is responsible for such control plane processing as setting up, 
+However, QEMU is still responsible for such control plane processing as setting up, 
 configuring, and negotiating features for an in-kernel virtio device.  
 
 
@@ -255,7 +255,7 @@ to those external interrupts that do not come from an IOAPIC, e.g., message sign
 The Posted Interrupt mechanism~\cite{intelvtd-paper,intelvtd-manual} allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
 (Post Interrupt Notification or PIN vector) directly without involving the hypervisor.
 When a CPU core handles a PIN interrupt, it examines a bitmap data structure associated with the CPU core called {\em Virtual Interrupt Request Register} (vIRR),
-which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of an PIN interrupt delivery,  
+which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of a PIN interrupt delivery,  
 to determine the vectors of the interrupts behind the PIN interrupt, and processes these interrupts one by one according to their vectors and priorities.
 The PIR bitmap is part of a per-VCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.  
 The address of the PID and the PIN vector associated with a CPU core are both contained in the virtual machine control structure (VMCS) associated with the VCPU running on the CPU core.
@@ -263,7 +263,7 @@ The address of the PID and the PIN vector associated with a CPU core are both co
 %\subsubsection{Direct External Interrupt Delivery}
 To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
 First , it sets the IRT entry's IM bit to 1, which means that any interrupt matching this entry is to be delivered via the posted interrupt mechanism.  
-Then, it ses the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
+Then, it sets the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
 When an external interrupt arrives at the IOMMU and matches an IRT entry, the 
 hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
 converts this interrupt into an interrupt labelled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
@@ -625,7 +625,7 @@ The HaaS VM running on every \na physical server sends and receives network pack
 During normal execution, the pass-through NIC is the Active slave and the para-virtual NIC is the Backup slave,
 so that a HaaS VM can make full use of the underlying physical NIC's capability.
 Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
-Upon detecting the Active slave's failure, the bonding driver immediately switches network traddic to the Backup slave.
+Upon detecting the Active slave's failure, the bonding driver immediately switches network traffic to the Backup slave.
 % to be the Active slave.
 From this point on, all network traffic goes through the para-virtual NIC. 
 KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
@@ -689,14 +689,14 @@ The most important performance metric for VM migration is the service disruption
 The additional service disruption time that \na introduces is attributed to the transition from
 the pass-through NIC to the para-virtual NIC on the source server, and the transition from
 the para-virtual NIC to the pass-through NIC on the destination server.
-Measurements on a earilier \na prototype suggested that the transition from the 
+Measurements on a earlier \na prototype suggested that the transition from the 
 para-virtual to the pass-through NIC introduces non-trivial service disruption time (about 300ms), 
 when hot-plugging the pass-through NIC on the destination server. 
 
 A deeper analysis shows that the hot-plug operation consists of three steps:
 (1) QEMU prepares a software object to represent the pass-through
 NIC, (2) then It populates this software object with parameter values extracted 
-from the PCIe configuarion space of the NIC, (3) and finaly it
+from the PCIe configuration space of the NIC, (3) and finally it
 resets the software NIC object to set up the BAR and interrupt forwarding
 information. The first and third steps must take place in QEMU's main event
 loop when the entire HaaS VM requesting the hot-plug operation must be paused.
@@ -722,7 +722,7 @@ packet loss in the guest. The hot plug mechanism of assigned
 NIC consists of the following three steps. First, QEMU
 prepares a software object that represents the passthrough
 NIC. It then realizes the QEMU software object by getting a
-copy of configuarion space from the NIC device. Finally, it
+copy of configuration space from the NIC device. Finally, it
 resets the software NIC object and setup the BAR and interrupt
 forwarding. The first and last step happen in QEMU main event
 loop during which the guest remains paused. As a result, the
@@ -757,10 +757,10 @@ and shift factor of the calibrated timer, etc., which are provided by the hyperv
 
 During the normal run time, timer interrupts are delivered to a HaaS VM directly. 
 Before a HaaS VM is to be migrated, \na notifies the HaaS VM to stop the 
-durect timer interrupt delivery (DTID) mechanism, unmaps the PIR page, 
+direct timer interrupt delivery (DTID) mechanism, unmaps the PIR page, 
 enables the TMICT WRMSR VM exit, configures the local vector table in the local APIC to 
 fire timer interrupts as they are rather than as posted-interrupt notification interrupts. 
-Upon receving this notification, the HaaS VM uses a different set of 
+Upon receiving this notification, the HaaS VM uses a different set of 
 multiplication and shift parameters to compute the next timer value, 
 and convey the resulting value to the hypervisor via the \texttt{hrtimer} object
 when control is transferred to the hypervisor upon a TMICT WRMSR VM exit. 
@@ -774,7 +774,7 @@ the aforementioned steps in reverse order.
 \mycomment{   
 The direct timer interrupt delivery depends the following
 factors. First, the host shares the posted-interrupt
-descriptor with the guest. When the guest udpates the
+descriptor with the guest. When the guest updates the
 timer-interrupt bit of posted-interrupt request through EPT,
 it does not trigger the EPT violations and the local timer
 interrupt is delivered as the posted interrupt. Second, the
