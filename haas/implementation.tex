@@ -46,19 +46,6 @@ device to the running guest.
 
 
 
-\subsection{Disable HLT Exiting and Update the MSR Bitmap}
-To disable HLT-related VM exit, the HLT-exiting bit of
-processor-based VM-execution control of VMCS is cleared. 
-Our
-implementation uses the existing KVM function to set or unset
-the HLT-exiting bit. The function is \texttt{vmcs\_write64}.
-To update the MSR bitmap, we disable the VM exit due to TMICT
-WRMSR. The function is
-\texttt{vmx\_disable\_intercept\_msr\_x2apic}. We uses this
-function as the prototype and enable the TMICT WRMSR VM exits,
-while consulting the MSR bitmap from the Intel Software
-Developer Manual.
-
 \subsection{CPU Idleness Processing}
 
 When a CPU on a Linux-based machine does not have any applications to run,
@@ -153,16 +140,22 @@ and boosts the network performance. This lockless design is safe because the PIR
 that the HaaS VM and the Interrupt Remapping Table access are guaranteed to be 
 disjoint and thus do not need to be locked before being accessed.
 
+{\bf Disabling HLT Exiting and Updating the MSR Bitmap:}
+To disable HLT-triggered VM exits, the HLT-exiting bit of
+processor-based VM-execution control in VMCS is cleared
+using KVM's \texttt{vmcs\_write64} function.
+We also disable VM exits due MSR write to the TMICT counter of the local timer
+using KVM's \texttt{vmx\_disable\_intercept\_msr\_x2apic} to update the MSR bitmap. 
 
-{\bf NIC Bonding}
+
+{\bf NIC Bonding:}
 Linux's bonding driver provides a \texttt{fail\_over\_mac} option to change 
-the MAC address of the bonded interface and broadcast ARP packets for the new MAC address 
-when the Active slave fails. \na configures the bonding driver by setting   
-\texttt{fail\_over\_mac} to 1, and cuts down the
-network downtime due to hot unplug operations.
-
-To transition a NIC between the VFIO and Vhost mode, \na hot-plugs and hot-unplugs the corresponding devcices at the right times.  It uses the QEMU command \texttt{device\_add} to implement a hot plug operation, and the QEMU command \texttt{device\_del} to implement a hot unplug operation. 
-
+the MAC address of the bonded interface and broadcast gratituous ARP packets for the new MAC address 
+when the active slave fails. \na configures the bonding driver by enabling 
+\texttt{fail\_over\_mac}, which cuts down the
+network downtime due to hot-unplug operations.
+To transition a bonded NIC in the guest between the VFIO and Vhost slave NICS, \na hot-unplugs and hot-plugs 
+the VFIO NIC using QEMU commands \texttt{device\_del} and \texttt{device\_add}, respectively.
 
 
 \mycomment{
