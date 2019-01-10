@@ -45,7 +45,7 @@ and SLA enforcement. In contrast, with \na, the guest OS
 cannot access or modify hypervisor code or memory.
 BLMVisor~\cite{blmvisor,blmvisor-journal} proposes live migration of VMs 
 having direct access to physical devices by having the hypervisor
-regulary intercept and capture low-level physical device states
+regularly intercept and capture low-level physical device states
 during normal execution; the captured state is then reconstructed
 at the destination after migration. This approach requires
 implementing device-specific state capture and reconstruction code 
@@ -53,7 +53,7 @@ for each type of physical device, besides active
 interception of these operations by the hypervisor. 
 In contrast, \na is device agnostic and does not require
 the hypervisor to intercept guest I/O accesses.
-Finally, unlike the above aproaches,
+Finally, unlike the above approaches,
 \na supports direct delivery of timer interrupts 
 to the guest OS without hypervisor intervention, besides supporting
 live migration of guests having direct timer access.
