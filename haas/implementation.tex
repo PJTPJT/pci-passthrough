@@ -94,7 +94,7 @@ As a result, whenever a CPU becomes idle, no {\tt HLT}-related VM exits occur, t
 %without triggering any VM exit. This feature is discussed in
 %Interrupts that wake a CPU up from the {\tt HLT}-induced energy-saving mode used to go through the hypervisor and thus may incur additional VM exits.
 %As disucussed in the~\nameref{subsubsec:shared_pid_dtid}, we leverage X86's {\em posted interrupt} mechanism to deliver these interrupts directly to a VM in the energy-saving mode.
-%Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare metal server.
+%Consequently, processing of CPU idleness incurs no VM exit, as is the case when the user OS runs directly on a bare-metal server.
 }
 
 {\bf Gues OS access to the PIR bitmap:}
@@ -106,7 +106,7 @@ the hypervisor, and (in \sna) to  the HaaS VM running on the CPU core.
 To make a PID accessible to the HaaS VM's guest OS,
 when a VCPU is created, \na allocates a separate page for its PID, 
 and places the PID's base address in the VCPU's VMCS, and 
-in all the Interrupt Remapping Table entries that target at the vCPU.
+in all the Interrupt Remapping Table entries that target at the VCPU.
 %To enable the VCPU's associated VM to access this PID page, 
 The guest OS provides the address of a page in the guest physical address 
 space to the hypervisor via a hypercall, and the hypervisor maps this address 
