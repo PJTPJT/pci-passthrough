@@ -17,7 +17,7 @@
 \hline
 & \begin{tabular}[c]{@{}l@{}}Outbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}Inbound\\ (Gbps)\end{tabular} & \begin{tabular}[c]{@{}l@{}}RTT\\ ($\mu$s)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf Baremetal}\end{tabular}     & 37.39 & 37.52 & 12\\ \hline
-\begin{tabular}[c]{@{}l@{}} {\bf VHOST} \end{tabular} & 37.39 & 19.02 & 24\\ \hline
+\begin{tabular}[c]{@{}l@{}} {\bf VHOST} \end{tabular} & 37.39 & 37.10 & 18\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf VFIO}\end{tabular}  & 37.45 & 37.58 & 13\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf OPTI} \end{tabular}    & 37.37 & 37.52 & 13\\ \hline
 \begin{tabular}[c]{@{}l@{}} {\bf DTID} \end{tabular}    & 37.35 & 37.50 & 12\\ \hline
@@ -26,7 +26,7 @@
 %%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\end{tabular}          & $37.37 \pm 0.11$ & $37.52 \pm 0.15$ & $13 \pm 3$\\ \hline
 %%\begin{tabular}[c]{@{}l@{}}GUEST\\ + VFIO\\ + OPTIMIZATION\\ + DTID\end{tabular} & $37.35 \pm 0.08$ & $37.50 \pm 0.23$ & $12 \pm 5$\\ \hline
 \end{tabular}
-\caption{Comparison of network bandwidth and packet latency over a
+\caption{Comparison of network bandwidth and network packet latency over a
 40Gbps Infiniband link for the five configurations evaluated.}
 \label{tab:network_performance}
 \end{table}
@@ -40,23 +40,21 @@
 {\bf Configuration} & {\bf Outbound} & {\bf Inbound}  & {\bf Round-Trip} \\ 
  & {\bf (Gbps)} & {\bf (Gbps)} & {\bf Delay ($\mu$s)} \\ \hline
  {\bf Baremetal}  & 37.39 & 37.52 & 12\\ \hline
- {\bf VHOST} & 37.39 & 19.02 & 24\\ \hline
+ {\bf VHOST} & 37.39 & 19.02/37.10 & 24/18\\ \hline
 {\bf VFIO}  & 37.45 & 37.58 & 13\\ \hline
  {\bf OPTI} & 37.37 & 37.52 & 13\\ \hline
  {\bf DTID} & 37.35 & 37.50 & 12\\ \hline
 \end{tabular}
 \end{center}
-%\vspace{-0.05in}
-\caption{Comparison of network bandwidth and round-trip packet delay over a
-40Gbps Infiniband link for the five evaluated configurations.}
+\vspace{-0.1in}
+\caption{Comparison of network throughput and round-trip packet delay over a
+40Gbps Infiniband link among the five evaluated configurations}
 \label{tab:network_performance}
-\vspace{-0.06in}
+\vspace{-0.1in}
 \end{table}
 
 
-In this experiment, we demonstrate that, with all  the proposed optimizations applied,  a HaaS VM performs 
-essentially the same as a bare-metal host in terms of network throughput, network packet latency and 
-CPU utilization.
+In this experiment, we demonstrate that, with all  the proposed optimizations applied,  a HaaS VM performs essentially the same as a bare-metal server in terms of network throughput, network packet latency and CPU utilization.
 
 
 %the guest using our
@@ -65,27 +63,23 @@ CPU utilization.
 %macro benchmark and measure the performance in the following
 %three metrics: network bandwidth, latency and CPU utilization.
 
-We use  iperf~\cite{iperf} to measure the network bandwidth of 
-incoming and outgoing TCP traffic on an infiniband link.
+We use  iperf~\cite{iperf} to measure the network throughput of
+incoming and outgoing TCP traffic on a 40Gbps Infiniband link.
 As shown in Table~\ref{tab:network_performance}, for outgoing TCP traffic, 
-all five evaluated configurations are able to saturate the infiniband link and 
-thus produce almost identical network bandwidth results. 
+all five evaluated configurations are able to saturate the Infiniband link and 
+have almost identical network throughputs. 
 %performance for the gigabit link is not shown here. All the
 %configurations are able to saturate the 1Gbps NIC and 40 Gbps
 %infiniband for the outgoing TCP throughput. 
-However, for incoming TCP  traffic, the network bandwidth of the VHSOT configuration 
-is about 52\% of that of the other four configurations, whose network bandwidth performances
-are comparable to each other.
+For incoming TCP  traffic, all five configurations except the VHOST configuration have roughly the same network throughput; however, the VHSOT configuration's network throughput 
+is about 52\% of that of the other four configurations when two CPU cores are used, and is comparable to that of the other four configurations only when three CPU cores are used. 
 
 
-We use ping~\cite{ping} to measure the round-trip delay and use the results to
-evaluate the network packet latency of these configurations. 
-As shown in Table~\ref{tab:network_performance}, the round-trip delay between 
-two ends of an infiniband link in the 
-VHOST configuration is 24$\mu$s, which is about twice as much as that of the other four configurations,
-between 12-13$\mu$s.
-This extra delay arises beause, when a HaaS VM runs in the VHOST configuration, VM exists occur whenever it
-access virtual I/O devices and receives interrupts from these devices.
+
+We use ping~\cite{ping} to measure the round-trip delays over a 40Gbps Infiniband link and use them to compare the network packet latency of the evaluated configuration. 
+As shown in Table~\ref{tab:network_performance}, when two CPU cores are used, the round-trip delay over an Infiniband link in the 
+VHOST configuration is 24$\mu$s, which is about twice as much as that of the other four configurations, between 12-13$\mu$s.
+The extra delay arises beause, when a HaaS VM runs in the VHOST configuration, VM exists occur whenever it access virtual I/O devices and receives interrupts from these devices.
 
 
 
@@ -145,12 +139,12 @@ guest. \%Idle is not shown.}
 {\bf Interrupt}   & 15702 & 219   & 498  & 1    \\ \hline
 \end{tabular}
 \end{center}
-%\vspace{-0.05in}
+\vspace{-0.1in}
 \caption{Comparison of number of VM exits per second when the evaluated 
 configurations send out TCP traffic over a
-40Gbps Infiniband link at full speed. }
+40Gbps Infiniband link at full speed using iperf}
 \label{tab:vm_exit}
-\vspace{-0.06in}
+\vspace{-0.1in}
 \end{table}
 
 Because the number of VM exits significantly impacts the CPU utilization, 
@@ -217,17 +211,17 @@ without causing any VM exit.
 {\bf Configuration} & {\bf Host } & {\bf Host } & {\bf Guest} & {\bf Guest} \\ 
 {\bf } & {\bf  User } & {\bf System } & {\bf  User} & {\bf System} \\ \hline
  {\bf Baremetal}    & 0.64\%   & 80.98\% & NA & NA\\ \hline
- {\bf VHOST} & 68.6\%   & 84.36\% &  &  \\ \hline
-{\bf VFIO}   & 90.48\%  & 85.08\% &  &  \\ \hline
+ {\bf VHOST} & 68.6\%   & 84.36\% & 0.67\% & 91.23\% \\ \hline
+{\bf VFIO}   & 90.48\%  & 85.08\% & 0.62\% & 83.77\% \\ \hline
  {\bf OPTI}  & 199.76\% & 0.24\%  & 0.66\% & 81.7\% \\ \hline 
 \end{tabular}
 \end{center}
-%\vspace{-0.05in}
+\vspace{-0.1in}
 \caption{Comparison of the total CPU utilization percentage and its breakdown 
 when the evaluated configurations send out TCP traffic over a
-40Gbps Infiniband link at full speed. The total is 200\% because two CPU cores are used.}
+40Gbps Infiniband link at full speed using iperf. The total is 200\% because two CPU cores are used.}
 \label{tab:cpu_utilization_40gbps}
-%\vspace{-0.06in}
+\vspace{-0.1in}
 \end{table}
 
 We measured the percentage of a \na server's run time spent in the host OS ({\em Host System}),
@@ -253,8 +247,8 @@ Guest System percentage is only 83.3\%. The gap between the two is due to HLT in
 That is, when a HaaS VM becomes idle and issues HLT instructions, these instructions put the VM in a lower power
 idle mode. However, to the hypervisor, the HaaS VM remains active because it takes up the CPU.
 In the end, the fact that the Guest User and Guest System percentage of the OPTI configuration are almost 
-identical to the Host User and Host System percentage suggests that \na is successful in enabling a HaaS server
-to behave like a bare-metal server.
+identical to the Host User and Host System percentage of the Baremetal configuration suggests that \na is successful in enabling a HaaS server
+to perform very closely to a bare-metal server.
 
 \mycomment{
 Although the outgoing TCP throughput is about 37.4Gbps for the

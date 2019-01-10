@@ -4,7 +4,7 @@
 % - Evaluate the performance and see if it match our goal.
 
 \figw{cyclictest}{9}{The cumulative distribution function of timer interrupt latency measured using the Cyclictest benchmark
-for Baremetal OS, VHOST guest, Optimized non-DTID HaaS guest, and DTID Guest}
+for bare-metal OS, VHOST guest, Optimized non-DTID HaaS guest (OPTI), and DTID Guest}
 %\figw{kernbench}{9}{Comparison of Kernbench execution time with baremetal}
 
 \mycomment{
@@ -47,8 +47,8 @@ card. INTR: interrupt. TMR: timer.}
 \end{center}
 \vspace{-0.05in}
 \caption{Comparison of the number of network and timer interrupts per second experienced
-by a Baremetal server, an OPTI HaaS VM and a DTID HaaS VM, when thet send out 
-TCP traffic over an infiniband link using iperf}
+between a Baremetal server and a DTID HaaS VM, when they send out 
+TCP traffic over a 40Gbps Infiniband link at full speed using iperf}
 \label{tab:network_interrupts}
 \vspace{-0.06in}
 \end{table}
@@ -80,8 +80,8 @@ iterations.
 %the experiment core. 
 We used the top 99\% of the measurements to compute a cumulative distribution function (CDF)
 for the timer interrupt latency. As shown in Figure~\ref{fig:cyclictest}, the 
-median of the timer interrupt latency for the Baremetal, DTID and
-VHOST configuration are 1.2, 2.46 and 13.93 $\mu$s, respectively.
+median of the timer interrupt latency for the Baremetal, DTID, OPTI and
+VHOST configuration are 1.2, 2.46, 8.06 and 13.93 $\mu$s, respectively.
 That is, the average timer interrupt latency of a DTID HaaS VM is 
 more than five times smaller than that of a VHOST HaaS VM.
 Because a DTID HaaS VM still experiences VM exits due to reasons such as privileged instructions,
@@ -92,9 +92,8 @@ its average timer interrupt latency is still larger than that of a bare-metal se
 
 To determine if a DTID HaaS VM indeed performs like a bare-metal server,
 we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
-experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf 
-In this test, CPU core 0 is configured to process NIC interrupts and 250Hz timer interrupts, whereas CPU core 1 is only for 
-250Hz timer interrupts.
+experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf.
+In this test, CPU core 0 is configured to process NIC interrupts and 250Hz timer interrupts, whereas CPU core 1 is only for 250Hz timer interrupts.
 As shown in Table~\ref{tab:network_interrupts},
 the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Baremetal configuration, 
 demonstrating that \sna's spurious timer interrupt filtering mechnaim works correctly. 
