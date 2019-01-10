@@ -75,23 +75,25 @@ Specifically, the hypervisor must intercept and deliver device interrupts
 (using either virtual interrupts or inter-processor interrupts)
 when the target VM's VCPU is not scheduled on the CPU
 that receives the device interrupt. Further, idling guest VCPUs
-waiting for I/O completion trap to the hypervisor, where a well-intended
+waiting for I/O completion will trap to the hypervisor, where a well-intended
 halt-polling optimizations can inadvertently end up increasing CPU utilization.
-In contrast, \na eliminates these virtualization
-overheads in device interrupt delivery by not only leveraging
-Intel VT-d posted interrupts, but also by isolating  hypervisor execution 
-to a single physical core, and ensuring that physical 
-cores assigned to the VM remain in guest (non-root) 
-mode whenever the guest idles while waiting for I/O completion.
+In contrast, \na eliminates these 
+overheads in device interrupt delivery by 
+combining the use of Intel VT-d with optimizations to
+dedicate physical CPU cores to the guest and disable VM exits when a guest VCPU idles.
+%Intel VT-d posted interrupts, but also by isolating  hypervisor execution 
+%to a single physical core, and ensuring that physical 
+%cores assigned to the VM remain in guest (non-root) 
+%mode whenever the guest idles while waiting for I/O completion.
 
-Furthermore, a key distinction of \na lies in LAPIC timer
+Finally, a key distinction of \na lies in local timer
 access and timer interrupt processing by the VM.
 None of the existing techniques eliminate hypervisor overheads 
-when a VM accesses its LAPIC timer and nor do they 
-support direct delivery of timer interrupts to the guest OS.
+when a VM interacts with its local timer hardware and nor do they 
+support direct delivery of timer interrupts to the guest.
 \na does so for the single-VM virtualization case by a novel use of Intel VT-d posted 
 interrupt mechanism that allows the guest to directly set timer events
-on LAPIC and receive timer interrupts without any VM Exits.
+on LAPIC and receive timer interrupts, all without VM Exits.
 
 % TODO: Single VM virtualization
 %   Unikernels

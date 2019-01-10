@@ -62,7 +62,8 @@ A HaaS user or tenant makes a HaaS service request to \na by specifying a PDCI, 
 %This way, HaaS users are still able to enjoy the multiplexing benefits of cloud computing that are due to sharing of hardware and facilities.
 %A HaaS user or tenant makes a HaaS service request to \na by specifying a PDCI, which consists of 
 \begin{itemize} 
-\setlength\itemsep{-0.04in}
+\parskip 0mm
+\itemsep 0mm
 \item A set of physical servers, each with its CPU/memory/PCIe device specification, and configurations on the BIOS, and PCI devices,
 %\item A set of physical servers, each with its CPU/memory/PCIe device specification, and configurations on the BIOS, BMC, and PCI devices,
 
@@ -84,8 +85,8 @@ For the HaaS use case in which a tenant installs an operating system (Linux or W
 proprietary hypervisor on the physical servers of its PDCI, \na runs a specialized hypervisor on each 
 physical server to enable migration of running workloads and informed monitoring of application-level performance. 
 This hypervisor, conceptually an extension of a physical server's BIOS, allows only one VM, called the {\em HaaS VM}, 
-to run on each server and enables the VM's operating system to interact with all the server's devices as 
-if it runs directly on a bare-metal server.
+to run on each server and enables the VM's guest OS to interact with all the server's devices, as 
+if it runs directly on bare-metal.
 The functional requirements of this {\em single-VM virtualization} (SVMV) hypervisor are
 \begin{itemize} 
 \setlength\itemsep{-0.04in}

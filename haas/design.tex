@@ -83,8 +83,7 @@ Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct
 and safe access to hardware I/O devices by VMs running in non-root mode.
 Virtual function I/O (VFIO)~\cite{vfio} is a Linux software framework that enables user-space
 device drivers to interact with PCIe devices directly without involving the Linux kernel. 
-In general, there are four types of interactions between an OS and the PCIe 
-I/O devices under its management:
+In general, there are four types of interactions between an OS and its PCIe I/O devices:
 \begin{enumerate} 
 \parskip 0mm
 \itemsep 0mm
@@ -389,8 +388,8 @@ using VFIO (see Table~\ref{tab:network_performance}),
 both VM exits and polling loop cause significant 
 CPU utilization by the hypervisor 
 (see Table~\ref{tab:cpu_utilization_40gbps}).
-{\em Ironically, this overhead occurs even when using pass-through I/O and 
-posted interrupts which were meant to reduce hypervisor overheads.}
+Ironically, this overhead occurs even when using pass-through I/O and 
+posted interrupts which were meant to reduce hypervisor overheads.
 Eliminating this event polling alone is insufficient because {\tt HLT}-triggered VM exits 
 are also expensive by themselves; the guest VCPU thread is blocked and
 must make a trip through the hypervisor's CPU scheduler before 
@@ -429,11 +428,10 @@ the hardware, similar to the behavior on a bare-metal OS.
 
 \subsection{Direct Local Interrupt Delivery} 
 \label{subsubsec:shared_pid_dtid}
-\figw{dtid}{9}{Architecture for direct delivery of timer interrupts in \sna. 
+\figw{dtid}{9}{Direct delivery of timer interrupts in \sna. 
 %TODO: mention disabling WRMSR VM Exits.
-The hypervisor in \na configures each guest LAPIC to transform the local timer 
-interrupt into a PIN interrupt and allows the guest
-to directly update the PID page.}
+The hypervisor configures each guest LAPIC to transform the local timer 
+interrupt into a PIN interrupt and allows guest OS to directly update the PID page.}
 
 Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
@@ -576,7 +574,7 @@ with the full timer interrupt processing.
 %We call such a VM a HaaS VM.
 Because the states associated with directly accessible devices complicate the migration process~\cite{zhai:2008}, 
 \na augments KVM's VM migration capability with additional mechanisms to support seamless migration of HaaS VMs. 
-More specifically, \na adopts the following unified strategy to hide the states of directly accessed device states from KVM's VM migration logic:
+More specifically, \na adopts the following unified strategy to hide the states of directly accessed devices from KVM's VM migration logic:
 In the normal mode, a HaaS VM directly accesses PCIe devices and timers; immediately before and during when the HaaS VM is migrated,  the VM 
 accesses PCIe devices and timers indirectly; after the migration, the migrated HaaS VM accesses PCIe devices and timers directly again.
 
@@ -614,24 +612,29 @@ are reverted after the guest starts up at the destination.
 }
 
 \subsubsection{NIC State Migration}
-\figh{nic_bonding}{5}{NIC bonding}
+\figw{nic_bonding}{9}{Bonding of pass-through and para-virtual NICS in a HaaS VM to support live migration in \na.}
 
 We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
 which provides one physical function and multiple virtual functions, each with its own MAC address.
-\na sets up a directly accessed or pass-through NIC using one of the virtual functions
-and an indirectly accessed or virtual NIC using another virtual function,
-and then teams them up using the active-backup mode of the Linux bonding driver~\cite{bond-dri}, as shown in Figure~\ref{fig:nic_bonding}.
+As shown in Figure~\ref{fig:nic_bonding}, 
+\na sets up a directly accessed pass-through NIC using one of the virtual functions
+and an indirectly accessed para-virtual NIC using another virtual function.
+A NIC bonding driver~\cite{bond-dri} in the guest OS teams up the pass-through and para-virtual NICs in an active-backup mode.
 The HaaS VM running on every \na physical server sends and receives network packets through such a bonded interface. 
 
-
-During the normal run time, the pass-through NIC is the Active slave and the virtual NIC is the Backup slave,
-so that a HaaS VM could make full use of the underlying physical NIC's capability.
+During normal execution, the pass-through NIC is the Active slave and the para-virtual NIC is the Backup slave,
+so that a HaaS VM can make full use of the underlying physical NIC's capability.
 Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
-Upon detecting the Active slave's failure, the bonding driver immediately switches the Backup slave to be the Active slave,
-and from this point on, all network traffic goes through the virtual NIC and KVM has now captured the NIC-related state. Then \na kicks off a VM migration transaction for the HaaS VM to transfer its NIC-related state.
+Upon detecting the Active slave's failure, the bonding driver immediately switches network traddic to the Backup slave.
+% to be the Active slave.
+From this point on, all network traffic goes through the para-virtual NIC. 
+KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
+Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its NIC-related state.
 %During the migration, \na . 
-After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the virtual NIC.
-In the mean time, \na hot-plugs the pass-through NIC on the destination  server to make it the Backup slave, and then hot-unplugs the virtual NIC so that the current Backup slave or the pass-through  NIC becomes the new Active slave.
+After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the para-virtual NIC.
+In the mean time, \na hot-plugs the pass-through NIC on the destination  server 
+%to make it the Backup slave, and then hot-unplugs the virtual NIC so that the current Backup slave or 
+so that the pass-through NIC becomes the new Active slave.
 
 
 \mycomment{
@@ -684,21 +687,25 @@ plugged.
 
 The most important performance metric for VM migration is the service disruption time.
 The additional service disruption time that \na introduces is attributed to the transition from
-the pass-through NIC to the virtual NIC on the source server, and the transition from
-the virtual NIC to the pass-through NIC on the destination server.
-Measurements on a earilier \na prototype suggest that the transition from the virtual to the pass-through NIC introduces non-trivial (about 0.3 second) service disruption, which results from hot-plugging the pass-through NIC on the destination server. 
+the pass-through NIC to the para-virtual NIC on the source server, and the transition from
+the para-virtual NIC to the pass-through NIC on the destination server.
+Measurements on a earilier \na prototype suggested that the transition from the 
+para-virtual to the pass-through NIC introduces non-trivial service disruption time (about 300ms), 
+when hot-plugging the pass-through NIC on the destination server. 
 
 A deeper analysis shows that the hot-plug operation consists of three steps:
 (1) QEMU prepares a software object to represent the pass-through
-NIC, (2) then It populates this software object by with parameter values from extracted 
-fiom the PCIe configuarion space of the NIC, (3) and finaly it
+NIC, (2) then It populates this software object with parameter values extracted 
+from the PCIe configuarion space of the NIC, (3) and finaly it
 resets the software NIC object to set up the BAR and interrupt forwarding
-information. The first and third step must take place in QEMU's main event
-loop when the HaaS VM requsting the hot-plug operation must be paused.
+information. The first and third steps must take place in QEMU's main event
+loop when the entire HaaS VM requesting the hot-plug operation must be paused.
 
 To minimize this service disruption time due to hot-plug, 
-\na performs the first and second step of the operation of hot-plugging the pass-through NIC
-on the destination server while the HaaS VM is being migrated, and performs the third step after the HaaS VM is migrated and resumed. This brings the service disruption time due to hot-plug to ? second.
+\na performs the first and second steps of the hot-plugging the pass-through NIC
+on the destination server while the HaaS VM is being migrated and before it is resumed, 
+and performs the third step after the HaaS VM is migrated and resumed. 
+%This brings the service disruption time due to hot-plug to TODO second.
 
 
 \mycomment{
