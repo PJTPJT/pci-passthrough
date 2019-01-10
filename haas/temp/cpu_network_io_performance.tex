@@ -63,7 +63,7 @@ In this experiment, we demonstrate that, with all  the proposed optimizations ap
 %macro benchmark and measure the performance in the following
 %three metrics: network bandwidth, latency and CPU utilization.
 
-We use  iperf~\cite{iperf} to measure the network throughput of
+We use  iPerf~\cite{iperf} to measure the network throughput of
 incoming and outgoing TCP traffic on a 40Gbps Infiniband link.
 As shown in Table~\ref{tab:network_performance}, for outgoing TCP traffic, 
 all five evaluated configurations are able to saturate the Infiniband link and 
@@ -142,7 +142,7 @@ guest. \%Idle is not shown.}
 \vspace{-0.1in}
 \caption{Comparison of number of VM exits per second when the evaluated 
 configurations send out TCP traffic over a
-40Gbps Infiniband link at full speed using iperf}
+40Gbps Infiniband link using iPerf.}
 \label{tab:vm_exit}
 \vspace{-0.1in}
 \end{table}
@@ -219,7 +219,7 @@ without causing any VM exit.
 \vspace{-0.1in}
 \caption{Comparison of the total CPU utilization percentage and its breakdown 
 when the evaluated configurations send out TCP traffic over a
-40Gbps Infiniband link at full speed using iperf. The total is 200\% because two CPU cores are used.}
+40Gbps Infiniband link at full speed using iPerf. The total is 200\% because two CPU cores are used.}
 \label{tab:cpu_utilization_40gbps}
 \vspace{-0.1in}
 \end{table}
@@ -228,7 +228,7 @@ We measured the percentage of a \na server's run time spent in the host OS ({\em
 in the HaaS VM ({\em Host User}), in the kernel mode of the HaaS VM ({\em Guest System})
 and in the user model  of the HaaS VM ({\em Guest User}).
 Because  the Bare-metal configuration is not virtualized, its Host User percentage is due to 
-the user-level test program, in this case iperf, and it does not have Guest System or 
+the user-level test program, in this case iPerf, and it does not have Guest System or 
 Guest User percentage.
 As shown in Table~\ref{tab:cpu_utilization_40gbps}, compared with the Bare-metal configuration, 
 the VHOST and VFIO configuration both have a higher Host System percentage because of additional 

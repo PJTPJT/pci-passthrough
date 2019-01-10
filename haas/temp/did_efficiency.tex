@@ -48,7 +48,7 @@ card. INTR: interrupt. TMR: timer.}
 \vspace{-0.05in}
 \caption{Comparison of the number of network and timer interrupts per second experienced
 between a Bare-metal server and a DTID HaaS VM, when they send out 
-TCP traffic over a 40Gbps Infiniband link at full speed using iperf}
+TCP traffic over a 40Gbps Infiniband link at full speed using iPerf}
 \label{tab:network_interrupts}
 \vspace{-0.06in}
 \end{table}
@@ -94,7 +94,7 @@ is part of our future work.
 
 To determine if a DTID HaaS VM indeed performs like a bare-metal server,
 we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
-experiences when they send out TCP traffic over a 40Gbps infiniband link using iperf.
+experiences when they send out TCP traffic over a 40Gbps infiniband link using iPerf.
 In this test, CPU core 0 is configured to process NIC interrupts and 250Hz local timer interrupts, whereas CPU core 1 runs the 
 iPerf TCP benchmark and processes 250Hz local timer interrupts.
 As shown in Table~\ref{tab:network_interrupts},
@@ -113,10 +113,10 @@ the iPerf benchmark process which sets up aperiodic timers in addition to the sy
 
 \mycomment{
 We measure the expected frequency of timer and network
-interrupts, when running the iperf benchmark over the 40Gbps
+interrupts, when running the iPerf benchmark over the 40Gbps
 infiniband. Both the host and guest uses two cores. One core
 handles the network interrupts, while the other core runs the
-iperf benchmark. In Table~\ref{tab:network_interrupts}, the
+iPerf benchmark. In Table~\ref{tab:network_interrupts}, the
 host and guest both receive the expected frequency of timer
 and network interrupts and saturate the 40Gbps link.
 
@@ -135,7 +135,7 @@ Figure~\ref{fig:network_latency}, and
 Table~\ref{tab:cpu_utilization_40gbps}.
 
 Moreover, we observe that the spurious interrupt occurs on the
-core running the iperf benchmark, but there is no network
+core running the iPerf benchmark, but there is no network
 interrupts. Since the spurious timer interrupt also happens
 after the VM entry, the perf analysis suggests it is due to
 other type of VM exits such as IO instructions, MSR writes or
