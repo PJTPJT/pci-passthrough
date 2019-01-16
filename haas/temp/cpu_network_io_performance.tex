@@ -207,13 +207,13 @@ without causing any VM exit.
 \renewcommand{\arraystretch}{1.2}
 \small
 \begin{center}
-\begin{tabular}{|c|c|c|c|c|} \hline
-{\bf Configuration} & {\bf Host } & {\bf Host } & {\bf Guest} & {\bf Guest} \\ 
-{\bf } & {\bf  User } & {\bf System } & {\bf  User} & {\bf System} \\ \hline
- {\bf Bare-metal}    & 0.64\%   & 80.98\% & NA & NA\\ \hline
- {\bf VHOST} & 68.6\%   & 84.36\% & 0.67\% & 91.23\% \\ \hline
-{\bf VFIO}   & 90.48\%  & 85.08\% & 0.62\% & 83.77\% \\ \hline
- {\bf OPTI}  & 199.76\% & 0.24\%  & 0.66\% & 81.7\% \\ \hline 
+\begin{tabular}{|c|c|c|c|c|c|} \hline
+{\bf } & {\bf Host } & {\bf Host } & {\bf Guest} & {\bf Guest} & {\bf Total}\\ 
+{\bf } & {\bf  User } & {\bf System } & {\bf  User} & {\bf System} & \\ \hline
+ {\bf Bare-metal}    & 0.64\%   & 80.98\% & NA & NA & 81.62\%\\ \hline
+ {\bf VHOST} & 68.32\%   & 83.85\% & 0.23\% & 31.20\% & 115.28\%\\ \hline
+{\bf VFIO}   & 83.35\%  & 99.25\% & 0.26\% & 34.92\% & 134.43\% \\ \hline
+ {\bf OPTI}  & 199.76\% & 0.24\%  & 0.65\% & 81.62\% & 82.51\% \\ \hline 
 \end{tabular}
 \end{center}
 \vspace{-0.1in}
@@ -224,26 +224,36 @@ when the evaluated configurations send out TCP traffic over a
 \vspace{-0.1in}
 \end{table}
 
-We measured the percentage of a \na server's run time spent in the host OS ({\em Host System}),
-in the HaaS VM ({\em Host User}), in the kernel mode of the HaaS VM ({\em Guest System})
-and in the user model  of the HaaS VM ({\em Guest User}).
+We measured the CPU utilization percentage by the host OS ({\em Host System}),
+by the HaaS VM ({\em Host User}), by the kernel of the HaaS VM ({\em Guest System})
+and by the user programs of the HaaS VM ({\em Guest User}).
 Because  the Bare-metal configuration is not virtualized, its Host User percentage is due to 
 the user-level test program, in this case iPerf, and it does not have Guest System or 
 Guest User percentage.
-As shown in Table~\ref{tab:cpu_utilization_40gbps}, compared with the Bare-metal configuration, 
-the VHOST and VFIO configuration both have a higher Host System percentage because of additional 
-processing costs associated with VM exits and entries that result from HLT instructions, EPT faults and interrupts.
+The total CPU utilization is equal to $Guest System + Guest User + Host System$.
+As shown in Table~\ref{tab:cpu_utilization_40gbps}, 
+the Bare-metal configuration consumes the least CPU resource,  
+the OPTI configuration's CPU resource consumption comes very close to that of the Bare-metal configuration,
+and both the VHOST and VFIO configuration consume at least 40\% more CPU resource in comparison.
+%compared with the Bare-metal configuration, 
+%the VHOST and VFIO configuration both have a higher Host System percentage because of additional 
+%processing costs associated with VM exits and entries that result from HLT instructions, EPT faults and interrupts.
 
-The VHOST configuration's Guest User percentage is significantly higher than 
-that of  the Bare-metal configuration, because the kernel of the HaaS VM is responsible for {\em virtual} NIC 
-interaction and interrupt processing, and TCP protocol processing.
-The VFIO configuration's Guest User percentage is significantly higher than 
-that of  the VHOST configuration, because the kernel of the HaaS VM is responsible for {\em physical} NIC 
-interaction and interrupt processing, and TCP protocol processing.
+Even though the VFIO configuration enables direct access to and interrupt delivery for NICs,
+surprisingly, the total CPU utilization of the VFIO configuration is actually higher than that of 
+the VHOST configuration. The main cause is the large number of VM exits due to HLT instructions in the VFIO configuration, as shown in Table~\ref{tab:vm_exit}. When KVM processes emulates an HLT instruction, it uses a busy waiting loop, and the CPU cycles burned by these busy waiting loops bump up the Host System mode's CPU utilization and eventually the total CPU utilization of the VFIO configuration.
+
+
+%The VHOST configuration's Guest User percentage is significantly higher than 
+%that of  the Bare-metal configuration, because the kernel of the HaaS VM is responsible for {\em virtual} NIC 
+%interaction and interrupt processing, and TCP protocol processing.
+%The VFIO configuration's Guest User percentage is significantly higher than 
+%that of  the VHOST configuration, because the kernel of the HaaS VM is responsible for {\em physical} NIC 
+%interaction and interrupt processing, and TCP protocol processing.
 
 In the OPTI configuration, the Host User percentage is close to 0\%, indicating that the hypervisor is almost 
 completely out of the picture. Although the Host User percentage is 199.76\%, the sum of the Guest User and
-Guest System percentage is only 83.3\%. The gap between the two is due to HLT instructions.
+Guest System percentage is only 82.27\%. The gap between the two is due to HLT instructions.
 That is, when a HaaS VM becomes idle and issues HLT instructions, these instructions put the VM in a lower power
 idle mode. However, to the hypervisor, the HaaS VM remains active because it takes up the CPU.
 In the end, the fact that the Guest User and Guest System percentage of the OPTI configuration are almost 
