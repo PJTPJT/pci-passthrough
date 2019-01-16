@@ -153,7 +153,7 @@ evaluated configurations.
 Table \ref{tab:vm_exit}  lists the number of VM exists per second a HaaS VM experiences 
 when it sends out TCP traffic over an Infiniband link in one of the four virtualized 
 configurations. 
-The VHOST configuration incurs a VM exit whenever a HaaS VM executes an HLT instruction,
+The VHOST configuration incurs a VM exit whenever a HaaS VM executes the HLT instruction,
 accesses a NIC and triggers an EPT fault, or gets interrupted. 
 
 In contrast, a HaaS VM running in the VFIO configuration does not trigger any VM exit when
@@ -171,7 +171,7 @@ When a HaaS VM occupies the CPU longer, it is more likely for the VM to be idle 
  Compared with the VFIO configuration, the OPTI configuration further eliminates VM exits due to HLT instructions.
  The only VM exits for a HaaS VM running in the OPTI configuration are caused by local interrupts.
  In our test, because both the hypervisor and the test HaaS VM set a timer 
- resolution of 4 msec or 250Hz and they expiration times
+ resolution of 4 msec or 250Hz and their expiration times
  are not synchronized, about 500 hardware timer interrupts are generated every second.
  These interrupts are all delivered through the hypervisor to the HaaS VM. That's why the OPTI configuration 
  experiences roughly 498 VM exits per second, most of which are attributed to timer interrupts.
@@ -241,7 +241,7 @@ and both the VHOST and VFIO configuration consume at least 40\% more CPU resourc
 
 Even though the VFIO configuration enables direct access to and interrupt delivery for NICs,
 surprisingly, the total CPU utilization of the VFIO configuration is actually higher than that of 
-the VHOST configuration. The main cause is the large number of VM exits due to HLT instructions in the VFIO configuration, as shown in Table~\ref{tab:vm_exit}. When KVM processes emulates an HLT instruction, it uses a busy waiting loop, and the CPU cycles burned by these busy waiting loops bump up the Host System mode's CPU utilization and eventually the total CPU utilization of the VFIO configuration.
+the VHOST configuration. The main cause is the large number of VM exits due to HLT instructions in the VFIO configuration, as shown in Table~\ref{tab:vm_exit}. When KVM processes emulates the HLT instruction, it uses a busy waiting loop, and the CPU cycles burned by these busy waiting loops bump up the Host System mode's CPU utilization and eventually the total CPU utilization of the VFIO configuration.
 
 
 %The VHOST configuration's Guest User percentage is significantly higher than 
