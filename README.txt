@@ -10,8 +10,7 @@ Authors
 - Aprameya Bhat     (abhat3@binghamton.edu)
 - Kartik Gopalan    (kartik@binghamton.edu)
 
-Major Revision
---------------
-- December 09, 2017
-- March 21, 2018
-- June 29, 2018
+Linux Source Code
+-----------------
+- git@github.com:osnetsvn/linux-4.10.1.git
+- https://github.com/osnetsvn/linux-4.10.1.git
