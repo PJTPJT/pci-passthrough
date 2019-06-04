@@ -1,0 +1,80 @@
+% Describe the tested including the following items.
+% - Hardware configuration: CPU, memory and network cards.
+% - Guest: CPU, memory, bonding driver, assigned and virtual devices.
+% - QEMU
+% - KVM
+%\figw{cpu_state_diagram}{8}{CPU State Diagram}
+
+The experiments are run on machines equipped with the 10-core
+Intel Xeon CPU E4 v4 of 2.2GHz, 32GB memory, 40Gbps Mellanox
+ConnectX-3 Pro network interface and Intel Corporation
+Ethernet Connection I217-LM. The Linux kernel 4.10.1 and QEMU
+2.9.0 are installed in the host. The guest is configured with
+1 to 9 vCPUs, 10GB of RAM, 1 Virtio and 1 pass-through network
+device. The Linux kernel of 4.10.1 and the Ethernet bonding
+driver are installed in the guest. The bonding driver operates
+in active-backup mode.
+
+The tools to measure the CPU, memory and network I/O
+performance are listed as follows. iPerf 2.0.5~\cite{iperf}
+measures the network bandwidth. Ping~\cite{ping} measures the
+round-trip delay. Atopsar 2.3.0~\cite{atopsar} measures the
+CPU utilization. Free 3.3.10~\cite{free} measures the memory
+consumption. Perf 4.10.1~\cite{perf} measures the number of VM
+exits. Cyclictest 0.93~\cite{cyclictest} benchmarks the timer
+interrupt latency. 
+%Kernbench 0.42~\cite{kernbench} benchmarks the CPU throughput. 
+The following configurations are evaluated:
+%depending on the physical or virtual network device, CPU
+%optimization and DTID.
+\mycomment{
+\begin{enumerate}[(a)]
+ \item The guest uses the Virtio network device backed by the
+  vHost driver (Guest + vHost).
+  \item The guest uses the assigned network device (Guest +
+  VFIO).
+  \item The guest uses the assigned network device. We also
+  apply the CPU optimization (OPTI Guest). There are no VM
+  exits due to the network interrupt and HLT instruction.
+  \item The guest uses the assigned network device. We apply
+  both the CPU optimization and DTID (DTID Guest). guest.
+  There are no VM exits due the network interrupts, HLT
+  instruction, local timer interrupts, direct timer updates or
+  EPT violations when accessing the shared PID page.
+\end{enumerate}
+}
+
+\begin{itemize}
+\setlength\itemsep{-0.04in}
+  \item {\bf Bare-metal}: A physical machine without virtualization.
+  
+  \item {\bf VHOST}: A HaaS VM accessing I/O devices using the vHost interface.
+  
+  \item {\bf VFIO}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts.
+  
+  \item {\bf OPTI}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts or HLT instructions.  
+  
+  \item{\bf  DTID}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts, HLT instructions or local timer interrupts.  
+ 
+\end{itemize}
+
+
+\mycomment{
+In Figure~\ref{fig:cpu_state_diagram}, it shows the transition
+among host and different guest configurations. The control is
+transferred to the host upon a VM exit. After the host has
+done it emulation, the control is return back to the guest. In
+the case of live migration, OPTI or DTID guest are reverted
+back to the unmodified guest before the migration starts.
+After the migration ends, the unmodified guest is again
+transformed to the OPTI or DTID guest.
+}
+
+
+In our experiment, it is necessary to use two CPU cores to
+saturate a 40Gbps Infiniband link for all configurations. One
+core is handling the interrupts and soft IRQs, while the other
+is running the network performance testing workload. We use a third
+core to monitor the CPU utilization, which does not
+affect the network performance. In contrast, it needs only one
+core to saturate a gigabit Ethernet link.

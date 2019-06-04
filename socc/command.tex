@@ -1,0 +1,66 @@
+
+% Latex shortcut definitions for figures and common commands
+
+% The ~ symbol adds a hard space after the name
+%\newcommand{\fullname}{{Bare-metal Virtual Machine~}} 
+%\newcommand{\acro}{BVM} 
+%\newcommand{\name}{{\acro~}}
+
+%\newcommand{\fullname}{{ITRI HaaS OS~}} 
+\newcommand{\sna}{IHO} 
+\newcommand{\na}{{\sna~}}
+
+%\newcommand{\fullname}{{Single-VM virtualization~}} 
+%\newcommand{\sna}{SVMV} 
+%\newcommand{\na}{{\sna~}}
+
+\newcommand{\mycomment}[1]{{}}
+
+%\renewcommand{\baselinestretch}{1}
+%\setcounter{secnumdepth}{3}
+
+\newcommand{\figh}[3]
+{
+\begin{figure}
+\centerline{\includegraphics[height=#2cm]{fig/#1.pdf}}
+%\centerline{\includegraphics[height=#2]{fig/#1.eps}}
+\caption{\label{fig:#1} #3}
+\vspace{-0.1in}
+\end{figure}
+}
+
+\newcommand{\figw}[3]
+{
+\begin{figure}[t]
+\centerline{\includegraphics[width=#2cm]{fig/#1.pdf}}
+%\centerline{\includegraphics[width=#2]{fig/#1.eps}}
+\caption{\label{fig:#1} #3}
+\vspace{-0.1in}
+\end{figure}
+}
+
+\newcommand{\fighw}[4]
+{
+\begin{figure}[t]
+\centerline{\includegraphics[width=#2cm,height=#3cm]{fig/#1.pdf}}
+%\centerline{\includegraphics[width=#2]{fig/#1.eps}}
+\caption{\label{fig:#1} #4}
+\vspace{-0.1in}
+\end{figure}
+}
+
+\newcommand{\figwtwocol}[3]
+{
+\begin{figure*}[t]
+\centerline{\includegraphics[width=#2cm]{fig/#1.pdf}}
+%\centerline{\includegraphics[width=#2]{fig/#1.eps}}
+\caption{\label{fig:#1} #3}
+\end{figure*}
+}
+
+\newcommand{\minifigw}[2]
+{
+\centerline{\includegraphics[width=#2cm]{fig/#1.pdf}}
+%\centerline{\includegraphics[width=#2]{fig/#1.eps}}
+}
+

@@ -1,0 +1,49 @@
+\section{Performance Evaluation}
+
+\mycomment{
+In this section we present our solutions using macro
+and micro-benchmarks. We demonstrate the following.
+\begin{itemize}
+  \item The guest using our optimization matches the baremetal
+  network performance with the minimum CPU overhead.
+  \item The guest with DTID improves the timer interrupt
+  latency by directly handling the timer interrupt and
+  updating the timer.
+  \item The guest with DTID ignores the NIC-induced timer
+  interrupts while achieving the baremetal network bandwidth
+  and latency performance with low CPU overhead.
+  \item DTID is scalable to all CPUs, while the host has its
+  dedicated CPU.
+  \item The guest with DTID matches the baremetal CPU
+  throughput.
+  \item The guest using the bonding driver and our QEMU
+  optimization does not experience the apparent network
+  downtime during the migration.
+  \item The total memory consumption of idle hypervisor is
+  between 80 to 120MB of RAM.
+\end{itemize}
+
+In addition, the total number lines changed in the guest OS is
+387. First, 43 lines of code are added to the timer interrupt
+handler to set the PIR timer-interrupt bits and ignore the
+spurious timer interrupt. Second, the kernel module of 110
+lines is used to adjust for the LAPIC timers. Since the timers
+are calibrated by the host at boot time, the guest needs to
+adjust its multiplication and shift factor of tick calculation
+to the host configuration. The module consumes 16KB of RAM.
+Third, the kernel module of 234 lines is used to map or unmap
+the shared PID page. The module consumes 16KB of RAM plus $n$
+shared PID pages, where each page is 4KB.
+}
+
+\subsection{Evaluation Testbed and Methodology}
+\input{evaluation/evaluation_testbed}
+
+\subsection{Network I/O Performance}
+\input{evaluation/cpu_network_io_performance}
+
+\subsection{Direct Interrupt Delivery Efficiency}
+\input{evaluation/did_efficiency}
+
+\subsection{Live Migration Performance}
+\input{evaluation/migration_performance}

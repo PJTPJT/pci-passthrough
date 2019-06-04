@@ -1,0 +1,491 @@
+Review #734A
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Reviewer confidence
+-------------------
+3. High
+
+Paper summary
+-------------
+This paper describes a technique for recovering many of the
+benefits of hypervisor-level virtualization in a HaaS setting,
+where providers in principle eschew the installation of a
+software virtualization layer. The key idea is to insert a
+hypervisor-like layer that is specialized for the case where
+there is a single tenant with exclusive access to all machine
+resources, so the technical focus of the paper is on how to
+minimize interposition on the hardware while still retaining
+the ability support features that require interposition, such
+as live migration. The solution reserves a core for the
+hypervisor layer, and combines aspects of direct device
+assignment with para-virtual I/O to make it possible to run on
+bare metal in the common case, but fall back to para-virtual
+techniques during migration so that the hypervisor can
+actually capture the device state needed to migrate the
+"virtual" machine.
+
+Strengths
+---------
++ Good background, especially the material on posted
+  interrupts
++ Important area, clearly on-topic for ATC
++ Very rich in technical detail
++ Bonded driver to combine pass through and paravirtual NICs
+  backed by single SR-IOV device is a very cool idea.
+
+Weaknesses
+----------
+- Much of the work can be seen as an exercise in removing
+  functionality from an existing VMM
+- Often reads more like an Intel manual than a research paper:
+  I love this kind of paper, and even I found it a bit
+  grueling after a while. People who don't work on this kind
+  of thing may find it inaccessible.
+- As a "bare-metal" solution, it requires a great deal: host
+  software, guest code change, etc, appears to be entirely
+  non-portable.
+
+Detailed feedback
+-----------------
+Thank you for submitting this work to ATC. I enjoyed reading
+this paper and found myself spending a lot of time with it.
+Other researchers who work on or adjacent to core
+virtualization are likely to find this an interesting read as
+well.
+
+To its credit, this paper provides some great background on
+existing HaaS techniques, as well as hardware and para-
+virtualization. While the research prototype (IHO) could be
+fairly characterized as a very stripped down hypervisor, the
+strip-down effort appears to have involved some non-trivial
+technical effort and careful thought, and there is material in
+this paper for people both familiar an unfamiliar with the
+area to learn from. To be frank, while I've worked in
+virtualization for some time, and have also used HaaS
+services, I have always wondered how providers go about
+supporting a HaaS service, and found this paper an engaging
+read, both for its background on current approaches and for
+the creativity it brought to the problem of building a
+hypervisor specialized for a single machine case, where the
+goal is to avoid interposition almost entirely. In particular,
+the technique for making mostly non-interposed network I/O
+migratable, by standing up a bonded driver that composes a
+pass-through NIC with a para-virtual one based on the same
+physical device is an idea I didn't see coming, and found to
+have considerable conceptual appeal. The technical meat about
+IOAPIC management, and how avoid VM-exits for timer interrupts
+and IPIs was interesting as well.
+
+The paper is not without weaknesses. From a writing
+perspective, the paper is not as straightforward as I would
+like about the stack components present in the proposed
+solution. The paper begins by talking about HaaS techniques,
+provides quite a thorough tour of the background, and sets up
+the expectation that IHO will be a very thin bare-metal
+hypervisor that does as little as possible so that the HaaS
+abstraction is preserved as much as possible. However, the
+actual system transforms through a very slow reveal to be a
+KVM variant that requires not just guest drivers but guest
+code change, renders physical cores unusable for the guest,
+etc. To be clear, I am not of the school of thought that holds
+guest modification to be a priori bad, and if your goal is to
+manage a fleet of Linux hosts with mostly HaaS-like properties
+and network I/O as the only important class of I/O, IHO is
+probably a great way to go about it. I just felt that what the
+paper delivered by the end was sufficiently different from the
+expectation I got out of the front-matter that it made me wish
+the authors had characterized it differently from the
+beginning. There are cool ideas here either way, and a
+stronger paper would be clearer about how the system-building
+relates to the goals and to the nomenclature in the community.
+
+The paper will not appeal to everyone: if you don't love
+virtualization, this paper is probably going to be too much in
+the weeds for you. I consumed the low-level details
+voraciously at first, but by the time the evaluation came
+around, I was pretty exhausted from having to separate
+low-level details from important conceptual information
+without much help from the authors.
+
+My net weak-positive position on this paper reflects two
+important perspectives. First, I think there is interesting
+ideation here, but acknowledge a contrasting position that
+finds this work to be an exercise in removing functionality
+from an existing system, and which may combine ideas in
+interesting ways but relies pretty heavily on techniques that
+won't surprise people who work in the area. Second, while I
+enjoyed it, I similarly acknowledge that the paper will be
+inaccessible to the fraction (likely, majority) of an ATC
+audience that doesn't work in virtualization.
+
+Comments/Nits/Questions:
+------------------------------------------------
+* In section 2, why do you say that live migration requires
+  trust inversion (hypervisor trusts the migrated OS with
+  access to hypervisor memory)? Is this really what you meant
+  to say?
+
+* The technique for switching to para-virtual I/O to capture
+  state to enable live migration is cool, as I've said more
+  than once above. If I understand it correctly, it depends a
+  bit on the fact that networking applications are used to
+  handling lost connections. How would you handle other
+  devices that support SR-IOV but may not have a similar
+  degree of resilience built into their protocols? Smart
+  Disks? GPUs?
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #734B
+===========================================================================
+
+Overall merit
+-------------
+1. Reject
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Reviewer confidence
+-------------------
+3. High
+
+Paper summary
+-------------
+This paper describes an HaaS platform named IHO, focusing
+specifically on the technical aspects of its "Single Virtual
+Machine Virtualization". This is an attempt to give HaaS
+providers and users near bare-metal performance, while still
+providing common, hypervisor-assisted cloud services such as
+live migration, VM introspection, and monitoring.
+
+The Single Virtual Machine Virtualization scheme is based on
+Linux KVM/QEMU, and adds optimized, VMEXIT-less interrupt
+delivery to the single guest. By eliminating VMEXITs for local
+timer interrupts and in-guest HLT instructions (because it's
+safe to do so in a single-tenant/guest case), system load can
+be drastically reduced for some kinds of workloads. The
+authors also attempt to solve the problem of migration in the
+face of direct device assignment by using an in-guest channel
+bond of multiple NIC VFs (one of which is directly-acccessible
+to the guest using VFIO, and the other is an emulated virtio
+device); this allows them to hot-unplug the VFIO NIC prior to
+migration to avoid saving physical device state.
+
+Strengths
+---------
+The paper is reasonably-well written, and provides most of the
+necessary background information to understand the
+APIC-oriented optimizations it proposes. It is an interesting
+implied set of changes to the x86 hardware-assisted
+virtualization that would bring VMs nearer to bare-metal
+performance, coupled to some performance numbers---but this
+information isn't really new.
+
+Weaknesses
+----------
+The introduction claims that IHO supports both Linux and
+Windows guests, but later makes clear that significant guest
+modification is necessary to support its optimizations (but
+clearly the authors only modified Linux); this makes it a bad
+fit for some bare-metal cloud use cases. Although the
+background information is reasonable, some of the specific
+technical contributions made are very briefly discussed. The
+evaluation is missing important experiment setup information,
+and is incorrect and incomprehensible at points.
+
+Detailed feedback
+-----------------
+This paper is an interesting attempt at having one's cake and
+eating it, too, combining the goals of having raw hardware
+access while still presenting a hypervisor control/monitoring
+interface. It comes across as a collection of optimizations,
+including one that isn't really supported by hardware (the
+transformation of local APIC timer interrupts into
+PIN-deliverable interrupts), and thus requires guest
+modifications to implement. Other workloads would presumably
+require more optimization to avoid VMEXITs (e.g. IPI send).
+
+Given that IHO is a modification of KVM/QEMU, it would be best
+to explicitly state that those systems (and Xen) have had
+support for most of the supporting technologies for years
+(even posted interrupt delivery has been supported in
+Linux/Xen for 3-4 years). Instead, in the second and third
+paragraphs of Section 3 (and in the paragraph directly above
+3.1.1), the paper makes it sound more like it is IHO doing the
+work of in-guest direct PCIe device interaction and posted
+interrupt delivery, but IHO is really just using and modifying
+it. The bulk of the work is done; IHO undoes parts of it
+(based on the single-VM assumption), and enables some kinds of
+local and remote interrupt delivery directly to the VM without
+incurring VMEXITs on receipt, thus decreasing system load.
+
+The second paragraph of Section 3.3 does not provide enough
+information to understand everything IHO does to turn a local
+APIC timer interrupt into a PIN-deliverable one (and for IPI
+direct delivery). Elaboration is likely necessary to help
+others reproduce your work. These are two of the core
+technical contributions, and the paper devoted significant
+background to the underlying APIC goo. The paper should say
+more so that the mechanism can be fully understood.
+
+The method of using in-guest channel bonding of one VFIO
+device and one emulated virtio device (and hot-unplug/plug of
+the VFIO device) to work around the device-specific state
+saving problem during live migration is inventive, but it
+relies on configuration of existing OS mechanisms. Moreover,
+it would seem to preclude in-guest use cases like DPDK.
+Finally, this method of masking the device-state-saving
+problem does not seem to extend to things like disk
+controllers or accelerator cards (GPUs, FPGAs).
+
+The evaluation is lacking some important detail. Which modes
+was iperf run in (uni/bi-directional, single/multi-stream)?
+What packet sizes did were used; were jumbo frames enabled?
+
+The two paragraphs discussing Table 3 at the bottom of page 9
+are confused and/or wrong. The first refers to "Guest User"
+times, but that makes no sense. I couldn't understand the
+point of that paragraph. The second of the two paragraphs also
+mis-references "Host-User" (should be "Host-System", I think),
+and I'm not sure where the 83.3% number comes from (should be
+82.36%, if I understood the reasoning).
+
+In the migration part of the evaluation, there is no
+comparison of packet loss numbers (or any other migration
+metric) to existing migration systems. That part was also
+strange, due to the fact that the evaluation configuration
+changed to two bonded GbE devices, instead of bonded 40GbE
+VFs. Why aren't both included?
+
+Brief, specific comments:
+
+The general discussion in the introduction of IHO's PDCI,
+virtual network capabilities, etc, seems unnecessarily
+detailed. The paper is all about the virtualization
+mechanisms.
+
+In the 5th paragraph of Section 3.3, the paper states that IHO
+places the PIR on a guest-writeable page. I think you meant
+the PID; the PIR part of the PID is not separable from the
+rest of the PID
+(https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf,
+Vol 3C, chapter 29, page 13).
+
+It would be helpful to add some text stating that configuring
+timer interrupts and IPIs still costs a VMEXIT; the only way
+to avoid that is to give the guest direct access to the entire
+local APIC as well as the PID, I think. And IHO couldn't give
+direct local APIC access to the guest without allowing
+potential "attacks" on VCPU0, I believe.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #734C
+===========================================================================
+
+Overall merit
+-------------
+2. Weak reject
+
+Reviewer expertise
+------------------
+4. Expert
+
+Reviewer confidence
+-------------------
+3. High
+
+Paper summary
+-------------
+This paper presents a virtualization architecture for
+bare-metal cloud computing. The system provides the advantages
+of having a hypervisor while allowing tenants near-complete
+access to and control of the underlying hardware. This allows
+the cloud provider to provide monitoring, migration, and other
+services, while the tenant can achieve high performance.
+
+Strengths
+---------
+The paper presents a pragmatic system that enables bare-metal
+cloud like behavior with the addition of management and
+serviceability.
+
+Weaknesses
+----------
+The system does require the cooperation of the guest operating
+system in order to function effectively. While the changes are
+seemingly minimal, they are still required.
+
+Detailed feedback
+-----------------
+This is a useful step towards providing a virtualization layer
+to allow serviceability and manageability while still
+providing a cloud tenant near bare-metal access and control.
+The system appears well designed and is shown to incur minimal
+overhead.
+
+However, the novelty of the overall system is not very high.
+The interrupt delivery mechanisms and timer handling are novel
+and interesting. The judicious use of the VMCS control blocks
+to allow the guest access to the hardware is well thought out,
+but relatively straight forward. The paper does a good job of
+identifying the bottlenecks, explaining why protection is not
+needed when there is only a single VM, and showing how to
+mitigate them.
+
+The paper purports to provide support for bare-metal clouds.
+One of the points of a bare-metal cloud is that the tenant can
+install whatever OS they want. However, with this system, that
+is not true. There are modifications to the OS required in
+order to collaborate with the system. Notably, the handling of
+timer interrupts. One also needs to use NIC bonding for live
+migration. This needs to be stated clearly up front in the
+introduction. This is not necessarily a deal breaker, but it
+is a limitation. I cannot necessarily install a closed-source
+OS in such a cloud, unless it supports these modifications
+already.
+
+Furthermore, the performance results need to be presented
+better. For example, the CPU utilization needs to be included
+in Table 1. As all configurations saturate the link, it is
+unclear if they are offering similar performance or not. The
+inclusion of CPU utilization would more accurately portray the
+system's performance. Further, Table 3 is difficult to
+understand and poorly explained. It is unclear from the text
+what the four categories actually are, and the values are not
+intuitive. The text seems to have errors in it as well, making
+it harder to understand ("In the OPTI configuration, the Host
+User percentage is close to 0%...", yet in the table it is
+199.76%). Furthermore, the total CPU utilization in OPTI is
+near 300%, not the 200% of VHOST and VFIO. So, is it using an
+additional CPU? The text seemingly tries to address this, but
+fails to do so in a comprehensible way.
+
+
+Comments
+===========================================================================
+
+Rebuttal Response by Kartik Gopalan <kartik@binghamton.edu>
+---------------------------------------------------------------------------
+Thank you for your thoughtful and detailed reviews. Here are
+some answers and clarifications.
+
+Q (R1, R2, R3): Guest modifications
+
+Response:
+All our guest code is self-contained within a guest kernel
+module. No changes are required to the core guest kernel. Our
+guest module now transparently interposes between relevant
+guest operations (timer handler, IPI handlers, bonding driver
+configuration, etc) to disable/enable direct hardware access
+before/after live migration.
+
+Q (R1): In section 2, why do you say that live migration
+requires trust inversion?
+
+Response:
+Our statement did not refer to standard live VM migration, but
+to reference [23] about a special live migration approach for
+bare-metal servers. In [23]. the bare-metal OS (being
+migrated) launches a hypervisor code, which then
+de-privileges, migrates, and re-privileges the OS. Hence the
+trust inversion in [23].
+
+Q (R1): If I understand it correctly, [switching to
+para-virtual NIC for live migration] depends a bit on the fact
+that networking applications are used to handling lost
+connections. How would you handle other devices that support
+SR-IOV but may not have a similar degree of resilience built
+into their protocols?Smart Disks? GPUs?
+
+Response:
+In our implementation, TCP connections are not lost when
+switching traffic to para-virtual I/O (hence the liveness).
+Also, very few packets are lost during this switchover
+(reported packet losses were a later found to be a measurement
+artifact); that said application resilience to some packet
+losses is important. We have not tried other SR-IOV devices
+yet; likely the solution would depend on the extent of their
+statefulness and the serializability of such state.
+
+Q (R2): In the 5th paragraph of Section 3.3, the paper states
+that IHO places the PIR on a guest-writeable page. I think you
+meant the PID; ...
+
+Response:
+Yes, we meant PID, not PIR. Thank you for catching that.
+
+Q (R2): It would be helpful to add some text stating that
+configuring timer interrupts and IPIs still costs a VMEXIT;
+the only way to avoid that is to give the guest direct access
+to the entire local APIC as well as the PID, I think. And IHO
+couldn't give direct local APIC access to the guest without
+allowing potential "attacks" on VCPU0, I believe.
+
+Response:
+In our system, configuring timer interrupts and IPIs do not
+cause a VM Exit, since we disable VM Exits on corresponding
+MSR Writes in the VMCS for each guest VCPU. Guest VCPUs are
+not allowed to run on CPU0, or to control CPU0's local APIC
+and timer. CPU0 is also protected from malicious guest IPIs by
+not exposing CPU0’s local APIC ID to the guest kernel module.
+
+Q (R2, R3): Better explanation of performance results:
+
+Response:
+All comments are well taken. Thank you. We will do a better
+job explaining the experimental setup and results, especially
+CPU utilization in Table 3. The CPU utilizations were measured
+both in the host (“Host User” and “Host System” columns) and
+the guest (“Guest User” and “Guest System”). “Host User”
+includes CPU utilization by guest in non-root mode. For OPTI
+row, the 199.76% “Host User” number is the host-level
+measurement of guest CPU utilization in non-root mode;
+however, since VM Exits on HLT instruction are disabled, the
+real guest CPU utilization is lower than that seen from host.
+
+Q (R2): There is no comparison of packet loss numbers (or any
+other migration metric) to existing migration systems....the
+evaluation configuration changed to two bonded GbE devices,
+instead of bonded 40GbE VFs.
+
+Response: Traditional live migration in KVM/QEMU does not
+migrate VMs having pass-through devices. We reported
+additional overheads over traditional live migration for VM's
+that have only para-virtual NICs. Specifically, we reported
+packet loss numbers for hot-plug and hot-unplug operations
+(section 4.4 para 4), but those losses too have since been
+eliminated; those packet losses turned out to be a measurement
+artifact of tcpdump in guest. Decision to use of 1GbE driver
+for this experiment was unfortunately due to last-minute
+configuration issues with our machine having 40GbE interface;
+we will redo this experiment over 40GbE. Sorry for the
+confusion.
+
+Comment @A1 by Reviewer B
+---------------------------------------------------------------------------
+**Post-rebuttal comment.**
+The reviewers discussed the paper submission and the authors'
+response. The response was informative, but it did not change
+the reviewers' ratings of the submission. The presentation of
+the performance results, the missing support for/experience
+with a variety of SR-IOV devices, and the need for guest
+modifications (even if well-modularized) in a bare-metal
+context were issues that contributed to the consensus decision
+not to accept this paper for ATC '19. The reviewers hope that
+the authors can address these issues in a future paper about
+their research.
