@@ -70,13 +70,15 @@ specialized hypervisor,  called the Single VM
 hypervisor (SVMvisor)\footnote{The SVMvisor could conceptually be an extension of a physical server's trusted BIOS.},
 that runs on each physical server 
 and is optimized to run a single VM, called the HaaS VM.
+
 During normal execution, the SVMvisor allows 
 the HaaS VM to directly interact with physical I/O devices and processor hardware
-without hypervisor's intervention, 
+without the hypervisor's intervention, 
 as if it runs directly on a physical server with negligible performance overheads.
 At the same time, the SVMvisor can provide the HaaS VM with 
 features of conventional clouds, such as 
 live migration and VM introspection.
+
 %Bare-metal cloud operators provide a user with a physical data center instance (PDCI), which is 
 %composed of a set of physical machines connected in a way specified by the user. 
 %In the past three years, we have been developing a HaaS operating system called 
@@ -115,16 +117,24 @@ live migration and VM introspection.
 %For the HaaS use case in which a tenant installs an operating system (Linux or Windows) rather than a 
 %proprietary hypervisor on the physical servers of its PDCI, 
 %
-To summarize, the functional requirements of SVMvisor are as follows.
+
+Unlike traditional hypervisors, which are designed to limit and control a VM's 
+access to physical resources, the SVMvisor is designed to maximize the HaaS VM's 
+access to hardware while providing value-added services, such as live migration.
+Specifically, SVMvisor provides the following specialized support for a HaaS VM.
 \begin{itemize} 
 %\setlength\itemsep{-0.04in}
 \parskip 0mm
 \itemsep 0mm
-\item Direct passthrough of all PCIe devices without involving the hypervisor,
-\item Direct delivery of interrupts, including PCIe device interrupts, local timer interrupts, and inter-processor interrupts (IPI), 
-\item Seamless migration of virtual machine and physical device state, and 
-\item Minimal hypervisor footprint limited to one CPU core and around 100MB of RAM.
+\item Dedicated CPU and memory resources.
+\item Direct access to all PCIe devices without involving the hypervisor in data plane I/O processing.
+\item Direct delivery of all interrupts, including PCIe device interrupts, local timer interrupts, and inter-processor interrupts (IPI).
+\item Elimination of almost all VM exits during a HaaS VM's execution.
+\item Seamless live migration of a HaaS VM that has passthrough access to  physical devices.
+\item Minimal execution and memory footprint of the hypervisor, currently limited to one (non-dedicated) CPU core and around 100MB of RAM.
 \end{itemize}
+
+Compared to existing techniques~\cite{}, SVMvisor is novel because... TODO.
 %Except during VM migration, this hypervisor is not involved in the data-plane processing of any I/O operations, 
 %and thus imposes a negligible performance overhead at run time.  
 %With such a hypervisor installed on each physical server, \na can monitor each 
@@ -136,6 +146,6 @@ We first describe the design of SVMvisor,
 specifically its support for direct hardware access by a HaaS VM and live migration.
 Next, we present the implementation evaluation of our SVMvisor prototype
 on the Linux and KVM/QEMU platform.
-Finally, we discuss related work and conclusions.
+Finally, we discuss related work followed by conclusions.
 
 
