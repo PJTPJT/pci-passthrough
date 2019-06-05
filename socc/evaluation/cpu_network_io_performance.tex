@@ -44,7 +44,8 @@ are used.
 
 We use ping~\cite{ping} to measure the round-trip delays over
 a 40Gbps Infiniband link and use them to compare the network
-packet latency of the evaluated configuration. As shown in
+packet latency of the evaluated configuration. The size of
+ping packet is 56 bytes. As shown in
 Table~\ref{tab:network_performance}, when two CPU cores are
 used, the round-trip delay in the VHOST configuration is
 24$\mu$s, which is about twice as much as that of the other
