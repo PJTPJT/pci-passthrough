@@ -119,33 +119,50 @@ live migration and VM introspection.
 %
 
 Unlike traditional hypervisors, which are designed to limit and control a VM's 
-access to physical resources, the SVMvisor is designed to maximize the HaaS VM's 
-access to hardware while providing value-added services, such as live migration.
-Specifically, SVMvisor provides the following specialized support for a HaaS VM.
+access to resources, the SVMvisor is designed to maximize the HaaS VM's 
+access to physical hardware while retaining the ability to live migrate the VM on-demand.
+Specifically, SVMvisor provides the following features for a HaaS VM. 
 \begin{itemize} 
 %\setlength\itemsep{-0.04in}
 \parskip 0mm
 \itemsep 0mm
-\item Dedicated CPU and memory resources.
-\item Direct access to all PCIe devices without involving the hypervisor in data plane I/O processing.
-\item Direct delivery of all interrupts, including PCIe device interrupts, local timer interrupts, and inter-processor interrupts (IPI).
-\item Elimination of almost all VM exits during a HaaS VM's execution.
-\item Seamless live migration of a HaaS VM that has passthrough access to  physical devices.
-\item Minimal execution and memory footprint of the hypervisor, currently limited to one (non-dedicated) CPU core and around 100MB of RAM.
+
+\item Dedicated physical CPU and memory resources for HaaS VM.
+
+\item Direct access to all PCIe devices and local APIC timers by HaaS VM without hypervisor involvement.
+
+\item Direct delivery of all interrupts. Existing approaches~\cite{posted-interrupts,others}
+only deliver PCIe device interrupts directly to the guest. In addition, SVMvisor also supports 
+direct delivery of hardware timer interrupts from local APIC  and inter-processor interrupts (IPI) between 
+virtual CPUs (VCPUs) without hypervisor intervention via a novel use of VT-d 
+posted-interrupt~\cite{posted-interrupt} mechanism.
+
+\item Elimination of all major VM Exit overheads  during a HaaS VM's execution. 
+We identify how, in traditional passthrough I/O support,  VM Exits still
+lower the I/O throughput and increase CPU usage of the host.
+SVMvisor includes mechanisms to systematically eliminate
+these overheads to match bare-metal I/O performance and CPU usage within a HaaS VM.
+
+\item Seamless live migration of a HaaS VM having passthrough access to physical devices and local APIC timers. 
+Unlike existing approaches for bare-metal live migration~\cite{blmvisor,others}, 
+SVMvisor does not use any device-specific migration code, and yet matches the 
+liveness and application performance metrics of traditional live migration.
+Except during VM migration, SVMvisor is not involved in the HaaS VM's normal execution 
+and thus imposes a negligible performance overhead at run time.  
+
+\item Small execution and memory footprint of SVMvisor, currently limited to one non-dedicated CPU core and around 100MB of RAM, with room for further reduction.
+%TODO: Confirm with Kevin that CPU0 can also be used by the HaaS VM.
+
 \end{itemize}
 
-Compared to existing techniques~\cite{}, SVMvisor is novel because... TODO.
-%Except during VM migration, this hypervisor is not involved in the data-plane processing of any I/O operations, 
-%and thus imposes a negligible performance overhead at run time.  
 %With such a hypervisor installed on each physical server, \na can monitor each 
 %server's internal user activities using VM introspection, and seamlessly migrate the user state 
 %on the server from one physical machine to another. 
 
 The rest of this paper is organized as follows.
-We first describe the design of SVMvisor,
-specifically its support for direct hardware access by a HaaS VM and live migration.
-Next, we present the implementation evaluation of our SVMvisor prototype
+We first describe the design and implementation of SVMvisor,
+specifically the detailed description of the above contributions.
+Next, we evaluate the performance of our SVMvisor prototype
 on the Linux and KVM/QEMU platform.
 Finally, we discuss related work followed by conclusions.
-
 
