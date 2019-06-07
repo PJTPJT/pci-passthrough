@@ -1,20 +1,20 @@
-% DID efficiency.
+% DTID efficiency.
 
-\figw{cyclictest}{9}{The cumulative distribution function of
-timer interrupt latency measured using the Cyclictest
-benchmark for Bare-metal , VHOST, OPTI, and DTID
-configurations.}
+\figw{cyclictest_in_kernel}{8.5}{The cumulative distribution
+function of timer interrupt latency measured for the
+Bare-metal, DTID, DID and unmodified-guest (\textbf{VANILLA})
+configuration.}
 
 \begin{table}
 \renewcommand{\arraystretch}{1.2}
 \small
 \begin{center}
-\begin{tabular}{|l|c|c|c|c|} \hline
-& {\bf B/W} & {\bf CPU} & {\bf NIC INTR} & {\bf Tmr INTR} \\
-& {\bf (Gbps)} & {\bf Core} & {\bf (per sec)} & {\bf (per sec)}  \\ \hline 
-\multirow{2}{*}{\bf Bare-metal} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+& \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}B/W\\ (Gbps)\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}CPU\\ Core\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}NIC INTR\\ (per sec)\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}TMR INTR\\ (per sec)\end{tabular}} \\ \hline
+\multirow{2}{*}{Bare-Metal} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 348 \\ \hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}} {\bf DTID} \end{tabular}} & \multirow{2}{*}{37.35} & 0 & 110856 & 255 \\ \cline{3-5}
+\multirow{2}{*}{DTID} & \multirow{2}{*}{37.35} & 0 & 110856 & 255 \\ \cline{3-5}
 &  & 1 & 0 & 348 \\ \hline
 \end{tabular}
 \end{center}
@@ -23,51 +23,67 @@ configurations.}
 interrupts per second experienced between a Bare-metal server
 and a DTID HaaS VM, when they send out TCP traffic over a
 40Gbps Infiniband link at full speed using iPerf.
-\textbf{B/W}: Bandwidth. \textbf{Tmr}: Timer. \textbf{INTR}:
+\textbf{B/W}: Bandwidth. \textbf{TMR}: Timer. \textbf{INTR}:
 Interrupt.}
 \label{tab:network_interrupts}
 \vspace{-0.06in}
 \end{table}
 
-
 To evaluate the usefulness of direct timer interrupt delivery,
-we measured the timer interrupt latency using
-cyclictest~\cite{cyclictest} benchmark, which measures the
-interrupt latency by comparing the time taken when a sleep
-call is made and the corresponding wakeup time.  We ran the
-cyclictest program with the sleep time of 200$\mu$s for 10
-million iterations. 
+we measured the timer interrupt latency by setting up a
+periodic timer in the kernel. The timer interrupt latency was
+the timing difference between the expected and actual wakeup
+time. We ran the experiment with the sleep time of 200$\mu$s
+for 10 million iterations.
+
+As shown in Figure~\ref{fig:cyclictest_in_kernel}, the median
+timer interrupt latency for the Bare-metal, DID, DTID and
+VANILLA configuration were 1.51, 2.03, 2.04 and 9.20 $\mu$s,
+respectively. Both the a DTID and DID HaaS VM came close to
+the bare-metal OS and reduced the median timer interrupt
+latency by four times over a VANILLA HaaS VM. Because a DTID
+or DID HaaS VM still experienced VM exits due to reasons such
+as privileged instructions, its median timer interrupt latency
+is 0.52$\mu$s more than the bare-metal OS. Reducing this
+difference further by identifying the underlying VM exit
+reasons is part of our future work.
+
+Since both the NIC and timer-interrupt delivery used the
+posted-interrupt mechanism, it was possible that the timer
+interrupts was triggered by the network interrupts and arrived
+earlier than the expected time. When the DTID HaaS VM
+performed the network I/O over the 40Gbps Infiniband link,
+spurious timer interrupts did not only reduce the network
+bandwidth performanc, but also kept CPU busy handling
+additional timer interrupts. The filtering mechansim was
+implemented to ignore early timer interrupts. Its
+effectiveness was determined by measuring the frequency of NIC
+and timer interrupts for the DTID haas VM, when it transmitted
+the TCP traffic over a 40Gbps Infiniband link by
+iPerf~\cite{iperf}.
+
+In our experiment, the CPU core 0 was configured to process
+NIC interrupts and 250Hz local timer interrupts, whereas the
+CPU core 1 ran the TCP benchmark and processes 250Hz local
+timer interrupts. As shown in
+Table~\ref{tab:network_interrupts}, the timer interrupt rate
+of CPU core 0 of the DTID configuration was almost the same as
+that of the Bare-metal configuration. It demonstrated that
+\sna's spurious timer interrupt filtering mechanism worked
+correctly. Although the DTID configuration incurred additional
+filter processing overhead for every NIC interrupt, this
+overhead had negligible impact on its network bandwidth
+performance. The NIC interrupt rate of CPU core 0 of the DTID
+configuration was slightly lower than that of the Bare-metal
+configuration, because some of NIC interrupts were processed
+as part of timer interrupt processing. The timer interrupt
+rate of CPU core 1 was higher than that of CPU core 0 in both
+configurations because CPU core 1 runs the iPerf benchmark,
+which set up aperiodic timers in addition to the system's
+periodic 250Hz timers.
 
 
-
-We used the top 99\% of the measurements to compute a cumulative distribution function (CDF)
-for the timer interrupt latency. As shown in Figure~\ref{fig:cyclictest}, the 
-median timer interrupt latency for the Bare-metal, DTID, OPTI and
-VHOST configuration are 1.2, 2.46, 8.06 and 13.93 $\mu$s, respectively.
-That is, the a DTID HaaS VM reduces the median timer interrupt latency by
-more than five times over a VHOST HaaS VM.
-Because a DTID HaaS VM still experiences VM exits due to reasons such as privileged instructions,
-its median timer interrupt latency is 1.26$\mu$s more than the bare-metal OS. 
-Reducing this difference further by identifying the underlying VM exit reasons 
-is part of our future work.
-
-To determine if a DTID HaaS VM indeed performs like a bare-metal server,
-we measured the number of network and timer interrupts per second that a DTID HaaS VM and a bare-metal server
-experiences when they send out TCP traffic over a 40Gbps Infiniband link using iPerf.
-In this test, CPU core 0 is configured to process NIC interrupts and 250Hz local timer interrupts, whereas CPU core 1 runs the 
-iPerf TCP benchmark and processes 250Hz local timer interrupts.
-As shown in Table~\ref{tab:network_interrupts},
-the timer interrupt rate of CPU core 0 of the DTID configuration is almost the same as that of the Bare-metal configuration, 
-demonstrating that \sna's spurious timer interrupt filtering mechanism works correctly. 
-Even though the DTID configuration may incur additional filter processing overhead for every NIC interrupt,
-this overhead has negligible impact on its network bandwidth performance, which is comparable to that of the Bare-metal 
-configuration.   
-The NIC interrupt rate of CPU core 0 of the DTID configuration is slightly lower than that of the Bare-metal configuration, 
-because some of NIC interrupts are processed as part of timer interrupt processing.
-The timer interrupt rate of CPU core 1 is higher than that of CPU core 0 in both configurations because CPU core 1 runs
-the iPerf benchmark process which sets up aperiodic timers in addition to the system's periodic 250Hz timers. 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mycomment{
 \begin{table}[tbp]
 \begin{tabular}{|l|l|l|l|l|}
@@ -163,7 +179,7 @@ INTR: interrupt, SPU TMR INTR: spurious timer interrupt.}
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|} \hline
 & {\bf B/W} & {\bf CPU} & {\bf NIC INTR} & {\bf Tmr INTR} \\
-& {\bf (Gbps)} & {\bf Core} & {\bf (per sec)} & {\bf (per sec)}  \\ \hline 
+& {\bf (Gbps)} & {\bf Core} & {\bf (per sec)} & {\bf (per sec)}  \\ \hline
 \multirow{2}{*}{\bf Bare-metal} & \multirow{2}{*}{37.39} & 0 & 118592 & 256 \\ \cline{3-5}
 &  & 1 & 0 & 348 \\ \hline
 %\multirow{2}{*}{\bf OPTI} & \multirow{2}{*}{37.37} & 0 & 123024 & 256 \\ \cline{3-5}

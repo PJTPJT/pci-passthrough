@@ -22,8 +22,8 @@ round-trip delay. Atopsar 2.3.0~\cite{atopsar} measures the
 CPU utilization. Free 3.3.10~\cite{free} measures the memory
 consumption. Perf 4.10.1~\cite{perf} measures the number of VM
 exits. Cyclictest 0.93~\cite{cyclictest} benchmarks the timer
-interrupt latency. 
-%Kernbench 0.42~\cite{kernbench} benchmarks the CPU throughput. 
+interrupt latency.
+%Kernbench 0.42~\cite{kernbench} benchmarks the CPU throughput.
 The following configurations are evaluated:
 %depending on the physical or virtual network device, CPU
 %optimization and DTID.
@@ -46,16 +46,30 @@ The following configurations are evaluated:
 
 \begin{itemize}
 \setlength\itemsep{-0.04in}
-  \item {\bf Bare-metal}: A physical machine without virtualization.
-  
-  \item {\bf VHOST}: A HaaS VM accessing I/O devices using the vHost interface.
-  
-  \item {\bf VFIO}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts.
-  
-  \item {\bf OPTI}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts or HLT instructions.  
-  
-  \item{\bf  DTID}: A HaaS VM accessing I/O devices using the VFIO interface without incurring VM exits due to network interrupts, HLT instructions or local timer interrupts.  
- 
+\item {\bf Bare-metal}: A physical machine without
+                        virtualization.
+
+\item {\bf VHOST}: A HaaS VM accessing I/O devices using the
+                   vHost interface.
+
+\item {\bf VFIO}: A HaaS VM accessing I/O devices using the
+                  VFIO interface without incurring VM exits
+                  due to network interrupts.
+
+\item {\bf OPTI}: A HaaS VM accessing I/O devices using the
+                  VFIO interface without incurring VM exits
+                  due to network interrupts or HLT
+                  instructions.
+
+\item{\bf  DTID}: A HaaS VM accessing I/O devices using the
+                  VFIO interface without incurring VM exits
+                  due to network interrupts, HLT instructions
+                  or local timer interrupts.
+
+\item{\bf  DID}: A HaaS VM accessing I/O devices using the
+                 VFIO interface without incurring VM exits due
+                 to network interrupts, HLT instructions or
+                 local timer interrupts or IPIs.
 \end{itemize}
 
 
