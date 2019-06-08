@@ -5,6 +5,10 @@ function of timer interrupt latency measured for the
 Bare-metal, DTID, DID and unmodified-guest (\textbf{VANILLA})
 configuration.}
 
+\figw{ipi_latency}{8.5}{The cumulative distribution function
+of IPI latency measured for the Bare-metal, DTID, DID and
+unmodified-guest (\textbf{VANILLA}) configuration.}
+
 \begin{table}
 \renewcommand{\arraystretch}{1.2}
 \small
@@ -51,7 +55,10 @@ reasons is part of our future work.
 Since both the NIC and timer-interrupt delivery used the
 posted-interrupt mechanism, it was possible that the timer
 interrupts was triggered by the network interrupts and arrived
-earlier than the expected time. When the DTID HaaS VM
+earlier than the expected time. Then, the early timer
+interrupt was serviced and the timer was reset. Nonetheless,
+the more NIC interrupts occured, the more early timer
+interrupts needed to be handled. When the DTID HaaS VM
 performed the network I/O over the 40Gbps Infiniband link,
 spurious timer interrupts did not only reduce the network
 bandwidth performanc, but also kept CPU busy handling
