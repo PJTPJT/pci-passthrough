@@ -33,30 +33,41 @@ Interrupt.}
 \vspace{-0.06in}
 \end{table}
 
-To evaluate the usefulness of direct timer interrupt delivery,
-we measured the timer interrupt latency by setting up a
-periodic timer in the kernel. The timer interrupt latency was
-the timing difference between the expected and actual wakeup
-time. We ran the experiment with the sleep time of 200$\mu$s
-for 10 million iterations.
+To evaluate the direct local interrupt delivery, we measured
+both the timer interrupt and IPI latency. The timer interrupt
+latency was the timing difference between the expected and
+actual wakeup time. We ran the experiment with the sleep time
+of 200$\mu$s for 10 million iterations. For the IPI, our own
+IPI vector was registered in the kernel. When such an IPI was
+sent or received, the timestamps were recorded. The latency
+was the difference between the tranmission and receipt time.
+In our experiment, IPI was sent from the core A to B with the
+interval of 200$\mu$s for 10 million iterations.
 
 As shown in Figure~\ref{fig:cyclictest_in_kernel}, the median
 timer interrupt latency for the Bare-metal, DID, DTID and
 VANILLA configuration were 1.51, 2.03, 2.04 and 9.20 $\mu$s,
 respectively. Both the a DTID and DID HaaS VM came close to
-the bare-metal OS and reduced the median timer interrupt
-latency by four times over a VANILLA HaaS VM. Because a DTID
-or DID HaaS VM still experienced VM exits due to reasons such
-as privileged instructions, its median timer interrupt latency
-is 0.52$\mu$s more than the bare-metal OS. Reducing this
-difference further by identifying the underlying VM exit
-reasons is part of our future work.
+the bare-metal OS with the additional 0.52$\mu$s latency and
+reduced the median timer interrupt latency by $78\%$ over a
+VANILLA HaaS VM. For the IPI latency in
+Figure~\ref{fig:ipi_latency}, the median IPI latency for
+Bare-metal, DID, DTID and VANILLA configuration were 1.80,
+2.89, 3.33 and 9.35, respectively. DID HaaS VM had 1$mu$s
+extra latency than Bare-metal and reduced the median latency
+by $69\%$ over a VANILLA HaaS VM. Because a DTID or DID HaaS
+VM still experienced VM exits due to reasons such as
+privileged instructions and required to set the correct bit in
+the PID page, its median timer interrupt latency is 0.52$\mu$s
+more than the bare-metal OS. Reducing this difference further
+by identifying the underlying VM exit reasons is part of our
+future work.
 
 Since both the NIC and timer-interrupt delivery used the
 posted-interrupt mechanism, it was possible that the timer
 interrupts was triggered by the network interrupts and arrived
 earlier than the expected time. Then, the early timer
-interrupt was serviced and the timer was reset. Nonetheless,
+interrupt was serviced and the timer was updated. Nonetheless,
 the more NIC interrupts occured, the more early timer
 interrupts needed to be handled. When the DTID HaaS VM
 performed the network I/O over the 40Gbps Infiniband link,
@@ -77,7 +88,7 @@ Table~\ref{tab:network_interrupts}, the timer interrupt rate
 of CPU core 0 of the DTID configuration was almost the same as
 that of the Bare-metal configuration. It demonstrated that
 \sna's spurious timer interrupt filtering mechanism worked
-correctly. Although the DTID configuration incurred additional
+correctly. Although the DTID configuration incurred extra
 filter processing overhead for every NIC interrupt, this
 overhead had negligible impact on its network bandwidth
 performance. The NIC interrupt rate of CPU core 0 of the DTID
