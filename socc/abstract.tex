@@ -3,25 +3,23 @@
 Bare-metal cloud computing, or Hardware as a Service (HaaS), allows customers
 to rent remote physical servers so as to install their preferred operating system (OS)
 and make the best of the server's raw hardware capabilities. 
-Common management functions available on virtualized servers offered 
-by cloud platforms, such as live migration and introspection-based 
-application performance management, are difficult to 
-duplicate on HaaS servers, because HaaS providers typically 
-do not install any software on these servers.
+However, common management functions available on virtualized 
+cloud platforms, such as live migration and introspection,
+are difficult to duplicate on HaaS servers, because bare-metal
+cloud providers typically do not install any software on these servers.
 To address this manageability gap of existing HaaS platforms, 
-we propose a special form of virtualization called the Single Virtual Machine 
-Virtualization (SVMV) that is optimized to run a single VM (or HaaS VM)
-on a physical server such that the VM's guest OS directly interacts 
-with physical I/O devices and timer hardware, as if it runs on
-a bare-metal physical server. 
-This paper describes the design, implementation, and evaluation of 
-a HaaS management system, called 
-%\fullname (\sna) 
-\sna, to support a HaaS VM 
-that can process I/O and timer-related operations 
-with close to bare-metal performance.
-\na also provides seamless live migration of a HaaS VM
-without degrading the migration-induced downtime.
+we propose a specialized hypervisor, called the Single Virtual Machine 
+hypervisor (\sna) that is optimized to run a single VM, or HaaS VM.
+Unlike traditional hypervisors, which limit and control a VM’s access 
+to physical resources, the SVMvisor maximizes the HaaS VM’s access to 
+physical hardware during normal execution, 
+while retaining the ability to live migrate the VM on demand.
+This paper describes 
+a \sna prototype that supports a HaaS VM with dedicated 
+CPU and memory resources, direct access to local APIC timer and 
+PCIe device hardware, direct delivery of all interrupts (timers,
+inter-VCPU IPIs, and I/O devices), close to bare-metal performance,
+and seamless live migration with low downtime.
 \end{abstract}
 
 
