@@ -43,7 +43,7 @@ have begun to offer bare-metal cloud service, or Hardware-as-a-Service (HaaS),
 %In contrast, bare-metal cloud operators, 
 which allow users to rent dedicated  physical machines.
 HaaS clouds enables users combine the benefits of 
-scaling up their operations in the cloud and having dedicated 
+scaling up their operations in the cloud with having dedicated 
 hardware; users are assured stronger isolation than multi-tenant clouds and 
 bare-metal performance for critical workloads 
 such as high-performance computing, big data analytics, and AI.
@@ -62,21 +62,20 @@ To address this manageability gap of existing HaaS platforms,
 we have been developing a HaaS management system, called 
 %TODO: uncomment later
 %\fullname (\sna) 
-\sna,
+IHO,
 with the goal of enhancing the manageability and serviceability 
 of modern bare-metal cloud services.
-The focus of this paper is on \sna's support for a 
-specialized hypervisor,  called the Single VM
-hypervisor (SVMvisor)\footnote{The SVMvisor could conceptually be an extension of a physical server's trusted BIOS.},
-that runs on each physical server 
-and is optimized to run a single VM, called the HaaS VM.
+The focus of this paper is on IHO's support for a 
+specialized hypervisor, called the Single VM
+hypervisor (\sna), that runs on each physical server and is optimized to run a single VM, called the 
+HaaS VM\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}.
 
-During normal execution, the SVMvisor allows 
+During normal execution, the \na allows 
 the HaaS VM to directly interact with physical I/O devices and processor hardware
 without the hypervisor's intervention, 
 as if it runs directly on a physical server with negligible performance overheads.
-At the same time, the SVMvisor can provide the HaaS VM with 
-features of conventional clouds, such as 
+At the same time, the \na can provide the HaaS VM with 
+manageability features of conventional clouds, such as 
 live migration and VM introspection.
 
 %Bare-metal cloud operators provide a user with a physical data center instance (PDCI), which is 
@@ -119,39 +118,55 @@ live migration and VM introspection.
 %
 
 Unlike traditional hypervisors, which are designed to limit and control a VM's 
-access to resources, the SVMvisor is designed to maximize the HaaS VM's 
-access to physical hardware while retaining the ability to live migrate the VM on-demand.
-Specifically, SVMvisor provides the following features for a HaaS VM. 
+access to physical resources, an \na is designed to maximize the HaaS VM's 
+access to physical hardware while retaining its ability to live migrate the VM on-demand.
+Specifically, \na provides the following features for a HaaS VM. 
 \begin{itemize} 
 %\setlength\itemsep{-0.04in}
 \parskip 0mm
 \itemsep 0mm
 
-\item Dedicated physical CPU and memory resources for HaaS VM.
+\item Dedicated hardware resources for a HaaS VM: \na provides a HaaS VM with 
+dedicated physical CPU, memory, and other hardware resources such as 
+local APIC timers, and PCIe I/O devices. A HaaS VM can interact with its hardware resources
+directly for its normal execution without hypervisor intervention.
 
-\item Direct access to all PCIe devices and local APIC timers by HaaS VM without hypervisor involvement.
 
-\item Direct delivery of all interrupts. Existing approaches~\cite{posted-interrupts,others}
-only deliver PCIe device interrupts directly to the guest. In addition, SVMvisor also supports 
-direct delivery of hardware timer interrupts from local APIC  and inter-processor interrupts (IPI) between 
-virtual CPUs (VCPUs) without hypervisor intervention via a novel use of VT-d 
-posted-interrupt~\cite{posted-interrupt} mechanism.
+\item Direct delivery of all interrupts: 
+Existing approaches~\cite{amit:2015,tu:2015}
+only deliver PCIe device interrupts directly to the guest. 
+Besides PCIe interrupts, \na also supports 
+direct delivery of hardware timer interrupts from local APIC  and 
+inter-processor interrupts (IPIs) between 
+virtual CPUs (VCPUs) without VM Exits via a novel use of VT-d 
+posted-interrupt~\cite{postedinterrupt} mechanism.
 
 \item Elimination of all major VM Exit overheads  during a HaaS VM's execution. 
-We identify how, in traditional passthrough I/O support,  VM Exits still
+With traditional passthrough I/O support, we demonstrate how VM Exits can still
 lower the I/O throughput and increase CPU usage of the host.
-SVMvisor includes mechanisms to systematically eliminate
-these overheads to match bare-metal I/O performance and CPU usage within a HaaS VM.
+\na includes mechanisms to systematically eliminate
+these traditional hypervisor-induced overheads to match bare-metal I/O performance and CPU utilization.
 
-\item Seamless live migration of a HaaS VM having passthrough access to physical devices and local APIC timers. 
-Unlike existing approaches for bare-metal live migration~\cite{blmvisor,others}, 
-SVMvisor does not use any device-specific migration code, and yet matches the 
-liveness and application performance metrics of traditional live migration.
-Except during VM migration, SVMvisor is not involved in the HaaS VM's normal execution 
-and thus imposes a negligible performance overhead at run time.  
+\item Seamless live migration: 
+\na provides on-demand live migration of a HaaS VM having direct access to 
+physical network devices and local APIC timers. 
+%through coordinated switching to para-virtual I/O during migration.
+\na seamlessly disables the HaaS VM's physical hardware access at the 
+source machine before migration and 
+re-establishes access at the destination after migration
+with minimal disruption to the VM's liveness and performance.
+Unlike existing live migration~\cite{blmvisor,ondemand} approaches for VMs with pasthrough 
+I/O access, \na does not require any device-specific state capture and migration code 
+nor does it require the hypervisor to trust the guest OS. 
+%Yet \na matches the liveness and performance of traditional live migration.
 
-\item Small execution and memory footprint of SVMvisor, currently limited to one non-dedicated CPU core and around 100MB of RAM, with room for further reduction.
+\item Small footprint: \sna's execution footprint is currently limited to one non-dedicated 
+CPU core and its memory footprint to around 100MB of RAM, with room for further reductions.
 %TODO: Confirm with Kevin that CPU0 can also be used by the HaaS VM.
+A small HaaS agent in the VM runs as a self-contained guest kernel module
+to enable/disable HaaS features of the VM and coordinate the live migration with \sna.
+Other than during startup and live migration, the \na is not involved in the
+HaaS VM's normal execution and thus imposes negligible performance overhead at run time.  
 
 \end{itemize}
 
@@ -160,9 +175,9 @@ and thus imposes a negligible performance overhead at run time.
 %on the server from one physical machine to another. 
 
 The rest of this paper is organized as follows.
-We first describe the design and implementation of SVMvisor,
+We first describe the design and implementation of \sna,
 specifically the detailed description of the above contributions.
-Next, we evaluate the performance of our SVMvisor prototype
+Next, we evaluate the performance of our \na prototype
 on the Linux and KVM/QEMU platform.
 Finally, we discuss related work followed by conclusions.
 

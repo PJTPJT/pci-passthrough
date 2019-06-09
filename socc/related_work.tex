@@ -22,7 +22,7 @@ VMs but also introduce overheads  due to
 hypervisor-level emulation of hardware access by guests. To mitigate I/O-related 
 virtualization costs, customers can provision VMs with 
 direct device assignment~\cite{intelvtd-paper,intelvtd-manual}. 
-However, doing so entails sacrificing the ability 
+However, doing so has meant sacrificing the ability 
 to live migrate VMs for load balancing and fault-tolerance
 due to the difficulty of migrating the state of physical I/O devices.
 \na aims to  support bare-metal server performance
@@ -41,26 +41,27 @@ requires the hypervisor to fully trust the OS being migrated,
 the OS having full access to the hypervisor's memory and code.
 Such lack of isolation rules out the use of many hypervisor-level
 cloud services that require strong isolation, such as VM introspection
-and SLA enforcement. In contrast, with \na, the guest OS 
-cannot access or modify hypervisor code or memory.
+and SLA enforcement. In contrast, a HaaS VM 
+cannot access or modify \sna's code or memory.
 BLMVisor~\cite{blmvisor,blmvisor-journal} proposes live migration of VMs 
-having direct access to physical devices by having the hypervisor
-regularly intercept and capture low-level physical device states
+having direct access to physical devices by requiring the hypervisor
+to regularly intercept and capture low-level physical device states
 during normal execution; the captured state is then reconstructed
 at the destination after migration. This approach requires
 implementing device-specific state capture and reconstruction code 
-for each type of physical device, besides active 
+in the VM for each type of physical device, besides active 
 interception of these operations by the hypervisor. 
-In contrast, \na is device agnostic and does not require
-the hypervisor to intercept guest I/O accesses.
+Recently proposed VFIO Passthrough~\cite{vfio-passthrough} framework
+in KVM/QEMU provides a generic framework for guest device drivers 
+to save and restore physical device states, which requires modifying
+individual device drivers to become migration aware.
+In contrast, \sna's live migration mechanism is device agnostic; 
+device drivers in Haas VM do not need
+device-specific state capture and reconstruction code 
+and the \na does not need to intercept guest I/O accesses.
 Finally, unlike the above approaches,
-\na supports direct delivery of timer interrupts 
-to the guest OS without hypervisor intervention, besides supporting
-live migration of guests having direct timer access.
-\na seamlessly tears down the VM's
-physical device and timer dependencies  at the source server before live migration and 
-re-establishes these dependencies at the destination server after migration
-with minimal disruption of the VM's execution.
+\na also supports posted timer interrupts, posted IPIs,
+and live migration of guests having direct access to timer hardware and PCIe devices.
 
 
 {\bf Reducing virtualization overheads:}
@@ -86,14 +87,15 @@ dedicate physical CPU cores to the guest and disable VM exits when a guest VCPU 
 %cores assigned to the VM remain in guest (non-root) 
 %mode whenever the guest idles while waiting for I/O completion.
 
-Finally, a key distinction of \na lies in local timer
-access and timer interrupt processing by the VM.
+Finally, a key distinction of \na lies in local APIC timer
+access by the guest, timer interrupt delivery to the guest, and IPI 
+delivery between guest VCPUs.
 None of the existing techniques eliminate hypervisor overheads 
-when a VM interacts with its local timer hardware and nor do they 
-support direct delivery of timer interrupts to the guest.
-\na does so for the single-VM virtualization case by a novel use of Intel VT-d posted 
-interrupt mechanism that allows the guest to directly set timer events
-on LAPIC and receive timer interrupts, all without VM Exits.
+when a VM interacts with its local APIC timer hardware and nor do they 
+support direct delivery of timer interrupts and inter-VCPU IPIs.
+\na provides these features for a HaaS VM through a novel 
+use of Intel VT-d posted interrupt mechanism and without 
+incurring VM Exit overheads.
 
 % TODO: Single VM virtualization
 %   Unikernels
