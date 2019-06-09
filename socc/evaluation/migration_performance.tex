@@ -1,7 +1,95 @@
 % Migration performance.
-% - Describe what we have done.
-% - Include tables and figures.
-% - Evaluate the performance and see if it match our goal.
+
+%\figw{seamless_migration_haas}{9}{Performance of iPerf TCP
+%benchmark during live migration of HaaS VM using fail-over-mac
+%and hot-plug optimizations.}
+
+\begin{table}[]
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Operation}    & \multicolumn{1}{l|}{\textbf{\# of Lost UDP Packets}} \\ \hline
+\textbf{VF to VIRTIO} & 25                                                   \\ \hline
+\textbf{Unplug VF}    & 0                                                    \\ \hline
+\textbf{Plug VF}      & 0                                                    \\ \hline
+\textbf{VIRTIO to VF} & 17                                                   \\ \hline
+\end{tabular}
+\caption{Number of UDP packets lost when transitioning between
+the passthrough NIC and VIRTIO network device. \textbf{VF}:
+virtual function. \textbf{VIRTIO}: Virtio NIC.}
+\label{tab:udp_packets_lost}
+\end{table}
+
+To support the seamless live migration, the Linux ethernet
+bonding driver was used to assist the shift of network traffic
+between the virtual function (VF) or passthrough NIC and
+Virtio network device in a HaaS VM. Usually the VM used the
+passthrough NIC to achieve the baremetal network performance.
+When it came to the live migration, the VM shifted the network
+traffic from VF to the Virtio NIC and unplugged VF to satisfy
+the QEMU-migration requirement. When the VM was migrated to
+the destination and VF was hotplugged, the network traffic was
+shifted back to VF. Importanly, the NIC hotplug halted the VM
+and stopped the network traffic. To minimize such network
+downtime, we made VF available to the guest as soon as it
+could. We have modified the NIC-hotplug mechanism in QEMU and
+hidden the majority of hotplug steps in the phase of
+guest-memory transfer. Thus, the destination was ready to
+configure VF as soon as the VM was back online.
+
+
+
+
+
+In out experiment, the guest is configured with a bonding
+driver in
+active-backup mode where the VFIO NIC acts as
+active slave and Virtio NIC as
+backup slave. The bonding driver accepts a
+\texttt{fail\_over\_mac} parameter, which
+ensures that the
+MAC address of the bond is always the same as the active
+slave.
+
+In Figure~\ref{fig:seamless_migration_haas}, we measure
+the bandwidth achieved by a HaaS VM
+when running the iPerf TCP benchmark over a 1Gbps network.
+First we note that, the iPerf maintains
+a steady throughput of 940Mbps bandwidth,
+except during brief periods that correspond to
+the hot-unplug and hot-plug of
+the VFIO NIC and during execution state transfer.
+Hot-unplug and execution state transfer each correspond to
+less than 100ms network disruption.
+
+Hot-plug of the VFIO NIC at the destination server
+shows about 300ms network disruption without
+the hot-plug optimization, described in Section~\ref{sec:nic_migration}.
+Once the hot-plug optimization is enabled, no
+network disruption is observed
+since the first two steps are executed in advance
+before the guest resumes.
+The total migration time remains unaffected.
+
+To investigate the network disruption further, we also
+measured the number of packets lost when when sending
+iPerf UDP traffic at 15000 packets per second from the HaaS VM.
+During hot-unplug operation,
+iPerf reports around 600 packets lost, which corresponds to
+around 40ms network disruption.
+During hot-plug operation, without hot-plug optimization, 4000 lost
+packets are reported, corresponding to 266ms network disruption time.
+With our hot-plug optimization enabled, zero lost packets are reported
+by iPerf, showing that pre-configuring the VFIO NIC at destination
+before the VM resumes is effective.
+
+We also do not observe any missed timer interrupts
+when disabling and re-enabling DTID  during migration;
+since the switch-over operation is in the order of few tens of microseconds,
+the guest and hypervisor transition to/from virtual interrupt delivery
+as soon DTID is disabled/enabled during migration.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\figw{seamless_migration_default}{8}{Place holder for seamless
 %migration. Top: Guest sends the outgoing traffic. Bottom:
@@ -23,112 +111,17 @@
 %\label{tab:downtime}
 %\end{table}
 
-In this section, we measure the network service disruption
-due to transition from VFIO (pass-through) NIC to the 
-Virtio (para-virtual) NIC 
-at the source server and from the Virtio NIC to the VFIO
-NIC at the destination server.
-%We also demonstrate the average 
-%number of missed local timer interrupts in guest, 
-%when we disable the DTID.
-
-\figw{seamless_migration_haas}{9}{Performance of iPerf TCP benchmark during live migration of HaaS VM using fail-over-mac and hot-plug optimizations.}
-
-The guest is configured with a bonding driver in 
-active-backup mode where the VFIO NIC acts as 
-active slave and Virtio NIC as 
-backup slave. The bonding driver accepts a
-\texttt{fail\_over\_mac} parameter, which
-ensures that the
-MAC address of the bond is always the same as the active
-slave. 
-%Before migration, \na hot-unplugs the assigned
-%NIC. The bonding driver detects hot-unplug event as failure
-%of pass-through NIC and chooses
-%Virtio NIC as the active slave. 
-%\texttt{fail\_over\_mac} switches the network 
-%traffic to the Virtio NIC by broadcasting
-%gratuitous ARP packets notifying the change in MAC address of the bond.
-
-In Figure~\ref{fig:seamless_migration_haas}, we measure 
-the bandwidth achieved by a HaaS VM 
-when running the iPerf TCP benchmark over a 1Gbps network.
-First we note that, the iPerf maintains 
-a steady throughput of 940Mbps bandwidth,
-except during brief periods that correspond to 
-the hot-unplug and hot-plug of
-the VFIO NIC and during execution state transfer.  
-Hot-unplug and execution state transfer each correspond to
-less than 100ms network disruption.
-%{\em without using the \texttt{fail\_over\_mac} option},
-%As shown in Figure~\ref{fig:seamless_migration_haas},
-%when the switch from VFIO to Virtio is performed
-%using \texttt{fail\_over\_mac} option, 
-%the downtime due to hot unplug reduces to 80ms.
-%During live migration, the iPerf benchmark continues 
-%to send traffic over the Virtio network interface
-%with the network bandwidth of 940Mbps.
-%The VM experiences another network downtime of 
-%0.1 seconds during the last phase of migration 
-%when the guest is paused on source server
-%to transfer the CPU and I/O state to destination server 
-%for guest resumption. This downtime is typical for pre-copy live migration.
-Hot-plug of the VFIO NIC at the destination server 
-shows about 300ms network disruption without
-the hot-plug optimization, described in Section~\ref{sec:nic_migration}.
-Once the hot-plug optimization is enabled, no
-network disruption is observed
-since the first two steps are executed in advance 
-before the guest resumes.
-The total migration time remains unaffected.
-%\na sets the VFIO network interface as the active slave and
-%switches the network traffic from Virtio network interface
-%back to the VFIO network interface. 
-%In Figure~\ref{fig:seamless_migration_default}, by default, 
-%the hot-plug operation introduces an additional downtime 
-%of 300 ms.
-%To reduce the downtime introduced by
-%the hot-plug event, it is broken down to three steps.
-%As shown in Figure~\ref{fig:seamless_migration_haas}, 
-%the step (a) of creating software NIC object 
-%and step (b) of extracting the values from the 
-%configuration space are executed before the guest 
-%is resumed at the destination. The last step (c) 
-%of resetting the software NIC object to set up the BAR and 
-%interrupt forwarding is executed after 
-%the live migration completes. 
-%Using the above  approach, as shown in Figure~\ref{fig:seamless_migration_haas},
-%the downtime due to hot-plug operation reduces to zero
-
-To investigate the network disruption further, we also 
-measured the number of packets lost when when sending
-iPerf UDP traffic at 15000 packets per second from the HaaS VM.
-%Table~\ref{tab:downtime} shows that 
-During hot-unplug operation, 
-iPerf reports around 600 packets lost, which corresponds to 
-around 40ms network disruption. 
-During hot-plug operation, without hot-plug optimization, 4000 lost
-packets are reported, corresponding to 266ms network disruption time.
-With our hot-plug optimization enabled, zero lost packets are reported 
-by iPerf, showing that pre-configuring the VFIO NIC at destination
-before the VM resumes is effective.
-
 %when switching
 %from the VFIO (pass-through) network device to Virtio network device
-%at the source machine, 
+%at the source machine,
 %the network downtime (in the ``Unplug'' column)
-%is observed to be 40ms  for the UDP sender case and 1.8ms for the  UDP receiver case. 
+%is observed to be 40ms  for the UDP sender case and 1.8ms for the  UDP receiver case.
 %When switching back from the Virtio to  VFIO network device at the destination
 %machine, the network downtime (in the ``Plug'' column)
-%is measured to be 300ms for both the UDP sender and receiver cases. 
+%is measured to be 300ms for both the UDP sender and receiver cases.
 %After we mask the overhead of VFIO NIC
 %initialization at the destination machine,
 %the network downtime (in the ``Optimized Plug'' column) reduces to zero for both sender and receiver cases.
-We also do not observe any missed timer interrupts 
-when disabling and re-enabling DTID  during migration;
-since the switch-over operation is in the order of few tens of microseconds,
-the guest and hypervisor transition to/from virtual interrupt delivery 
-as soon DTID is disabled/enabled during migration.
 
 %the timer interrupts received by the
 %guest per seconds matches the expected frequency of timer
@@ -138,5 +131,52 @@ as soon DTID is disabled/enabled during migration.
 %the transition takes, the later the migration starts. The host
 %communicates with the guest by the TCP transmission. We expect
 %most of the transition time is due to the packet transmission
-%and processing. 
+%and processing.
 %TODO: The average transition time is -- $\mu$s.
+
+%{\em without using the \texttt{fail\_over\_mac} option},
+%As shown in Figure~\ref{fig:seamless_migration_haas},
+%when the switch from VFIO to Virtio is performed
+%using \texttt{fail\_over\_mac} option,
+%the downtime due to hot unplug reduces to 80ms.
+%During live migration, the iPerf benchmark continues
+%to send traffic over the Virtio network interface
+%with the network bandwidth of 940Mbps.
+%The VM experiences another network downtime of
+%0.1 seconds during the last phase of migration
+%when the guest is paused on source server
+%to transfer the CPU and I/O state to destination server
+%for guest resumption. This downtime is typical for pre-copy live migration.
+
+%\na sets the VFIO network interface as the active slave and
+%switches the network traffic from Virtio network interface
+%back to the VFIO network interface.
+%In Figure~\ref{fig:seamless_migration_default}, by default,
+%the hot-plug operation introduces an additional downtime
+%of 300 ms.
+%To reduce the downtime introduced by
+%the hot-plug event, it is broken down to three steps.
+%As shown in Figure~\ref{fig:seamless_migration_haas},
+%the step (a) of creating software NIC object
+%and step (b) of extracting the values from the
+%configuration space are executed before the guest
+%is resumed at the destination. The last step (c)
+%of resetting the software NIC object to set up the BAR and
+%interrupt forwarding is executed after
+%the live migration completes.
+%Using the above  approach, as shown in Figure~\ref{fig:seamless_migration_haas},
+%the downtime due to hot-plug operation reduces to zero
+
+%Table~\ref{tab:downtime} shows that
+
+%We also demonstrate the average
+%number of missed local timer interrupts in guest,
+%when we disable the DTID.
+
+%Before migration, \na hot-unplugs the assigned
+%NIC. The bonding driver detects hot-unplug event as failure
+%of pass-through NIC and chooses
+%Virtio NIC as the active slave.
+%\texttt{fail\_over\_mac} switches the network
+%traffic to the Virtio NIC by broadcasting
+%gratuitous ARP packets notifying the change in MAC address of the bond.
