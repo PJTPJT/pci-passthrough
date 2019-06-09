@@ -48,12 +48,12 @@ The VM received 10K UDP packets per second, which each payload
 was 8-byte sequence number. tcpdump\cite{tcpdump} was used to
 detect the packet lost in the kernel.
 
-As show in Figure~\ref{udp_packet_lost}, the few UDP packet
+As show in Table~\ref{tab:udp_packet_lost}, the few UDP packet
 lost for the switch-over and hotplug opertions were dropped.
 Without our hotplug optimization, the network downtime was
 about 300ms. Once the optimization was enabled, no network
 disruption was observed. As described in
-Section~\ref{sec:nic_migrationa}, the first two steps of
+Section~\ref{sec:nic_migration}, the first two steps of
 optimization were excuted in advance at the destination during
 the guest-state transfer. The total migration remained
 unaffected.
