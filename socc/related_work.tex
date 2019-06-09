@@ -43,25 +43,29 @@ Such lack of isolation rules out the use of many hypervisor-level
 cloud services that require strong isolation, such as VM introspection
 and SLA enforcement. In contrast, a HaaS VM 
 cannot access or modify \sna's code or memory.
-BLMVisor~\cite{blmvisor,blmvisor-journal} proposes live migration of VMs 
-having direct access to physical devices by requiring the hypervisor
-to regularly intercept and capture low-level physical device states
-during normal execution; the captured state is then reconstructed
-at the destination after migration. This approach requires
+Recent developments~\cite{vfio-live-migration,blmvisor-journal} 
+have proposed frameworks to support live migration 
+of VMs using passthrough I/O devices. These approaches 
+require guest device drivers to save and reconstruct device-specific 
+I/O states for VM migration; the hypervisor to track changes to
+and transfer individual device states during migration.
+%BLMVisor~\cite{blmvisor,blmvisor-journal} proposes live migration of VMs 
+%having direct access to physical devices by requiring the hypervisor
+%to regularly intercept and capture low-level physical device states
+%during normal execution; the captured state is then reconstructed
+%at the destination after migration. 
+Such approaches require
 implementing device-specific state capture and reconstruction code 
-in the VM for each type of physical device, besides active 
-interception of these operations by the hypervisor. 
-Recently proposed VFIO Passthrough~\cite{vfio-passthrough} framework
-in KVM/QEMU provides a generic framework for guest device drivers 
-to save and restore physical device states, which requires modifying
-individual device drivers to become migration aware.
-In contrast, \sna's live migration mechanism is device agnostic; 
+in the VM by each device vendor besides tracking of each device's
+state changes by the hypervisor. 
+In contrast to the above approaches, 
+\sna's live migration mechanism is device agnostic; 
 device drivers in Haas VM do not need
 device-specific state capture and reconstruction code 
-and the \na does not need to intercept guest I/O accesses.
+and the \na does not need to intercept guest I/O state changes.
 Finally, unlike the above approaches,
-\na also supports posted timer interrupts, posted IPIs,
-and live migration of guests having direct access to timer hardware and PCIe devices.
+\na also supports live migration of guests accessing non-PCIe 
+hardware such as local timer and IPI hardware.
 
 
 {\bf Reducing virtualization overheads:}

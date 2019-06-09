@@ -155,7 +155,7 @@ physical network devices and local APIC timers.
 source machine before migration and 
 re-establishes access at the destination after migration
 with minimal disruption to the VM's liveness and performance.
-Unlike existing live migration~\cite{blmvisor,ondemand} approaches for VMs with pasthrough 
+Unlike existing live migration~\cite{vfio-live-migration,blmvisor-journal,ondemand} approaches for VMs with pasthrough 
 I/O access, \na does not require any device-specific state capture and migration code 
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
