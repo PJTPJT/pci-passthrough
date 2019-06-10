@@ -1,13 +1,14 @@
-% DTID efficiency.
+% DID efficiency.
 
 \figw{cyclictest_in_kernel}{8.5}{The cumulative distribution
 function of timer interrupt latency measured for the
 Bare-metal, DTID, DID, and unmodified-guest (VANILLA)
-configuration.}
+configuration which does not use our optimizations.}
 
 \figw{ipi_latency}{8.5}{The cumulative distribution function
 of IPI latency measured for the Bare-metal, DTID, DID, and
-unmodified-guest (VANILLA) configuration.}
+unmodified-guest (VANILLA) configuration which does not use our
+optimizations.}
 
 \begin{table}
 \renewcommand{\arraystretch}{1.2}
@@ -47,11 +48,12 @@ interval of 200$\mu$s for 10 million iterations.
 
 As shown in Figure~\ref{fig:cyclictest_in_kernel}, the median
 timer interrupt latency for the Bare-metal, DID, DTID and
-VANILLA configuration were 1.51, 2.03, 2.04 and 9.20 $\mu$s,
-respectively. Both the a DTID and DID HaaS VM came close to
-the bare-metal OS with the additional 0.52$\mu$s latency and
-reduced the median timer interrupt latency by $78\%$ over a
-VANILLA HaaS VM. For the IPI latency in
+VANILLA configuration, which did not use our optimizations
+except the dedicated cores, were 1.51, 2.03, 2.04 and 9.20
+$\mu$s, respectively. Both the a DTID and DID HaaS VM came
+close to the bare-metal OS with the additional 0.52$\mu$s
+latency and reduced the median timer interrupt latency by
+$78\%$ over a VANILLA HaaS VM. For the IPI latency in
 Figure~\ref{fig:ipi_latency}, the median IPI latency for
 Bare-metal, DID, DTID and VANILLA configuration were 1.80,
 2.89, 3.33 and 9.35, respectively. DID HaaS VM had 1$mu$s

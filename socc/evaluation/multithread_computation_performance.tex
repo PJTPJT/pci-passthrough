@@ -3,26 +3,43 @@
 \figw{fpspeed_barchart}{8.5}{Percentage of CPU performance
 slowdown for the floating-point computation compared to the
 bare-metal performance. The x-axis is the IDs for the
-benchmark programs of SPEC CPU 2017. \textbf{VANILLA}:
-unmodified guest. \textbf{603}: explosion modeling.
-\textbf{607}: relativity. \textbf{619}: fluid dynamics.
-\textbf{621}: weather forecasting. \textbf{627}: atmosphere
-modeling. \textbf{628}: wide-scale ocean modeling.
-\textbf{638}: image manipulation. \textbf{644}: molecular
-dynamics. \textbf{649}: electromagnetic. \textbf{654}:
-regional ocean modeling.} 
+benchmark programs of SPEC CPU 2017~\cite{bucek:2018}.
+\textbf{VANILLA}: unmodified guest configuration without our
+optimizations. \textbf{603}: explosion modeling. \textbf{607}:
+relativity. \textbf{619}: fluid dynamics. \textbf{621}:
+weather forecasting. \textbf{627}: atmosphere modeling.
+\textbf{628}: wide-scale ocean modeling. \textbf{638}: image
+manipulation. \textbf{644}: molecular dynamics. \textbf{649}:
+electromagnetic. \textbf{654}: regional ocean modeling.}
 
 \figw{parsec_barchart}{8.5}{Percentage of CPU performance
 slowdown compared to the bare-metal performance when running
 the PARSEC benchmark programs. \textbf{VANILLA}: unmodified
-guest.}
+guest without our optimizations.}
 
 \figw{intrate_barchart}{8.5}{Percentage of CPU performance
 slowdown for the integer computation compared to the
 bare-metal performance. The x-axis is the IDs for the
-benchmark programs of SPEC CPU 2017. \textbf{VANILLA}:
-unmodified guest. \textbf{500}: perl scripts. \textbf{502}:
-GCC. \textbf{505}: route planning. \textbf{520}: OMNeT
-simulation. \textbf{523}: XML conversion. \textbf{525}: video
-compression. \textbf{531}: chess. \textbf{541}: GO.
-\textbf{548}: sudoku. \textbf{57}: data compression.} 
+benchmark programs of SPEC CPU 2017~\cite{bucek:2018}.
+\textbf{VANILLA}: unmodified guest without our optimizations.
+\textbf{500}: perl scripts. \textbf{502}: GCC. \textbf{505}:
+route planning. \textbf{520}: OMNeT simulation. \textbf{523}:
+XML conversion. \textbf{525}: video compression.
+\textbf{531}: chess. \textbf{541}: GO. \textbf{548}: sudoku.
+\textbf{57}: data compression.}
+
+To evaluate how well a HaaS VM performed for the CPU-bound
+applications, we measured the percentage slowdown of CPU,
+cache and memory all together by the SPEC CPU
+2017~cite{bucek:2018} and PARSEC~\cite{bienia:2008} benchmark.
+In our experiment, the HaaS VM had dedicated 8 cores, and 27GB
+RAM, whereas \na had the remaining two core, include physical
+CPU core 0 and the remaining 5GB RAM. The CPU L1/L2/L3 cache
+topology was exposed to the VM. The guest kernel utilized this
+information for the scheduling optimization. The bare-metal
+was the baseline and had the same configuration as the VM. We
+compared the percent slowdown between the Haas and vanilla VM
+which did not use our optimizations except the dedicated
+cores.
+
+For the multi-threaded workloads,
