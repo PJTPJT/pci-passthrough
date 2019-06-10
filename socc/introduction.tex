@@ -64,19 +64,34 @@ we have been developing a HaaS management system, called
 %\fullname (\sna) 
 IHO,
 with the goal of enhancing the manageability and serviceability 
-of modern bare-metal cloud services.
-The focus of this paper is on IHO's support for a 
-specialized hypervisor, called the Single VM
-hypervisor (\sna), that runs on each physical server and is optimized to run a single VM, called the 
-HaaS VM\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}.
+of bare-metal cloud services.
+The focus of this paper is on IHO's virtualization support
+in the form of a specialized hypervisor, called the {\em Single VM
+hypervisor (\sna)}.
 
+
+\figw{architecture}{8.75}{Architecture of \na for single-VM
+virtualization: The \na runs as a thin hypervisor that
+provides manageability services such as live migration and VM
+monitoring. 
+The HaaS VM runs with dedicated CPU cores, memory, and I/O devices.
+All interrupts, including device, local timers, and IPIs
+are directly deivered from the hardware to the HaaS VM. }
+
+Figure~\ref{fig:architecture} shows the high-level
+architecture of \sna, which runs as a thin hypervisor on each
+physical server. \na is optimized to run one VM, called the 
+{\em HaaS VM}\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}, 
+on which  a user install a preferred OS and applications. 
 During normal execution, the \na allows 
 the HaaS VM to directly interact with physical I/O devices and processor hardware
 without the hypervisor's intervention, 
-as if it runs directly on a physical server with negligible performance overheads.
-At the same time, the \na can provide the HaaS VM with 
-manageability features of conventional clouds, such as 
-live migration and VM introspection.
+as if it runs directly on a physical server with near bare-metal performance.
+\na primarily provides value-added manageability 
+features of conventional clouds, such as live
+migration, introspection, and performance monitoring.
+A small HaaS agent in the guest (a self-contained kernel module)
+transparently coordinates with the \na to coordinate these services.
 
 %Bare-metal cloud operators provide a user with a physical data center instance (PDCI), which is 
 %composed of a set of physical machines connected in a way specified by the user. 
@@ -141,6 +156,9 @@ before live migration of the HaaS VM.
 \na enables a HaaS VM to directly receive all hardware interrupts from 
 its assigned PCIe devices and CPU cores (for timer interrupts and IPIs) 
 without interception and emulation by the hypervisor.
+Direct interrupt delivery to the HaaS VM greatly
+reduces interrupt processing latency, which is imoportant for running 
+latency-critical applications on bare-metal clouds.
 In contrast, existing approaches~\cite{vfio,postedinterrupt,amit:2015,tu:2015}
 focus only on direct delivery of PCIe device interrupts.
 
@@ -151,27 +169,27 @@ physical network devices and local APIC timers.
 %through coordinated switching to para-virtual I/O during migration.
 \na seamlessly disables the HaaS VM's physical hardware access at the 
 source machine before migration and 
-re-establishes access at the destination after migration
+re-establishes access at the destination after migration,
 with minimal disruption to the VM's liveness and performance.
-Unlike existing live migration~\cite{vfio-live-migration,blmvisor-journal,ondemand} approaches for VMs with pasthrough 
+Unlike existing live migration~\cite{vfio-live-migration,blmvisor-journal,ondemand} 
+approaches for VMs with pasthrough 
 I/O access, \na does not require device-specific state capture and migration code 
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
 
 \item {\bf Baremetal I/O Performance:}  
+To match bare-metal I/O performance, \na implements mechanisms
+for reducing the hypervisor's CPU, I/O, and memory footprint
+during runtime and minimizing interference with guest
+operations. 
+\na has a small execution footprint, currently one 
+CPU core and around 100MB of RAM, with room for further reductions.
 Even with passthrough I/O support~\cite{intelvtd-paper,intelvtd-manual}, 
 VM Exits can still lower the I/O throughput and increase CPU usage of the host.
 \na includes mechanisms to systematically eliminate
 most VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilization.
-
-\item {\bf Small footprint:} 
-\na has a small execution footprint, currently one 
-CPU core and around 100MB of RAM, with room for further reductions.
-%TODO: Confirm with Kevin that CPU0 can also be used by the HaaS VM.
-A small HaaS agent in the guest runs as a self-contained kernel module
-to enable/disable HaaS features of the VM and coordinate live migration with \sna.
 Other than during startup and live migration, the \na is not involved in the
-HaaS VM's normal execution and thus imposes negligible performance overhead at run time.  
+HaaS VM's normal execution and thus imposes negligible performance overhead.
 
 \end{itemize}
 

@@ -1,8 +1,20 @@
 
-\section{Background: Intel VT-d and VFIO}
+\section{Background}
 In this section, we first provide background on direct I/O
 device access using Intel VT-d and Linux KVM/QEMU~\cite{kvm}
 by the VM.
+
+I/O operations and interrupt processing using traditional VMs
+incur higher overheads than bare-metal execution. I/O
+operations issued by a VM typically are trapped into the
+hypervisor via VM exits for emulation. Likewise, external
+device interrupts, local timer interrupts and IPIs to the CPU
+running a VM result in VM exits for emulating virtual
+interrupt delivery. Each VM exit is expensive, since it
+requires saving the VM's execution context upon exit,
+emulation of the exit reason in hypervisor mode, and finally
+restoration of the VM's context before re-entry into the guest
+mode.
 
 Intel VT-d~\cite{intelvtd-paper} provides processor-level
 support for direct and safe access to hardware I/O devices by
@@ -40,7 +52,7 @@ Except the probe/enumeration operations, \na enables a guest
 OS to interact directly (without VM exits) with NICs and disk
 controllers for the other three types of device interactions.
 
-\subsubsection{Direct DMA Operations Using VT-d and VFIO}
+\subsection{Direct Device Access}
 Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
 memory-mapped I/O (MMIO) operations against the memory areas associated with the device.
 Essentially, VFIO makes the configuration register space and the memory regions of
@@ -73,7 +85,7 @@ However, QEMU is still responsible for such control plane processing as setting 
 configuring, and negotiating features for an in-kernel virtio device.
 
 
-\subsubsection{Posted Interrupts}
+\subsection{Posted Interrupts}
 
 {\bf Conventional Interrupt Delivery:}
 
