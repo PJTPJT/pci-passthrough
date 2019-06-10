@@ -1,0 +1,55 @@
+\section{\na Overview}
+
+\figw{architecture}{8.75}{Architecture of \na for single-VM
+virtualization: The \na runs as a thin hypervisor that
+provides manageability services such as live migration and VM
+monitoring. The HaaS VM runs on all the remaining CPU cores
+with direct access to I/O devices, local timers and interrupt
+command register and handles the direct delivery of timer,
+device and inter-VCPU interrupts.}
+
+Figure~\ref{fig:architecture} shows the high-level
+architecture of \na. \na runs as a thin hypervisor on each
+physical server and supports a single VM, called the HaaS VM,
+on which a users installs preferred OS and applications. \na
+primarily provides value-added functionalities, such as live
+migration, introspection, and performance monitoring, while
+staying out of normal execution path of a HaaS VM.
+
+I/O operations and interrupt processing using traditional VMs
+incur higher overheads than bare-metal execution. I/O
+operations issued by a VM typically are trapped into the
+hypervisor via VM exits for emulation. Likewise, external
+device interrupts, local timer interrupts and IPIs to the CPU
+running a VM result in VM exits for emulating virtual
+interrupt delivery. Each VM exit is expensive, since it
+requires saving the VM's execution context upon exit,
+emulation of the exit reason in hypervisor mode, and finally
+restoration of the VM's context before re-entry into the guest
+mode.
+
+The main technical challenge of providing the guest OS with
+the illusion of running on a bare-metal server is that its
+interactions with I/O devices, such as network interface card
+(NIC) and disk controller, must be direct without going
+through any intermediary. \na allows the sole VM on the
+physical machine to directly interact with PCIe I/O devices,
+timer hardware and the interrupt command register by
+leveraging Intel VT-d~\cite{intelvtd-paper} and Linux Virtual
+Function I/O (VFIO)~\cite{vfio} mechanisms.
+
+To match bare-metal I/O performance, \na implements mechanisms
+for reducing the hypervisor's CPU, I/O, and memory footprint
+during runtime and minimizing interference with guest
+operations. In addition, \na enables direct delivery of device
+interrupts, timer interrupts and inter-VCPU IPIs to a HaaS VM
+without any VM exit by leveraging the posted interrupt
+mechanism in Intel VT-d. Direct interrupt delivery greatly
+reduces the interrupt processing latency and is particularly
+useful for real-time applications running on bare-metal
+servers. When the VM must be live migrated, \na instructs the
+VM to use para-virtual I/O, virtualized timer and indirect
+IPIs and completes the migration. At the destination, it
+switches the VM back to direct I/O device and direct timer
+access and direct inter-VCPU IPIs with minimal disruption of
+VM's workload.
