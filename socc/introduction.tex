@@ -177,19 +177,18 @@ I/O access, \na does not require device-specific state capture and migration cod
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
 
-\item {\bf Baremetal I/O Performance:}  
-To match bare-metal I/O performance, \na implements mechanisms
-for reducing the hypervisor's CPU, I/O, and memory footprint
-during runtime and minimizing interference with guest
-operations. 
+\item {\bf Baremetal performance:}  
+To match bare-metal performance, \na implements mechanisms
+for reducing the its CPU, I/O, and memory footprint
+during runtime and minimizing interference with HaaS VM's execution.
 \na has a small execution footprint, currently one 
 CPU core and around 100MB of RAM, with room for further reductions.
 Even with passthrough I/O support~\cite{intelvtd-paper,intelvtd-manual}, 
-VM Exits can still lower the I/O throughput and increase CPU usage of the host.
+VM exits can still lower the I/O throughput and increase CPU usage of the host.
 \na includes mechanisms to systematically eliminate
 most VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilization.
 Other than during startup and live migration, the \na is not involved in the
-HaaS VM's normal execution and thus imposes negligible performance overhead.
+HaaS VM's normal execution.
 
 \end{itemize}
 
