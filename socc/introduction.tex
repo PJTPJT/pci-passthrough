@@ -119,28 +119,30 @@ live migration and VM introspection.
 
 Unlike traditional hypervisors, which are designed to limit and control a VM's 
 access to physical resources, \na is designed to maximize the HaaS VM's 
-access to physical hardware while retaining the ability to live migrate the VM on demand.
+access to physical hardware.
 Specifically, \na provides the following features for a HaaS VM. 
 \begin{itemize} 
 %\setlength\itemsep{-0.04in}
 \parskip 0mm
 \itemsep 0mm
 
-\item {\bf Dedicated hardware resources for a HaaS VM:} \na provides a HaaS VM with 
-dedicated physical CPU, memory, and other hardware resources such as 
-local APIC timers, and passthrough PCIe I/O devices. 
-A HaaS VM can interact with its hardware resources
-directly for its normal execution without hypervisor intervention.
+\item {\bf Direct access to dedicated hardware:} 
+\na assigns a HaaS VM with 
+dedicated hardware resources, namely 
+physical CPUs, memory, local APIC timers, and passthrough I/O devices,
+which the VM can access directly 
+during its normal execution without hypervisor intervention. 
+The \sna, however, maintains its ability to
+regain control over physical resources when needed, such 
+before live migration of the HaaS VM.
 
 
 \item {\bf Direct delivery of all interrupts:}
-Existing approaches~\cite{amit:2015,tu:2015}
-only deliver PCIe device interrupts directly, i.e. without VM Exits, to a VM.
-Besides direct PCIe interrupts, \na also enables
-a HaaS VM to directly receive
-timer interrupts from local APIC and inter-processor interrupts (IPIs) 
-between its virtual CPUs (VCPUs) via a novel use of VT-d 
-posted-interrupt~\cite{postedinterrupt} mechanism.
+\na enables a HaaS VM to directly receive all hardware interrupts from 
+its assigned PCIe devices and CPU cores (for timer interrupts and IPIs) 
+without interception and emulation by the hypervisor.
+In contrast, existing approaches~\cite{vfio,postedinterrupt,amit:2015,tu:2015}
+focus only on direct delivery of PCIe device interrupts.
 
 
 \item {\bf Seamless live migration:}
@@ -156,15 +158,15 @@ I/O access, \na does not require device-specific state capture and migration cod
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
 
-\item {\bf Elimination of all major VM Exit overheads:}  during a HaaS VM's execution. 
+\item {\bf Baremetal I/O Performance:}  
 Even with passthrough I/O support~\cite{intelvtd-paper,intelvtd-manual}, 
 VM Exits can still lower the I/O throughput and increase CPU usage of the host.
 \na includes mechanisms to systematically eliminate
-these traditional hypervisor-induced overheads to match bare-metal I/O performance and CPU utilization.
+most VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilization.
 
 \item {\bf Small footprint:} 
-\sna's execution footprint is currently limited to one non-dedicated 
-CPU core and its memory footprint to around 100MB of RAM, with room for further reductions.
+\na has a small execution footprint, currently one 
+CPU core and around 100MB of RAM, with room for further reductions.
 %TODO: Confirm with Kevin that CPU0 can also be used by the HaaS VM.
 A small HaaS agent in the guest runs as a self-contained kernel module
 to enable/disable HaaS features of the VM and coordinate live migration with \sna.

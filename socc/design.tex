@@ -1,4 +1,4 @@
-\section{Virtualization Support for HaaS}
+\section{\na Overview}
 % Virtualization support for HaaS include the following items
 % CPU idleness detection and processing
 % Direct NIC assignment
@@ -17,11 +17,12 @@
 %   - NIC bonding with the hot plug/unplug operation migration
 %   - DTID during the migration
 
-\figw{architecture}{9}{Architecture of \na for single-VM virtualization (SVMV). 
-The hypervisor runs on a single CPU core and provides
+\figw{architecture}{8.75}{Architecture of \na for single-VM virtualization:
+The \na runs as a thin hypervisor that provides
 manageability services such as live migration and VM monitoring.
-The HaaS VM runs on all the remaining CPU cores with direct access to I/O devices 
-and local timers, including direct delivery of device and timer interrupts.}
+The HaaS VM runs on all the remaining CPU cores with direct access 
+to I/O devices and local timers, including direct delivery of timer, 
+device, and inter-processor interrupts.}
 
 %The design goal of \na is to eliminate the hypervisor from
 %the guest I/O path while achieving bare-metal performance in
@@ -35,15 +36,14 @@ and local timers, including direct delivery of device and timer interrupts.}
 %without causing any VM exits. Finally, we present the
 %migration of virtual machine with directly assigned devices.
 
-To enhance the manageability of physical servers offered in a bare-metal cloud service, \na installs 
-a thin hypervisor on each physical server  to create a single VM (called the HaaS VM), on which 
-a \na user then installs a preferred OS and applications. 
+%To enhance the manageability of physical servers offered in a bare-metal cloud service, \na installs 
 Figure~\ref{fig:architecture} shows the high-level architecture of \na.
-This  hypervisor is primarily meant to provide management functionalities, such as 
-physical machine migration and application performance monitoring, rather than virtualization 
-of server resources, and therefore is largely not involved in the I/O operations in which a HaaS VM participates.
-%This section describes in detail the main design issues of this hypervisor, 
-%which is based on Linux/KVM/QEMU, and our corresponding solutions.
+\na runs as a thin hypervisor on each physical server and 
+supports a single VM, called the HaaS VM, on which 
+a users installs preferred OS and applications. 
+\na primarily provides value-added functionalities, such as 
+live migration, introspection, and performance monitoring, 
+while staying out of normal execution path of a HaaS VM.
 
 I/O operations and interrupt processing using traditional VMs incur higher overheads than bare-metal execution. 
 I/O operations issued by a VM typically trap into the hypervisor via VM exits for emulation.
@@ -72,11 +72,10 @@ para-virtual I/O and virtualized timer, completes the migration
 and, at the destination, switches the VM back to direct I/O device and direct 
 timer access, all with minimal disruption of VM's workload.
 
-In this section, we first  provide background on direct device access using 
-Intel VT-d and Linux KVM/QEMU~\cite{kvm}, followed by the description of design challenges 
-and our solutions for achieving bare-metal performance while supporting live migration.
-
 \subsection{Background: Intel VT-d and VFIO}
+In this section, we first  provide background on direct device access using 
+Intel VT-d and Linux KVM/QEMU~\cite{kvm}.
+
 
 %\subsection{Direct Interactions with PCI Devices}
 Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
@@ -209,8 +208,12 @@ dedicates the CPU time to the guest. Under the normal
 circumstances, the guest can not handle physical interrupts
 without the hypervisor. 
 }
-In the conventional architecture, when an interrupt is delivered to a CPU core,
-it triggers a VM exit if the CPU core is not in the root mode and control is transferred to the hypervisor. 
+Traditional hypervisors intercept most hardware interrupts and 
+emulate the delivery of resultant events to VMs, so as to
+restrict VMs' access to physical hardware in multi-tenant settings.
+A hardware interrupt delivered to a CPU core
+triggers a VM exit if the CPU core is not in the 
+root mode and control is transferred to the hypervisor. 
 %Saving and loading the execution context between the root and
 %non-root mode waste the CPU cycles. Second, the host needs to
 Then the hypervisor examines the cause of the interrupt. 
