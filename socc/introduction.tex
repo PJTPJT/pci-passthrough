@@ -83,6 +83,10 @@ architecture of \sna, which runs as a thin hypervisor on each
 physical server. \na is optimized to run one VM, called the 
 {\em HaaS VM}\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}, 
 on which  a user install a preferred OS and applications. 
+
+Unlike traditional hypervisors, which are designed to limit and control a VM's 
+access to physical resources, \na is designed to maximize the HaaS VM's 
+access to physical hardware.
 During normal execution, the \na allows 
 the HaaS VM to directly interact with physical I/O devices and processor hardware
 without the hypervisor's intervention, 
@@ -91,7 +95,8 @@ as if it runs directly on a physical server with near bare-metal performance.
 features of conventional clouds, such as live
 migration, introspection, and performance monitoring.
 A small HaaS agent in the guest (a self-contained kernel module)
-transparently coordinates with the \na to coordinate these services.
+transparently coordinates these services with the \sna.
+Specifically, \na provides the following features for a HaaS VM. 
 
 %Bare-metal cloud operators provide a user with a physical data center instance (PDCI), which is 
 %composed of a set of physical machines connected in a way specified by the user. 
@@ -132,10 +137,6 @@ transparently coordinates with the \na to coordinate these services.
 %proprietary hypervisor on the physical servers of its PDCI, 
 %
 
-Unlike traditional hypervisors, which are designed to limit and control a VM's 
-access to physical resources, \na is designed to maximize the HaaS VM's 
-access to physical hardware.
-Specifically, \na provides the following features for a HaaS VM. 
 \begin{itemize} 
 %\setlength\itemsep{-0.04in}
 \parskip 0mm
