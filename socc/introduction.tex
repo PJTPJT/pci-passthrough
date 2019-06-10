@@ -70,15 +70,16 @@ in the form of a specialized hypervisor, called the {\em Single VM
 hypervisor (\sna)}.
 
 
-\figw{architecture}{8.75}{Architecture of \na for single-VM
-virtualization: The \na runs as a thin hypervisor that
-provides manageability services such as live migration and VM
-monitoring. 
-The HaaS VM runs with dedicated CPU cores, memory, and I/O devices.
-All interrupts, including device, local timers, and IPIs
-are directly deivered from the hardware to the HaaS VM. }
+\figwtwocol{newarch}{16}{
+The \na runs as a thin shim layer
+to provide the HaaS VM with dedicated CPU cores, memory, and I/O devices.
+All hardware interrupts, including device, local timers, and IPIs
+are directly deivered to HaaS VM without hypervisor intervention.
+\na coordinates with a HaaS agent in the guest to provide
+manageability services such as live migration. 
+}
 
-Figure~\ref{fig:architecture} shows the high-level
+Figure~\ref{fig:newarch} shows the high-level
 architecture of \sna, which runs as a thin hypervisor on each
 physical server. \na is optimized to run one VM, called the 
 {\em HaaS VM}\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}, 

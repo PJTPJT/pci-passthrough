@@ -4,8 +4,9 @@ the hypervisor of from I/O data plane path of the VM, these alone are
 not sufficient to reduce hypervisor overheads.
 To ensure that a VM using VT-d and VFIO can achieve bare-metal
 I/O performance and with least overheads, \na implements
-the following overhead reduction mechanisms
+the following overhead reduction mechanisms.
 
+\figw{architecture}{8.75}{\na leverages VT-d passthrough I/O and posted interrupts to provide HaaS VM with direct access to PCIe I/O devices and direct delivery of I/O, timer, and inter-processor interrupts.}
 {\bf Dedicated CPUs:}
 First, the hypervisor is assigned one dedicated physical CPU core
 (CPU 0 in our implementation)
