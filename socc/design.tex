@@ -1,171 +1,4 @@
-\section{\na Overview}
-
-\figw{architecture}{8.75}{Architecture of \na for single-VM
-virtualization: The \na runs as a thin hypervisor that
-provides manageability services such as live migration and VM
-monitoring. The HaaS VM runs on all the remaining CPU cores
-with direct access to I/O devices, local timers and interrupt
-command register and handles the direct delivery of timer,
-device and inter-VCPU interrupts.}
-
-Figure~\ref{fig:architecture} shows the high-level
-architecture of \na. \na runs as a thin hypervisor on each
-physical server and supports a single VM, called the HaaS VM,
-on which a users installs preferred OS and applications. \na
-primarily provides value-added functionalities, such as live
-migration, introspection, and performance monitoring, while
-staying out of normal execution path of a HaaS VM.
-
-I/O operations and interrupt processing using traditional VMs
-incur higher overheads than bare-metal execution. I/O
-operations issued by a VM typically are trapped into the
-hypervisor via VM exits for emulation. Likewise, external
-device interrupts, local timer interrupts and IPIs to the CPU
-running a VM result in VM exits for emulating virtual
-interrupt delivery. Each VM exit is expensive, since it
-requires saving the VM's execution context upon exit,
-emulation of the exit reason in hypervisor mode, and finally
-restoration of the VM's context before re-entry into the guest
-mode.
-
-The main technical challenge of providing the guest OS with
-the illusion of running on a bare-metal server is that its
-interactions with I/O devices, such as network interface card
-(NIC) and disk controller, must be direct without going
-through any intermediary. \na allows the sole VM on the
-physical machine to directly interact with PCIe I/O devices,
-timer hardware and the interrupt command register by
-leveraging Intel VT-d~\cite{intelvtd-paper} and Linux Virtual
-Function I/O (VFIO)~\cite{vfio} mechanisms.
-
-To match bare-metal I/O performance, \na implements mechanisms
-for reducing the hypervisor's CPU, I/O, and memory footprint
-during runtime and minimizing interference with guest
-operations. In addition, \na enables direct delivery of device
-interrupts, timer interrupts and inter-VCPU IPIs to a HaaS VM
-without any VM exit by leveraging the posted interrupt
-mechanism in Intel VT-d. Direct interrupt delivery greatly
-reduces the interrupt processing latency and is particularly
-useful for real-time applications running on bare-metal
-servers. When the VM must be live migrated, \na instructs the
-VM to use para-virtual I/O, virtualized timer and indirect
-IPIs and completes the migration. At the destination, it
-switches the VM back to direct I/O device and direct timer
-access and direct inter-VCPU IPIs with minimal disruption of
-VM's workload.
-
-
-\subsection{Background: Intel VT-d and VFIO}
-In this section, we first provide background on direct I/O
-device access using Intel VT-d and Linux KVM/QEMU~\cite{kvm}
-by the VM.
-
-Intel VT-d~\cite{intelvtd-paper} provides processor-level
-support for direct and safe access to hardware I/O devices by
-VMs running in non-root mode.  Virtual function I/O
-(VFIO)~\cite{vfio} is a Linux software framework that enables
-user-space device drivers to interact with PCIe devices
-directly without involving the Linux kernel.  In general,
-there are four types of interactions between an OS and its
-PCIe I/O devices:
-
-\begin{enumerate}
-\parskip 0mm
-\itemsep 0mm
-%\setlength\itemsep{-0.04in}
-\item At the system start-up time, the OS probes and
-      enumerates the PCIe devices existing in the system, and
-      assigns a device number, configuration space address
-      range, and interrupt to each discovered device.
-
-\item The OS reads and writes a device's configuration
-      register space and the memory regions specified in its
-      base address registers (BAR), including setting up DMA
-      operations.
-
-\item A DMA engine moves data blocks between main memory and
-      PCIe devices according to the DMA commands set up by the
-      OS.
-
-\item A device interrupts the OS for its attention to certain
-      hardware events, such as new packet arrival or
-      transmission completion.
-
-\end{enumerate}
-Except the probe/enumeration operations, \na enables a guest
-OS to interact directly (without VM exits) with NICs and disk
-controllers for the other three types of device interactions.
-
-\subsubsection{Direct DMA Operations Using VT-d and VFIO}
-Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
-memory-mapped I/O (MMIO) operations against the memory areas associated with the device.
-Essentially, VFIO makes the configuration register space and the memory regions of
-each PCIe device accessible to user-space processes.
-
-
-Thus a user-space process can use DMA operations to move data directly between a PCIe device and
-a region of its virtual address space.
-The address of the source or destination buffer of a DMA operation resides in
-the {\em device address space} of the PCIe device involved in the DMA operation.
-Intel's VT-d architecture provides an IOMMU~\cite{ben:2006}, that maps a
-PCIe operation's {\em device address} into a {\em physical address},
-which is used to access main memory.
-
-The key field of each IOMMU entry includes a PCIe device number and a device address.
-Therefore, a machine's IOMMU may map the same device address into different physical addresses when the device address is associated with different PCIe devices.
-By controlling which user-space programs can access which PCIe devices, VFIO is able to leverage IOMMU to effectively prevent a user-space program
-from using DMA operations to corrupt the physical memory areas owned by other user-space programs.
-
-To KVM, a VM runs as part of a user-space process  called QEMU~\cite{qemu},
-specifically, as guest-mode threads within QEMU's virtual address space.
-QEMU uses VFIO to configure a VM to directly access the device address space of
-its assigned PCIe devices without emulation via KVM or QEMU.
-In contrast, in para-virtual Vhost~\cite{vhost-net} I/O architecture,
-each incoming or outgoing I/O operation (network or block I/O) must go through
-a special hypervisor-level thread (called the Vhost worker thread),
-which emulates a virtio~\cite{russell:2008} device in the kernel and
-therefore keeps QEMU out of the data plane.
-However, QEMU is still responsible for such control plane processing as setting up,
-configuring, and negotiating features for an in-kernel virtio device.
-
-
-\subsubsection{Posted Interrupts}
-
-{\bf Conventional Interrupt Delivery:}
-
-A VM may experience two types of interrupts: {\em external} and {\em local} interrupts.
-External interrupts originate from external I/O devices, such as network card or disk controller.
-When these I/O devices generate a hardware interrupt, this signal first goes to an IOAPIC, which, through an {\em Interrupt Redirection Table},
-converts the hardware interrupt into an interrupt message that contains a vector number and is sent to a particular CPU core.
-There is a local APIC associated with each CPU core to field interrupts sent to the CPU core.
-In the Intel VT-d architecture, all interrupts sent to any local APIC are intercepted by  an {\em Interrupt Remapping Table} in the IOMMU unit,
-which provides a similar functionality to that of an Interrupt Redirection Table
-to those external interrupts that do not come from an IOAPIC, e.g., message signaled interrupts from PCI devices.
-
-{\bf Posted Interrupt Delivery:}
-The Posted Interrupt mechanism~\cite{intelvtd-paper,intelvtd-manual} allows a CPU core that is running in the non-root mode to receive and handle interrupts with a specific vector
-(Post Interrupt Notification or PIN vector) directly without involving the hypervisor.
-When a CPU core handles a PIN interrupt, it examines a bitmap data structure associated with the CPU core called {\em Virtual Interrupt Request Register} (vIRR),
-which is copied from another privileged data structure also associated with the CPU core called {\em Posted Interrupt Requests} (PIR) as a side effect of a PIN interrupt delivery,
-to determine the vectors of the interrupts behind the PIN interrupt, and processes these interrupts one by one according to their vectors and priorities.
-The PIR bitmap is part of a per-VCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.
-The address of the PID and the PIN vector associated with a CPU core are both contained in the virtual machine control structure (VMCS) associated with the VCPU running on the CPU core.
-
-
-To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
-First , it sets the IRT entry's IM bit to 1, which means that any interrupt matching this entry is to be delivered via the posted interrupt mechanism.
-Then, it sets the IRT entry's PID address field to the PID address associated with this entry's target CPU core.
-When an external interrupt arrives at the IOMMU and matches an IRT entry, the
-hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
-converts this interrupt into an interrupt labeled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
-Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
-
-When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the
-associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
-would normally requires a VM exit, which would add to the interrupt processing overhead.
-Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
-
-\subsection{Achieving Bare-metal I/O Performance}
+\section{Achieving Bare-metal I/O Performance}
 While using the VT-d and posted-interrupt mechanisms removes
 the hypervisor of from I/O data plane path of the VM, these alone are
 not sufficient to reduce hypervisor overheads.
@@ -240,8 +73,8 @@ from its direct-assigned device, possibly due to
 faster EOI response and hence less interrupt coalescing by
 the hardware, similar to the behavior on a bare-metal OS.
 
-\subsection{Direct Local Interrupt Delivery}
-\label{subsubsec:shared_pid_dtid}
+\section{Direct Local Interrupt Delivery}
+\label{sec:shared_pid_dtid}
 \figw{dtid}{9}{Direct delivery of timer interrupts in \sna.
 %TODO: mention disabling WRMSR VM Exits.
 The hypervisor configures each guest LAPIC to transform the local timer
@@ -300,7 +133,7 @@ and then sets a certain bit in the PIR of the destination CPU core to indicate t
 
 
 
-\subsection{Seamless Device State Migration}
+\section{Seamless Device State Migration}
 
 Because the states associated with directly accessible devices complicate the migration process~\cite{zhai:2008},
 \na augments KVM's VM migration capability with additional mechanisms to support seamless migration of HaaS VMs.
@@ -316,7 +149,7 @@ In this section, we focus on two types of directly accessed devices: NIC and tim
 
 
 
-\subsubsection{NIC State Migration}
+\subsection{NIC State Migration}
 \label{sec:nic_migration}
 \figw{nic_bonding}{9}{Bonding of pass-through and para-virtual NICS in a HaaS VM to support live migration in \na.}
 
@@ -365,7 +198,7 @@ on the destination server while the HaaS VM is being migrated and before it is r
 and performs the third step after the HaaS VM is migrated and resumed.
 
 
-\subsubsection{Timer State Migration}
+\subsection{Timer State Migration}
 
 To leverage the posted interrupt mechanism to directly deliver local APIC timer interrupts,
 \na allows a HaaS VM running on a CPU core to directly access the following device state:
