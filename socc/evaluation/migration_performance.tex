@@ -5,18 +5,20 @@
 %and hot-plug optimizations.}
 
 \begin{table}[]
+\begin{center}
 \begin{tabular}{|l|c|}
 \hline
 \textbf{Operation}    & \multicolumn{1}{l|}{\textbf{\# of Lost UDP}} \\ \hline
-\textbf{VF to VIRTIO} & 25                                           \\ \hline
-\textbf{Unplug VF}    & 0                                            \\ \hline
-\textbf{Plug VF}      & 0                                            \\ \hline
-\textbf{VIRTIO to VF} & 17                                           \\ \hline
+\textbf{VF to VIRTIO at source} & 25                                           \\ \hline
+\textbf{Unplug VF at source}    & 0                                            \\ \hline
+\textbf{Plug VF at destination}      & 0                                            \\ \hline
+\textbf{VIRTIO to VF at destination} & 17                                           \\ \hline
 \end{tabular}
-\caption{Number of UDP packets lost when transferring the
+\end{center}
+\caption{Small number of packets are lost during various stages of 
+live migration when redirecting 
 network traffic between the passthrough NIC and VIRTIO network
-device. \textbf{VF}: virtual function. \textbf{VIRTIO}: Virtio
-NIC.}
+interface. \textbf{VF}: Virtual Function on Passthrough NIC. \textbf{VIRTIO}: Virtio interface.}
 \label{tab:udp_packet_lost}
 \end{table}
 
@@ -37,26 +39,28 @@ and hidden the majority of hotplug steps in the phase of
 guest-state transfer. Thus, the destination was ready to
 configure the VF as soon as the VM was back online.
 
-In this experiment, the number of UDP packets lost for the
-switch-over and VF hotplug operations were measured. The VM
+In this experiment, the number of UDP packets lost were measured
+during VF-to-VIRTIO switch-over and VF hotunplug at source, and 
+VF hotplug and VIRTIO-to-VF switchover at destination . The VM
 was configured with a bonding driver in active-backup mode
 where the VFIO and Virtio NIC served as active and backup
 slave, respectively. The bonding driver was configured with a
 \texttt{fail\_over\_mac} parameter, which ensured that the MAC
 address of the bond was always the same as the active slave.
-The VM received 10K UDP packets per second, which each payload
-was 8-byte sequence number. tcpdump\cite{tcpdump} was used to
-detect the packet lost in the kernel.
+The VM received 10K UDP packets per second, with each payload
+containing a unique 8-byte sequence number. 
+The {\tt tcpdump} tool~\cite{tcpdump} was used to
+measure the number of lost packets during various stages. 
 
-As show in Table~\ref{tab:udp_packet_lost}, the few UDP packet
-lost for the switch-over and hotplug opertions were dropped.
-Without our hotplug optimization, the network downtime was
-about 300ms. Once the optimization was enabled, no network
-disruption was observed. As described in
-Section~\ref{sec:nic_migration}, the first two steps of
-optimization were excuted in advance at the destination during
-the guest-state transfer. The total migration remained
-unaffected.
+As seen from Table~\ref{tab:udp_packet_lost}, very few packets
+were dropped during the switch-over operations at the source and destination.
+Before applying our hotplug optimization, the network downtime was
+around 300ms. Once our optimization was enabled, no measurable network
+downtime was observed other than as the few  dropped packets mentioned above. 
+As described in Section~\ref{sec:nic_migration}, the 
+optimization steps at the destination were executed at the destination 
+in parallel with the guest-state transfer. 
+%The total migration time and downtime remained unaffected with
 
 We also did not observe any missed timer interrupts when
 disabling and re-enabling DTID during migration, since the
