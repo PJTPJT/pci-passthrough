@@ -1,21 +1,4 @@
 \section{\na Overview}
-% Virtualization support for HaaS include the following items
-% CPU idleness detection and processing
-% Direct NIC assignment
-%   - VFIO
-%   - CPU optimization for the baremetal network performance
-% Direct interrupt delivery
-%   - Posted-interrupt mechanism
-%   - Direct timer-interrupt delivery
-%     - periodic vs aperiodic timer interrupt
-%     - one-shot vs periodic hardware timer interrupt
-%     - guest-level access to the PIR page
-%     - Eliminate the hardware lock, when the guest accesses
-%       the PIR bit
-%     - Spurious timer interrupts
-% Seamless baremetal virtual machine migration
-%   - NIC bonding with the hot plug/unplug operation migration
-%   - DTID during the migration
 
 \figw{architecture}{8.75}{Architecture of \na for single-VM virtualization:
 The \na runs as a thin hypervisor that provides
@@ -24,19 +7,6 @@ The HaaS VM runs on all the remaining CPU cores with direct access
 to I/O devices and local timers, including direct delivery of timer, 
 device, and inter-processor interrupts.}
 
-%The design goal of \na is to eliminate the hypervisor from
-%the guest I/O path while achieving bare-metal performance in
-%the guest. To achieve this \na considers direct device
-%assignment to the guest using Intel's VT-d support. First, the
-%guest meets the bare-metal network and disk I/O performance
-%with direct device assignment. We further apply optimizations
-%to reduce the CPU utilization by hypervisor. Second, the timer
-%interrupts are transformed into the posted interrupts, which
-%are directly delivered to the guest by the logical processor
-%without causing any VM exits. Finally, we present the
-%migration of virtual machine with directly assigned devices.
-
-%To enhance the manageability of physical servers offered in a bare-metal cloud service, \na installs 
 Figure~\ref{fig:architecture} shows the high-level architecture of \na.
 \na runs as a thin hypervisor on each physical server and 
 supports a single VM, called the HaaS VM, on which 
@@ -77,7 +47,6 @@ In this section, we first  provide background on direct device access using
 Intel VT-d and Linux KVM/QEMU~\cite{kvm}.
 
 
-%\subsection{Direct Interactions with PCI Devices}
 Intel VT-d~\cite{intelvtd-paper} provides processor-level support for direct 
 and safe access to hardware I/O devices by VMs running in non-root mode.
 Virtual function I/O (VFIO)~\cite{vfio} is a Linux software framework that enables user-space
@@ -105,31 +74,8 @@ Typically, a PCIe device driver communicates with its device using programmed I/
 memory-mapped I/O (MMIO) operations against the memory areas associated with the device. 
 Essentially, VFIO makes the configuration register space and the memory regions of
 each PCIe device accessible to user-space processes.
-%VFIO retrieves a PCIe device's device-specific information such as BARs from its
-%configuration register space, and maps them into distinct regions in a special file. 
-%By reading and writing specific regions of this special file, a user-space program 
-%is able to directly interact a particular PCIe device. 
-%VFIO provides user-space programs a PCIe device read/write API, and converts these API calls
-%into file read/write operations against the special PCIe device file.
-%
-%The userspace driver uses
-%the device file descriptor and offset to access each region
-%and retrieve the device information. The VFIO decomposes the
-%physical device to a software interface. Such software
-%interface is turned into the assigned device by QEMU.
-%Essentially, the device read and write handler in the QEMU
-%memory API is forwarded to the VFIO read and write handler.
-%Not all accesses to a PCIe device's associated memory regions by user-space processes are direct, 
-%because some parts of a PCIe configuration register space are privileged, such as 
-%message signalled interrupts (MSI), BARs, and ROM,  and accessing them 
-%requires KVM's or QEMU's emulation. 
-%
-%Nonetheless, accessing some parts of PCI configuration
-%PCI configuration space is
-%not handled as memory regions in QEMU. Some of the accesses to
-%the PCI configuration space is passthroughed directly, while
-%others, such as MSI, BARs, and ROM, need to be emulated.
-%
+
+
 Thus a user-space process can use DMA operations to move data directly between a PCIe device and 
 a region of its virtual address space.
 The address of the source or destination buffer of a DMA operation resides in 
@@ -137,13 +83,6 @@ the {\em device address space} of the PCIe device involved in the DMA operation.
 Intel's VT-d architecture provides an IOMMU~\cite{ben:2006}, that maps a 
 PCIe operation's {\em device address} into a {\em physical address}, 
 which is used to access main memory. 
-\mycomment{
-When a user-space program sets up a DMA operation, it only knows the virtual address of the associated buffer and thus places
-this address in the DMA command, essentially treating this virtual address as a device address. 
-Given such a DMA command, VFIO consults with the page table associated with this user-space program to extract the physical address corresponding
-to the DMA buffer's virtual address, and creates an IOMMU entry that links the buffer's virtual (device) address with its associated physical address. 
-When this DMA command is executed at run time, its buffer's device address is correctly translated to its corresponding physical address.
- }
   
 The key field of each IOMMU entry includes a PCIe device number and a device address.
 Therefore, a machine's IOMMU may map the same device address into different physical addresses when the device address is associated with different PCIe devices.
@@ -163,88 +102,10 @@ However, QEMU is still responsible for such control plane processing as setting 
 configuring, and negotiating features for an in-kernel virtio device.  
 
 
-
-\mycomment{
-Second, the VFIO programs the IOMMU to transfer the data
-between the userspace driver and device in a hardware
-protected manner. The VT-d IOMMU provides the device isolation
-using the per-device IOVA and paging structure. The virtual
-virtual address requested by the device is translated to the
-physical address through the set of paging structures by
-IOMMU. In the case of VM, the address space of assigned device
-is embedded within the guest address space. The IOMMU is
-programmed to translate such IOVA to the host physical address
-which is mapped to the guest address space. Such translation
-is both realized and protected by the IOMMU.
-
-Third, the VFIO has a mechanism to describe and register the
-device interrupt to signal its userspace driver. When the VM
-accesses the device configuration space, it is trapped through
-QEMU. QEMU configures the IRQs by the VFIO interrupt ioctls
-and sets up the event notifiers between the kernel, QEMU and
-guest. When the kernel signals the IRQ to QEMU, QEMU injects
-it into the VM. The interrupt signaling is further speeded up
-by moving QEMU out of the way. KVM supports both ioeventfd and
-irqfd. ioeventfd registers PIO and MMIO regions to trigger an
-event notification, when written by the VM. irqfd allows to
-inject a specific interrupt to the VM by KVM. Once ioeventfd
-and irqfd are coupled together, the interrupt pathway remains
-in the host kernel without exiting to the userspace QEMU.
-Using the VT-d, the KVM and QEMU is completed removed from the
-signaling path way. It enables the direct interrupt delivery
-from the assigned device to its VM without a VM exit.
-}
-
-
 \subsubsection{Posted Interrupts}
 
 {\bf Conventional Interrupt Delivery:}
-\mycomment{
-Our design uses the hardware-assisted posted interrupt
-mechanism and achieves the direct interrupt delivery of
-assigned devices and local timers without the intervention of
-hypervisor. It reduces the hypervisor CPU utilization and
-dedicates the CPU time to the guest. Under the normal
-circumstances, the guest can not handle physical interrupts
-without the hypervisor. 
-}
-Traditional hypervisors intercept most hardware interrupts and 
-emulate the delivery of resultant events to VMs, so as to
-restrict VMs' access to physical hardware in multi-tenant settings.
-A hardware interrupt delivered to a CPU core
-triggers a VM exit if the CPU core is not in the 
-root mode and control is transferred to the hypervisor. 
-%Saving and loading the execution context between the root and
-%non-root mode waste the CPU cycles. Second, the host needs to
-Then the hypervisor examines the cause of the interrupt. 
-If the interrupt is meant for a VM scheduled on the CPU core,
-the hypervisor delivers this interrupt as a virtual interrupt to the target VM
-next time when it is scheduled on the CPU core; otherwise the hypervisor handles
-the interrupt on its own.
-After a VM completes servicing an interrupt, it writes to the EOI (End of Interrupt)  register 
-to signal to the hardware that the interrupt in question has been handled. Because the EOI register is 
-a privileged resource, every EOI register write causes a VM exit.
-Therefore, processing of each physical interrupt costs at least two VM exits.
-This per-interrupt overhead is too expensive for network-intensive applications that 
-are designed to process multi-million packets per second. 
 
-\mycomment{
-and handle the physical interrupt. If the physical
-interrupt is meant for the guest, the host needs to deliver it
-as the virtual interrupt upon the next VM entry. Otherwise,
-the host handles it and schedules the next VM entry. Third,
-when the guest's interrupt handler finishes, it writes to the
-EOI register. Such write operation may induce the VM exit.
-Since the guest is not aware of the distinction between the
-physical and virtual interrupt, it signals the completion of
-interrupt in the same way. After the guest handles the virtual
-interrupt, its EOI update is normally emulated by the host.
-Fourth, the host may need to use CPU cache and reduce the time
-to handle the physical interrupt. This introduces the CPU
-cache pollution.
-}
-
-%In the X86 architecture, 
 A VM may experience two types of interrupts: {\em external} and {\em local} interrupts.
 External interrupts originate from external I/O devices, such as network card or disk controller.
 When these I/O devices generate a hardware interrupt, this signal first goes to an IOAPIC, which, through an {\em Interrupt Redirection Table}, 
@@ -263,7 +124,7 @@ to determine the vectors of the interrupts behind the PIN interrupt, and process
 The PIR bitmap is part of a per-VCPU data structure called {\em Posted Interrupt Descriptor} (PID), which in addition contains an Outstanding Notification (ON) flag, which, when set, indicates that there is a PIN interrupt pending.  
 The address of the PID and the PIN vector associated with a CPU core are both contained in the virtual machine control structure (VMCS) associated with the VCPU running on the CPU core.
 
-%\subsubsection{Direct External Interrupt Delivery}
+
 To deliver an external interrupt directly to a VM, KVM sets up an Interrupt Remapping Table (IRT) entry for that external interrupt as follows.
 First , it sets the IRT entry's IM bit to 1, which means that any interrupt matching this entry is to be delivered via the posted interrupt mechanism.  
 Then, it sets the IRT entry's PID address field to the PID address associated with this entry's target CPU core. 
@@ -276,68 +137,8 @@ When a VM completes the service of an interrupt, it needs to clear the EOI regis
 associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
 would normally requires a VM exit, which would add to the interrupt processing overhead. 
 Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
-%To allow a VM to avoid a VM exit due to clearing the EOI register after handling an interrupt of vector X,  KVM clears X's corresponding bit in 
-%the {\em EOI exit bitmap} in the VM's VMCS. As a result, at run time after this VM completes servicing an interrupt of vector X and clears the EOI register via a memory mapped 
-%interface (called APIC-access page), no VM exit occurs.   
-%Helped with the posted interrupt and EOI virtualization mechanism, a HaaS VM is now able to process any external interrupt directly without triggering any VM exit.
-
- 
-\mycomment{
-VT-d supports the posted-interrupt capability and deliver the
-external interrupts directly from the I/O devices and external
-controllers without the cost of VM exits and the hypervisor
-intervention. Before utilizing such feature, the system
-software needs to define the posted interrupt notification
-vector. The PIN signifies the incoming external interrupt from
-the assigned device is subjected to the posted-interrupt
-processing. The processing is achieved by updating the
-posted-interrupt descriptor dynamically. When the VMCS is
-actively used by the logical processor in the non-root mode,
-it is prohibited to update its data structures. The PID is the
-exception. Nonetheless, there is one requirement that the PID
-modifications must be done using locked read-modify-write
-instructions. Here is another benefit of posted-interrupt
-support. When the virtual processor is scheduled on another
-VCPU, the VMM can co-migrate its interrupts from the assigned
-devices by setting the corresponding bits in posted-interrupt
-register of PID.
-
-The posted-interrupt support is accomplished in three general
-steps. First, the VMM programs the interrupt-remapping
-hardware with the mapping between the external interrupt and
-virtual interrupt. Second, when the external interrupt is
-delivered to the interrupt-remapping hardware, it sets the
-outstanding bit and corresponding bit of virtual interrupt in
-the posted-interrupt register of PID. It generates the PIN.
-The IOAPIC delivers the PIN to the appropriate LAPIC. Third,
-PIN notifies the logical processor that it is the
-posted-interrupt event. The logical processor starts the
-posted interrupt processing and delivers the virtual interrupt
-without any VM exit.
-
-The posted-interrupt processing is described in the following
-steps. First, when the external interrupt is delivered to the
-guest's processor, it is acknowledged by the LAPIC. LAPIC
-provides the processor core the interrupt number. Second, if
-the physical interrupt is equal to the PIN, the logical
-processor starts the posted interrupt processing. Third, the
-processor clears the outstanding notification bit from the
-posted-interrupt descriptor. Fourth, the processor
-acknowledges the EOI. Fifth, the processor updates the vIRR by
-synchronizing it with the PIR. Sixth, the processor acquires
-the next request virtual interrupt. It updates RVI by the
-maximum of previous RVI and highest index of bits set in PIR,
-before it clears PIR. Seventh, the processor evaluates the
-pending virtual interrupt. Eighth, the processor delivers the
-virtual interrupt.
-}
-
 
 \subsection{Achieving Bare-metal I/O Performance}
-%\figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O without posted interrupt, and (c) optimized pass-through I/O in \sna.}
-%TODO: Describe I/O challenges here
-%	Why CPU utilization increases
-% 	VM Exit overhead
 While using the VT-d and posted-interrupt mechanisms removes 
 the hypervisor of from I/O data plane path of the VM, these alone are
 not sufficient to reduce hypervisor overheads. 
@@ -412,23 +213,6 @@ from its direct-assigned device, possibly due to
 faster EOI response and hence less interrupt coalescing by 
 the hardware, similar to the behavior on a bare-metal OS.
 
-%
-%First, the direct assigned network card and disk drive under
-%the VFIO framework removes the host from the forward I/O path.
-%%The guest has the control over the assigned devices and avoids
-%the virtualization overhead, when accessing the device control
-%registers and performing the
-%DMA~\cite{sdm:2018,intelvtd-manual,williamson:2016}. After the
-%assigned device services the request, it delivers the
-%interrupt to the guest and triggers the VM exits due to the
-%external interrupts and EOI respectively. Using the VT-d
-%posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
-%the guest handles the device interrupt and updates the EOI
-%without any VM exit. Thus, the host is completed removed from
-%the guest I/O path for the pass-through devices. Nonetheless,
-%
-
-
 \subsection{Direct Local Interrupt Delivery} 
 \label{subsubsec:shared_pid_dtid}
 \figw{dtid}{9}{Direct delivery of timer interrupts in \sna. 
@@ -488,6 +272,363 @@ and then sets a certain bit in the PIR of the destination CPU core to indicate t
 
  
 
+
+\subsection{Seamless Device State Migration}
+
+Because the states associated with directly accessible devices complicate the migration process~\cite{zhai:2008}, 
+\na augments KVM's VM migration capability with additional mechanisms to support seamless migration of HaaS VMs. 
+More specifically, \na adopts the following unified strategy to hide the states of directly accessed devices from KVM's VM migration logic:
+In the normal mode, a HaaS VM directly accesses PCIe devices and timers; immediately before and during when the HaaS VM is migrated,  the VM 
+accesses PCIe devices and timers indirectly; after the migration, the migrated HaaS VM accesses PCIe devices and timers directly again.
+
+Moreover, \na assumes that the source and destination physical servers involved in a migration have an identical
+set of hardware devices with which a HaaS VM interacts directly.
+This way, the driver code directly interacting with these devices has a chance to properly work on 
+both the source and destination server.
+In this section, we focus on two types of directly accessed devices: NIC and timer.
+
+
+
+\subsubsection{NIC State Migration}
+\label{sec:nic_migration}
+\figw{nic_bonding}{9}{Bonding of pass-through and para-virtual NICS in a HaaS VM to support live migration in \na.}
+
+We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
+which provides one physical function and multiple virtual functions, each with its own MAC address.
+As shown in Figure~\ref{fig:nic_bonding}, 
+\na sets up a directly accessed pass-through NIC using one of the virtual functions
+and an indirectly accessed para-virtual NIC using another virtual function.
+A NIC bonding driver~\cite{bond-dri} in the guest OS teams up the pass-through and para-virtual NICs in an active-backup mode.
+The HaaS VM running on every \na physical server sends and receives network packets through such a bonded interface. 
+
+During normal execution, the pass-through NIC is the Active slave and the para-virtual NIC is the Backup slave,
+so that a HaaS VM can make full use of the underlying physical NIC's capability.
+Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
+Upon detecting the Active slave's failure, the bonding driver immediately switches network traffic to the Backup slave.
+
+From this point on, all network traffic goes through the para-virtual NIC. 
+KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
+Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its NIC-related state.
+
+After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the para-virtual NIC.
+In the mean time, \na hot-plugs the pass-through NIC on the destination  server 
+so that the pass-through NIC becomes the new Active slave.
+
+
+
+The most important performance metric for VM migration is the service disruption time.
+The additional service disruption time that \na introduces is attributed to the transition from
+the pass-through NIC to the para-virtual NIC on the source server, and the transition from
+the para-virtual NIC to the pass-through NIC on the destination server.
+Measurements on a earlier \na prototype suggested that the transition from the 
+para-virtual to the pass-through NIC introduces non-trivial service disruption time (about 300ms), 
+when hot-plugging the pass-through NIC on the destination server. 
+
+A deeper analysis shows that the hot-plug operation consists of three steps:
+(1) QEMU prepares a software object to represent the pass-through
+NIC, (2) then It populates this software object with parameter values extracted 
+from the PCIe configuration space of the NIC, (3) and finally it
+resets the software NIC object to set up the BAR and interrupt forwarding
+information. The first and third steps must take place in QEMU's main event
+loop when the entire HaaS VM requesting the hot-plug operation must be paused.
+
+To minimize this service disruption time due to hot-plug, 
+\na performs the first and second steps of the hot-plugging the pass-through NIC
+on the destination server while the HaaS VM is being migrated and before it is resumed, 
+and performs the third step after the HaaS VM is migrated and resumed. 
+
+
+\subsubsection{Timer State Migration}
+
+To leverage the posted interrupt mechanism to directly deliver local APIC timer interrupts,
+\na allows a HaaS VM running on a CPU core to directly access the following device state:
+(1) setting the timer interrupt bit in the PIR associated with the CPU core's local APIC ,  (2) 
+using a WRMSR to modify the initial counter register of the local APIC timer, and (3) 
+computing the next timer expiration time from conversions between clock cycles and nano-seconds, the multiplication
+and shift factor of the calibrated timer, etc., which are provided by the hypervisor.
+
+During the normal run time, timer interrupts are delivered to a HaaS VM directly. 
+Before a HaaS VM is to be migrated, \na notifies the HaaS VM to stop the 
+direct timer interrupt delivery (DTID) mechanism, unmaps the PIR page, 
+enables the TMICT WRMSR VM exit, configures the local vector table in the local APIC to 
+fire timer interrupts as they are rather than as posted-interrupt notification interrupts. 
+Upon receiving this notification, the HaaS VM uses a different set of 
+multiplication and shift parameters to compute the next timer value, 
+and convey the resulting value to the hypervisor via the \texttt{hrtimer} object
+when control is transferred to the hypervisor upon a TMICT WRMSR VM exit. 
+
+After a HaaS VM is successfully migrated and resumed, both the hypervisor and the VM restart 
+the DTID mechanism, by running 
+the aforementioned steps in reverse order.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mycomment{   
+The direct timer interrupt delivery depends the following
+factors. First, the host shares the posted-interrupt
+descriptor with the guest. When the guest updates the
+timer-interrupt bit of posted-interrupt request through EPT,
+it does not trigger the EPT violations and the local timer
+interrupt is delivered as the posted interrupt. Second, the
+guest directly configures the timer initial count register
+without a WRMSR VM exit. This is achieved by updating the MSR
+bitmap of VM control structure. Third, the guest needs to
+correctly compute its next timer events with the
+host-calibrated LAPIC timer. To compute the next timer event
+from the nano-seconds to the clock cycles, the multiplication
+and shift factor of the calibrated timer are required. The
+host needs to convey such information to the guest. The guest
+configures the TMICT with the correct timer event in clock
+cycles.
+
+Before the migration starts, both host and guest need to tear
+down the DTID. In the host, it
+} 
+
+\mycomment{
+It does not only support the direct PCI device
+assignment to the userspace processes of VM, but also the
+platform devices. Why do we need to allow the userspace
+programs to gain the control of physical devices? For the
+field of high performance computing, the I/O performances has
+a great impact on the overall system performance. The
+performance congestion comes, When the rate of data being read
+is slower than the rate of data being consumed. Or it happens,
+when the rate of data being written is slower than the rate of
+data being computed and produced.
+
+The VFIO needs to fulfill the three requirements of device
+assignment to a userspace process. First, the userspace driver
+can access to the device resources such as I/O ports. Second,
+the userspace driver can perform the DMA securely. This is
+provided by the IOMMU protection mechanism. Third, the device
+interrupts is delivered to the device owner in the userspace.
+The way how the VFIO fulfills the three requirements and
+applies them with QEMU is briefly described below.
+}
+
+\mycomment{
+The hardware-assisted direct device assignment helps the guest
+achieve the baremetal I/O performance without the additional
+virtualization overhead using the VT-x and VT-d support.
+After proper VMCS and EPT configuration, the guest gains
+the control of assigned device
+by MMIO/PIO without the help of hypervisor. The VT-x APIC
+virtualization permits the guest to write to the
+end-of-interrupt register without a VM exit. With the VT-d
+support, the guest performs DMA with the enhanced security and
+eliminates the VM exit overhead due to the device interrupts by using 
+the posted-interrupt mechanism. In addition to the hardware
+support, VFIO provides the software framework for the
+userspace device drivers. It works with VT-d and QEMU and sets
+up the direct PCI device assignment. Although it is expected
+to move the hypervisor out of the guest I/O path, the
+hypervisor still induces high CPU utilization due to the
+HLT emulation. This greatly deviates our goal of guest having
+its own dedicated cores. Nonetheless, our CPU optimization
+strategies remedy such a problem.
+}
+
+%The design goal of \na is to eliminate the hypervisor from
+%the guest I/O path while achieving bare-metal performance in
+%the guest. To achieve this \na considers direct device
+%assignment to the guest using Intel's VT-d support. First, the
+%guest meets the bare-metal network and disk I/O performance
+%with direct device assignment. We further apply optimizations
+%to reduce the CPU utilization by hypervisor. Second, the timer
+%interrupts are transformed into the posted interrupts, which
+%are directly delivered to the guest by the logical processor
+%without causing any VM exits. Finally, we present the
+%migration of virtual machine with directly assigned devices.
+
+%To enhance the manageability of physical servers offered in a bare-metal cloud service, \na installs 
+%VFIO retrieves a PCIe device's device-specific information such as BARs from its
+%configuration register space, and maps them into distinct regions in a special file. 
+%By reading and writing specific regions of this special file, a user-space program 
+%is able to directly interact a particular PCIe device. 
+%VFIO provides user-space programs a PCIe device read/write API, and converts these API calls
+%into file read/write operations against the special PCIe device file.
+%
+%The userspace driver uses
+%the device file descriptor and offset to access each region
+%and retrieve the device information. The VFIO decomposes the
+%physical device to a software interface. Such software
+%interface is turned into the assigned device by QEMU.
+%Essentially, the device read and write handler in the QEMU
+%memory API is forwarded to the VFIO read and write handler.
+%Not all accesses to a PCIe device's associated memory regions by user-space processes are direct, 
+%because some parts of a PCIe configuration register space are privileged, such as 
+%message signalled interrupts (MSI), BARs, and ROM,  and accessing them 
+%requires KVM's or QEMU's emulation. 
+%
+%Nonetheless, accessing some parts of PCI configuration
+%PCI configuration space is
+%not handled as memory regions in QEMU. Some of the accesses to
+%the PCI configuration space is passthroughed directly, while
+%others, such as MSI, BARs, and ROM, need to be emulated.
+%
+\mycomment{
+When a user-space program sets up a DMA operation, it only knows the virtual address of the associated buffer and thus places
+this address in the DMA command, essentially treating this virtual address as a device address. 
+Given such a DMA command, VFIO consults with the page table associated with this user-space program to extract the physical address corresponding
+to the DMA buffer's virtual address, and creates an IOMMU entry that links the buffer's virtual (device) address with its associated physical address. 
+When this DMA command is executed at run time, its buffer's device address is correctly translated to its corresponding physical address.
+}
+
+\mycomment{
+Second, the VFIO programs the IOMMU to transfer the data
+between the userspace driver and device in a hardware
+protected manner. The VT-d IOMMU provides the device isolation
+using the per-device IOVA and paging structure. The virtual
+virtual address requested by the device is translated to the
+physical address through the set of paging structures by
+IOMMU. In the case of VM, the address space of assigned device
+is embedded within the guest address space. The IOMMU is
+programmed to translate such IOVA to the host physical address
+which is mapped to the guest address space. Such translation
+is both realized and protected by the IOMMU.
+
+Third, the VFIO has a mechanism to describe and register the
+device interrupt to signal its userspace driver. When the VM
+accesses the device configuration space, it is trapped through
+QEMU. QEMU configures the IRQs by the VFIO interrupt ioctls
+and sets up the event notifiers between the kernel, QEMU and
+guest. When the kernel signals the IRQ to QEMU, QEMU injects
+it into the VM. The interrupt signaling is further speeded up
+by moving QEMU out of the way. KVM supports both ioeventfd and
+irqfd. ioeventfd registers PIO and MMIO regions to trigger an
+event notification, when written by the VM. irqfd allows to
+inject a specific interrupt to the VM by KVM. Once ioeventfd
+and irqfd are coupled together, the interrupt pathway remains
+in the host kernel without exiting to the userspace QEMU.
+Using the VT-d, the KVM and QEMU is completed removed from the
+signaling path way. It enables the direct interrupt delivery
+from the assigned device to its VM without a VM exit.
+}
+
+\mycomment{
+Our design uses the hardware-assisted posted interrupt
+mechanism and achieves the direct interrupt delivery of
+assigned devices and local timers without the intervention of
+hypervisor. It reduces the hypervisor CPU utilization and
+dedicates the CPU time to the guest. Under the normal
+circumstances, the guest can not handle physical interrupts
+without the hypervisor. 
+}
+Traditional hypervisors intercept most hardware interrupts and 
+emulate the delivery of resultant events to VMs, so as to
+restrict VMs' access to physical hardware in multi-tenant settings.
+A hardware interrupt delivered to a CPU core
+triggers a VM exit if the CPU core is not in the 
+root mode and control is transferred to the hypervisor. 
+%Saving and loading the execution context between the root and
+%non-root mode waste the CPU cycles. Second, the host needs to
+Then the hypervisor examines the cause of the interrupt. 
+If the interrupt is meant for a VM scheduled on the CPU core,
+the hypervisor delivers this interrupt as a virtual interrupt to the target VM
+next time when it is scheduled on the CPU core; otherwise the hypervisor handles
+the interrupt on its own.
+After a VM completes servicing an interrupt, it writes to the EOI (End of Interrupt)  register 
+to signal to the hardware that the interrupt in question has been handled. Because the EOI register is 
+a privileged resource, every EOI register write causes a VM exit.
+Therefore, processing of each physical interrupt costs at least two VM exits.
+This per-interrupt overhead is too expensive for network-intensive applications that 
+are designed to process multi-million packets per second. 
+
+\mycomment{
+and handle the physical interrupt. If the physical
+interrupt is meant for the guest, the host needs to deliver it
+as the virtual interrupt upon the next VM entry. Otherwise,
+the host handles it and schedules the next VM entry. Third,
+when the guest's interrupt handler finishes, it writes to the
+EOI register. Such write operation may induce the VM exit.
+Since the guest is not aware of the distinction between the
+physical and virtual interrupt, it signals the completion of
+interrupt in the same way. After the guest handles the virtual
+interrupt, its EOI update is normally emulated by the host.
+Fourth, the host may need to use CPU cache and reduce the time
+to handle the physical interrupt. This introduces the CPU
+cache pollution.
+}
+
+%To allow a VM to avoid a VM exit due to clearing the EOI register after handling an interrupt of vector X,  KVM clears X's corresponding bit in 
+%the {\em EOI exit bitmap} in the VM's VMCS. As a result, at run time after this VM completes servicing an interrupt of vector X and clears the EOI register via a memory mapped 
+%interface (called APIC-access page), no VM exit occurs.   
+%Helped with the posted interrupt and EOI virtualization mechanism, a HaaS VM is now able to process any external interrupt directly without triggering any VM exit.
+
+ 
+\mycomment{
+VT-d supports the posted-interrupt capability and deliver the
+external interrupts directly from the I/O devices and external
+controllers without the cost of VM exits and the hypervisor
+intervention. Before utilizing such feature, the system
+software needs to define the posted interrupt notification
+vector. The PIN signifies the incoming external interrupt from
+the assigned device is subjected to the posted-interrupt
+processing. The processing is achieved by updating the
+posted-interrupt descriptor dynamically. When the VMCS is
+actively used by the logical processor in the non-root mode,
+it is prohibited to update its data structures. The PID is the
+exception. Nonetheless, there is one requirement that the PID
+modifications must be done using locked read-modify-write
+instructions. Here is another benefit of posted-interrupt
+support. When the virtual processor is scheduled on another
+VCPU, the VMM can co-migrate its interrupts from the assigned
+devices by setting the corresponding bits in posted-interrupt
+register of PID.
+
+The posted-interrupt support is accomplished in three general
+steps. First, the VMM programs the interrupt-remapping
+hardware with the mapping between the external interrupt and
+virtual interrupt. Second, when the external interrupt is
+delivered to the interrupt-remapping hardware, it sets the
+outstanding bit and corresponding bit of virtual interrupt in
+the posted-interrupt register of PID. It generates the PIN.
+The IOAPIC delivers the PIN to the appropriate LAPIC. Third,
+PIN notifies the logical processor that it is the
+posted-interrupt event. The logical processor starts the
+posted interrupt processing and delivers the virtual interrupt
+without any VM exit.
+
+The posted-interrupt processing is described in the following
+steps. First, when the external interrupt is delivered to the
+guest's processor, it is acknowledged by the LAPIC. LAPIC
+provides the processor core the interrupt number. Second, if
+the physical interrupt is equal to the PIN, the logical
+processor starts the posted interrupt processing. Third, the
+processor clears the outstanding notification bit from the
+posted-interrupt descriptor. Fourth, the processor
+acknowledges the EOI. Fifth, the processor updates the vIRR by
+synchronizing it with the PIR. Sixth, the processor acquires
+the next request virtual interrupt. It updates RVI by the
+maximum of previous RVI and highest index of bits set in PIR,
+before it clears PIR. Seventh, the processor evaluates the
+pending virtual interrupt. Eighth, the processor delivers the
+virtual interrupt.
+}
+
+%\figw{virtualization_overhead}{9}{Virtualization overheads in I/O operations due to VM exits in (a) para-virtualized I/O, (b) pass-through I/O without posted interrupt, and (c) optimized pass-through I/O in \sna.}
+%TODO: Describe I/O challenges here
+%	Why CPU utilization increases
+% 	VM Exit overhead
+
+
+%
+%First, the direct assigned network card and disk drive under
+%the VFIO framework removes the host from the forward I/O path.
+%%The guest has the control over the assigned devices and avoids
+%the virtualization overhead, when accessing the device control
+%registers and performing the
+%DMA~\cite{sdm:2018,intelvtd-manual,williamson:2016}. After the
+%assigned device services the request, it delivers the
+%interrupt to the guest and triggers the VM exits due to the
+%external interrupts and EOI respectively. Using the VT-d
+%posted-interrupt and VT-x APIC virtualization~\cite{postedinterrupt},
+%the guest handles the device interrupt and updates the EOI
+%without any VM exit. Thus, the host is completed removed from
+%the guest I/O path for the pass-through devices. Nonetheless,
+%
 
 
 \mycomment{
@@ -569,23 +710,11 @@ interrupt. Thus, the CPU overhead is reduced in comparison
 with the full timer interrupt processing. 
 
 }
-% Currently, 3.4 is under the review.
-\subsection{Seamless Device State Migration}
+
 
 %The VM on an \na server is special because it is the only VM on the server and it 
 %interacts directly with PCIe devices and local timers.
 %We call such a VM a HaaS VM.
-Because the states associated with directly accessible devices complicate the migration process~\cite{zhai:2008}, 
-\na augments KVM's VM migration capability with additional mechanisms to support seamless migration of HaaS VMs. 
-More specifically, \na adopts the following unified strategy to hide the states of directly accessed devices from KVM's VM migration logic:
-In the normal mode, a HaaS VM directly accesses PCIe devices and timers; immediately before and during when the HaaS VM is migrated,  the VM 
-accesses PCIe devices and timers indirectly; after the migration, the migrated HaaS VM accesses PCIe devices and timers directly again.
-
-Moreover, \na assumes that the source and destination physical servers involved in a migration have an identical
-set of hardware devices with which a HaaS VM interacts directly.
-This way, the driver code directly interacting with these devices has a chance to properly work on 
-both the source and destination server.
-In this section, we focus on two types of directly accessed devices: NIC and timer.
 
 \mycomment{
 The direct device assignment makes it difficult to migrate the
@@ -613,33 +742,6 @@ delivery with the help of \texttt{hrtimer} object and TMICT
 WRMSR VM exit is enabled, before the migration. The changes
 are reverted after the guest starts up at the destination.
 }
-
-\subsubsection{NIC State Migration}
-\label{sec:nic_migration}
-\figw{nic_bonding}{9}{Bonding of pass-through and para-virtual NICS in a HaaS VM to support live migration in \na.}
-
-We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
-which provides one physical function and multiple virtual functions, each with its own MAC address.
-As shown in Figure~\ref{fig:nic_bonding}, 
-\na sets up a directly accessed pass-through NIC using one of the virtual functions
-and an indirectly accessed para-virtual NIC using another virtual function.
-A NIC bonding driver~\cite{bond-dri} in the guest OS teams up the pass-through and para-virtual NICs in an active-backup mode.
-The HaaS VM running on every \na physical server sends and receives network packets through such a bonded interface. 
-
-During normal execution, the pass-through NIC is the Active slave and the para-virtual NIC is the Backup slave,
-so that a HaaS VM can make full use of the underlying physical NIC's capability.
-Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
-Upon detecting the Active slave's failure, the bonding driver immediately switches network traffic to the Backup slave.
-% to be the Active slave.
-From this point on, all network traffic goes through the para-virtual NIC. 
-KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
-Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its NIC-related state.
-%During the migration, \na . 
-After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the para-virtual NIC.
-In the mean time, \na hot-plugs the pass-through NIC on the destination  server 
-%to make it the Backup slave, and then hot-unplugs the virtual NIC so that the current Backup slave or 
-so that the pass-through NIC becomes the new Active slave.
-
 
 \mycomment{
 In this section we describe the mechanism of migrating a guest
@@ -689,29 +791,6 @@ the guest resumes on the destination, the NIC device is hot
 plugged.
 }
 
-The most important performance metric for VM migration is the service disruption time.
-The additional service disruption time that \na introduces is attributed to the transition from
-the pass-through NIC to the para-virtual NIC on the source server, and the transition from
-the para-virtual NIC to the pass-through NIC on the destination server.
-Measurements on a earlier \na prototype suggested that the transition from the 
-para-virtual to the pass-through NIC introduces non-trivial service disruption time (about 300ms), 
-when hot-plugging the pass-through NIC on the destination server. 
-
-A deeper analysis shows that the hot-plug operation consists of three steps:
-(1) QEMU prepares a software object to represent the pass-through
-NIC, (2) then It populates this software object with parameter values extracted 
-from the PCIe configuration space of the NIC, (3) and finally it
-resets the software NIC object to set up the BAR and interrupt forwarding
-information. The first and third steps must take place in QEMU's main event
-loop when the entire HaaS VM requesting the hot-plug operation must be paused.
-
-To minimize this service disruption time due to hot-plug, 
-\na performs the first and second steps of the hot-plugging the pass-through NIC
-on the destination server while the HaaS VM is being migrated and before it is resumed, 
-and performs the third step after the HaaS VM is migrated and resumed. 
-%This brings the service disruption time due to hot-plug to TODO second.
-
-
 \mycomment{
 However, by forcing the migrated HaaS VM resumed on the destination server to continue using the virtual NIC,
 the time required to hot-plug the directly accessed NIC on the destination server could be fully masked. 
@@ -748,96 +827,4 @@ Hence, we eliminate the downtime caused during the setup of
 software NIC object phase.
 }
 
-
-
-\subsubsection{Timer State Migration}
-
-To leverage the posted interrupt mechanism to directly deliver local APIC timer interrupts,
-\na allows a HaaS VM running on a CPU core to directly access the following device state:
-(1) setting the timer interrupt bit in the PIR associated with the CPU core's local APIC ,  (2) 
-using a WRMSR to modify the initial counter register of the local APIC timer, and (3) 
-computing the next timer expiration time from conversions between clock cycles and nano-seconds, the multiplication
-and shift factor of the calibrated timer, etc., which are provided by the hypervisor.
-
-During the normal run time, timer interrupts are delivered to a HaaS VM directly. 
-Before a HaaS VM is to be migrated, \na notifies the HaaS VM to stop the 
-direct timer interrupt delivery (DTID) mechanism, unmaps the PIR page, 
-enables the TMICT WRMSR VM exit, configures the local vector table in the local APIC to 
-fire timer interrupts as they are rather than as posted-interrupt notification interrupts. 
-Upon receiving this notification, the HaaS VM uses a different set of 
-multiplication and shift parameters to compute the next timer value, 
-and convey the resulting value to the hypervisor via the \texttt{hrtimer} object
-when control is transferred to the hypervisor upon a TMICT WRMSR VM exit. 
-
-
-After a HaaS VM is successfully migrated and resumed, both the hypervisor and the VM restart 
-the DTID mechanism, by running 
-the aforementioned steps in reverse order.
-
-
-\mycomment{   
-The direct timer interrupt delivery depends the following
-factors. First, the host shares the posted-interrupt
-descriptor with the guest. When the guest updates the
-timer-interrupt bit of posted-interrupt request through EPT,
-it does not trigger the EPT violations and the local timer
-interrupt is delivered as the posted interrupt. Second, the
-guest directly configures the timer initial count register
-without a WRMSR VM exit. This is achieved by updating the MSR
-bitmap of VM control structure. Third, the guest needs to
-correctly compute its next timer events with the
-host-calibrated LAPIC timer. To compute the next timer event
-from the nano-seconds to the clock cycles, the multiplication
-and shift factor of the calibrated timer are required. The
-host needs to convey such information to the guest. The guest
-configures the TMICT with the correct timer event in clock
-cycles.
-
-Before the migration starts, both host and guest need to tear
-down the DTID. In the host, it
-} 
-
-\mycomment{
-It does not only support the direct PCI device
-assignment to the userspace processes of VM, but also the
-platform devices. Why do we need to allow the userspace
-programs to gain the control of physical devices? For the
-field of high performance computing, the I/O performances has
-a great impact on the overall system performance. The
-performance congestion comes, When the rate of data being read
-is slower than the rate of data being consumed. Or it happens,
-when the rate of data being written is slower than the rate of
-data being computed and produced.
-
-The VFIO needs to fulfill the three requirements of device
-assignment to a userspace process. First, the userspace driver
-can access to the device resources such as I/O ports. Second,
-the userspace driver can perform the DMA securely. This is
-provided by the IOMMU protection mechanism. Third, the device
-interrupts is delivered to the device owner in the userspace.
-The way how the VFIO fulfills the three requirements and
-applies them with QEMU is briefly described below.
-}
-
-\mycomment{
-The hardware-assisted direct device assignment helps the guest
-achieve the baremetal I/O performance without the additional
-virtualization overhead using the VT-x and VT-d support.
-After proper VMCS and EPT configuration, the guest gains
-the control of assigned device
-by MMIO/PIO without the help of hypervisor. The VT-x APIC
-virtualization permits the guest to write to the
-end-of-interrupt register without a VM exit. With the VT-d
-support, the guest performs DMA with the enhanced security and
-eliminates the VM exit overhead due to the device interrupts by using 
-the posted-interrupt mechanism. In addition to the hardware
-support, VFIO provides the software framework for the
-userspace device drivers. It works with VT-d and QEMU and sets
-up the direct PCI device assignment. Although it is expected
-to move the hypervisor out of the guest I/O path, the
-hypervisor still induces high CPU utilization due to the
-HLT emulation. This greatly deviates our goal of guest having
-its own dedicated cores. Nonetheless, our CPU optimization
-strategies remedy such a problem.
-}
 
