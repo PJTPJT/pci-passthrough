@@ -1,8 +1,8 @@
 
 \begin{abstract}
 Bare-metal cloud computing, or Hardware as a Service (HaaS), allows customers
-to rent remote physical servers so as to install their preferred operating system (OS)
-and make the best of the server's raw hardware capabilities. 
+to rent remote physical servers so as to install their preferred operating system 
+and make the best of server's raw hardware capabilities. 
 However, common management functions available on virtualized 
 cloud platforms, such as live migration and introspection,
 are difficult to duplicate on HaaS servers, because bare-metal
@@ -17,8 +17,8 @@ while retaining the ability to live migrate the VM on demand.
 This paper describes 
 a \na prototype that supports a HaaS VM with dedicated 
 CPU and memory resources, direct access to local APIC timer and 
-PCIe I/O devices, direct delivery of all interrupts (timers,
-inter-VCPU IPIs, and I/O devices), close to bare-metal performance,
+PCIe I/O devices, direct delivery of all interrupts (timer,
+inter-VCPU IPIs, and I/O), close to bare-metal performance,
 and seamless live migration with low downtime.
 \end{abstract}
 

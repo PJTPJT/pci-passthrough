@@ -34,6 +34,15 @@ containing a unique 8-byte sequence number.
 The {\tt tcpdump} tool~\cite{tcpdump} was used to
 measure the number of lost packets during various stages. 
 
+As seen from Table~\ref{tab:udp_packet_lost}, very few packets
+were dropped during the switch-over operations at the source and destination.
+Before applying our hotplug optimization, the network downtime was
+around 300ms. Once our optimization was enabled, no measurable network
+downtime was observed other than as the few  dropped packets mentioned above. 
+As described in Section~\ref{sec:nic_migration}, the 
+optimization steps at the destination were executed at the destination 
+in parallel with the guest-state transfer. 
+%The total migration time and downtime remained unaffected with
 \begin{table}[t]
 \begin{center}
 \begin{tabular}{|l|c|}
@@ -45,23 +54,15 @@ measure the number of lost packets during various stages.
 \textbf{VIRTIO to VF at destination} & 17                                           \\ \hline
 \end{tabular}
 \end{center}
+\vspace{-0.1in}
 \caption{Small number of packets are lost during various stages of 
 live migration when redirecting 
 network traffic between Virtual Function (VF) on passthrough NIC and VIRTIO NIC.
 %\textbf{VF}: Virtual Function on Passthrough NIC. \textbf{VIRTIO}: Virtio interface.
 }
+\vspace{-0.05in}
 \label{tab:udp_packet_lost}
 \end{table}
-
-As seen from Table~\ref{tab:udp_packet_lost}, very few packets
-were dropped during the switch-over operations at the source and destination.
-Before applying our hotplug optimization, the network downtime was
-around 300ms. Once our optimization was enabled, no measurable network
-downtime was observed other than as the few  dropped packets mentioned above. 
-As described in Section~\ref{sec:nic_migration}, the 
-optimization steps at the destination were executed at the destination 
-in parallel with the guest-state transfer. 
-%The total migration time and downtime remained unaffected with
 
 We also did not observe any missed timer interrupts when
 disabling and re-enabling DTID during migration, since the

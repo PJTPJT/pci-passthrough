@@ -1,4 +1,5 @@
 \section{Implementation-specific Details}
+\vspace{-0.05in}
 % Low-level implementation details include the hypervisor
 % modifications.
 % - Disable the HLT existing: KVM
@@ -46,8 +47,7 @@ device to the running guest.
 
 
 
-\subsection{CPU Idleness Processing}
-
+{\bf CPU Idleness:}
 When a CPU on a Linux-based machine does not have any applications to run,
 Linux schedules a special idle task to run on the CPU. On X86 CPU, this idle task consists of a loop of {\tt HLT} instructions, 
 each of which places the CPU in the C1 energy-saving mode until an external interrupt occurs.

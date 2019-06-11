@@ -1,4 +1,5 @@
 \section{Bare-metal Performance}
+\vspace{-0.05in}
 While using the VT-d and posted-interrupt mechanisms removes
 the hypervisor of from I/O data plane path of the VM, these alone are
 not sufficient to reduce hypervisor overheads.
@@ -74,7 +75,9 @@ from its direct-assigned device, possibly due to
 faster EOI response and hence less interrupt coalescing by
 the hardware, similar to the behavior on a bare-metal OS.
 
+\vspace{-0.1in}
 \section{Direct Local Interrupt Delivery}
+\vspace{-0.05in}
 \label{sec:shared_pid_dtid}
 \figw{dtid}{9}{Direct delivery of timer interrupts in \sna.
 %TODO: mention disabling WRMSR VM Exits.
@@ -134,7 +137,9 @@ and then sets a certain bit in the PIR of the destination CPU core to indicate t
 
 
 
+\vspace{-0.1in}
 \section{Seamless Device State Migration}
+\vspace{-0.05in}
 
 Because the states associated with directly accessible devices complicate the migration process~\cite{zhai:2008},
 \na augments KVM's VM migration capability with additional mechanisms to support seamless migration of HaaS VMs.
@@ -150,8 +155,10 @@ In this section, we focus on two types of directly accessed devices: NIC and tim
 
 
 
+\vspace{-0.1in}
 \subsection{NIC State Migration}
 \label{sec:nic_migration}
+\vspace{-0.05in}
 \figw{nic_bonding}{8}{Bonding of pass-through and para-virtual NICs in a HaaS VM to support live migration in \na.}
 
 We assume each HaaS physical server is equipped with an SR-IOV Ethernet NIC~\cite{dong:2008},
@@ -199,7 +206,9 @@ on the destination server while the HaaS VM is being migrated and before it is r
 and performs the third step after the HaaS VM is migrated and resumed.
 
 
+\vspace{-0.1in}
 \subsection{Timer State Migration}
+\vspace{-0.05in}
 
 To leverage the posted interrupt mechanism to directly deliver local APIC timer interrupts,
 \na allows a HaaS VM running on a CPU core to directly access the following device state:
