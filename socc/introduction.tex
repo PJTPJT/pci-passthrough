@@ -75,7 +75,7 @@ hypervisor (\sna)}.
 The \na runs as a thin shim layer
 to provide the HaaS VM with dedicated CPU cores, memory, and I/O devices.
 All hardware interrupts, including device, local timers, and IPIs
-are directly deivered to HaaS VM without hypervisor intervention.
+are directly deivered to a HaaS VM without hypervisor intervention.
 \na coordinates with a HaaS agent in the guest to provide
 manageability services. 
 }
@@ -163,7 +163,7 @@ without interception and emulation by the hypervisor.
 In contrast, existing approaches~\cite{vfio,postedinterrupt,amit:2015,tu:2015}
 focus only on direct delivery of device interrupts.
 Direct interrupt delivery to the HaaS VM greatly
-reduces interrupt processing latency, which is imoportant for 
+reduces interrupt processing latency, which is important for 
 latency-critical applications.
 
 
@@ -174,10 +174,10 @@ I/O devices and local APIC timers.
 %through coordinated switching to para-virtual I/O during migration.
 \na seamlessly disables the HaaS VM's physical hardware access at the 
 source machine before migration and 
-re-establishes access at the destination after migration,
+re-establishes the access at the destination after migration,
 with minimal disruption to the VM's liveness and performance.
 Unlike existing live migration~\cite{vfio-live-migration,blmvisor-journal,ondemand} 
-approaches for VMs with pasthrough 
+approaches for VMs with passthrough 
 I/O access, \na does not require device-specific state capture and migration code 
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
@@ -186,7 +186,7 @@ nor does it require the hypervisor to trust the guest OS.
 {\bf Bare-metal performance:}  
 To match bare-metal performance, \na implements mechanisms
 for reducing the its CPU, I/O, and memory footprint
-during runtime and minimizing interference with HaaS VM's execution.
+during runtime and minimizing interference with the HaaS VM's execution.
 \na has a small execution footprint, currently one 
 CPU core and around 100MB of RAM, with room for further reductions.
 Even with passthrough I/O support~\cite{intelvtd-paper,intelvtd-manual}, 
