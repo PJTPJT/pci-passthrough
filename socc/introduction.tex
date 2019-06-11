@@ -139,12 +139,13 @@ Specifically, \na provides the following features for a HaaS VM.
 %proprietary hypervisor on the physical servers of its PDCI, 
 %
 
-\begin{itemize} 
-%\setlength\itemsep{-0.04in}
-\parskip 0mm
-\itemsep 0mm
-
-\item {\bf Direct access to dedicated hardware:} 
+%\begin{itemize} 
+%%\setlength\itemsep{-0.04in}
+%\parskip 0mm
+%\itemsep 0mm
+%
+%\item 
+{\bf Direct access to dedicated hardware:} 
 \na assigns a HaaS VM with 
 dedicated hardware resources, namely 
 physical CPUs, memory, local APIC timers, and passthrough I/O devices,
@@ -155,18 +156,20 @@ regain control over physical resources when needed, such
 before live migration of the HaaS VM.
 
 
-\item {\bf Direct delivery of all interrupts:}
+%\item 
+{\bf Direct delivery of all interrupts:}
 \na enables a HaaS VM to directly receive all hardware interrupts from 
 its assigned PCIe devices and CPU cores (for timer interrupts and IPIs) 
 without interception and emulation by the hypervisor.
-Direct interrupt delivery to the HaaS VM greatly
-reduces interrupt processing latency, which is imoportant for running 
-latency-critical applications on bare-metal clouds.
 In contrast, existing approaches~\cite{vfio,postedinterrupt,amit:2015,tu:2015}
-focus only on direct delivery of PCIe device interrupts.
+focus only on direct delivery of device interrupts.
+Direct interrupt delivery to the HaaS VM greatly
+reduces interrupt processing latency, which is imoportant for 
+latency-critical applications.
 
 
-\item {\bf Seamless live migration:}
+%\item 
+{\bf Seamless live migration:}
 \na provides on-demand live migration of a HaaS VM having direct access to 
 physical network devices and local APIC timers. 
 %through coordinated switching to para-virtual I/O during migration.
@@ -180,7 +183,8 @@ I/O access, \na does not require device-specific state capture and migration cod
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
 
-\item {\bf Bare-metal performance:}  
+%\item 
+{\bf Bare-metal performance:}  
 To match bare-metal performance, \na implements mechanisms
 for reducing the its CPU, I/O, and memory footprint
 during runtime and minimizing interference with HaaS VM's execution.
@@ -193,14 +197,14 @@ most VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilizat
 Other than during startup and live migration, the \na is not involved in the
 HaaS VM's normal execution.
 
-\end{itemize}
+%\end{itemize}
 %With such a hypervisor installed on each physical server, \na can monitor each 
 %server's internal user activities using VM introspection, and seamlessly migrate the user state 
 %on the server from one physical machine to another. 
-\vspace{-0.1in}
-The rest of this paper describes the necessary background, followed
-by the design, implementation, and evaluation of \sna's support 
-for HaaS VMs.
+%\vspace{-0.1in}
+%The rest of this paper describes the necessary background, followed
+%by the design, implementation, and evaluation of \sna's support 
+%for HaaS VMs.
 %The rest of this paper is organized as follows.
 %We first provide background on hardware support for 
 %pass-through I/O and posted interrupts.

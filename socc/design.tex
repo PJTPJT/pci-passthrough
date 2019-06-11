@@ -82,6 +82,23 @@ from its direct-assigned device, possibly due to
 faster EOI response and hence less interrupt coalescing by
 the hardware, similar to the behavior on a bare-metal OS.
 
+{\bf Eliminating other VM Exits:}
+Besides eliminating EPT faults and HLT-triggered VM exits, we 
+also eliminate other common sources of VM exits for a HaaS VM.
+We remove all unnecessary para-virtual and emulated I/O devices 
+(such as emulatedfloppy disks and CD-ROMs); these
+tend to communicate with QEMU by trapping on programmed I/O instructions
+that result in VM exits.
+For accessing local APIC timer (as detailed later), 
+we also disable the VM exits due to MSR
+writes to local APIC's initial count and divide configuration
+registers. For IPIs, we disable VM exits due to MSR writes to
+the interrupt command register.  Finally, external device interrupts
+from any I/O devices that are not assigned to the HaaS VM
+are delivered to CPU0 where the \na handles them without
+interrupting the HaaS VM.
+
+
 \vspace{-0.1in}
 \section{Direct Local Interrupt Delivery}
 \vspace{-0.05in}
