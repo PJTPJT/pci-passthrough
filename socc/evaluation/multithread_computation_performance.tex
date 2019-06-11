@@ -1,16 +1,19 @@
 % Multi-threaded Computation Performance
 
-\figw{parsec_barchart}{8.5}{Percentage of CPU performance
-slowdown compared to the bare-metal performance when running
-the PARSEC benchmark programs. \textbf{VANILLA}: unmodified
-guest has the configuration without our optimizations.}
+\figw{parsec_barchart}{8.5}{
+Slowdown of PARSEC benchmark programs for VANILLA and DID guests
+compared to the bare-metal performance.
+%\textbf{VANILLA}: unmodified guest has the configuration without our optimizations.
+}
 
-\figw{fpspeed_barchart}{8.5}{Percentage of CPU performance
-slowdown for the floating-point computation compared to the
-bare-metal performance. The x-axis is the IDs for the
-benchmark programs of SPEC CPU 2017~\cite{bucek:2018}.
-\textbf{VANILLA}: unmodified guest has the configuration
-without our optimizations. \textbf{603}: explosion modeling.
+\figw{fpspeed_barchart}{8.5}{
+Slowdown of floating point computation benchmarks in the
+SPEC CPU 2017~\cite{bucek:2018} suite for VANILLA and 
+DID guests compared to the bare-metal performance. 
+The x-axis refers to the IDs for the following benchmarks:
+%\textbf{VANILLA}: unmodified guest has the configuration
+%without our optimizations. 
+\textbf{603}: explosion modeling.
 \textbf{607}: relativity. \textbf{619}: fluid dynamics.
 \textbf{621}: weather forecasting. \textbf{627}: atmosphere
 modeling. \textbf{628}: wide-scale ocean modeling.
@@ -18,12 +21,14 @@ modeling. \textbf{628}: wide-scale ocean modeling.
 dynamics. \textbf{649}: electromagnetic. \textbf{654}:
 regional ocean modeling.}
 
-\figw{intrate_barchart}{8.5}{Percentage of CPU performance
-slowdown for the integer computation compared to the
-bare-metal performance. The x-axis is the IDs for the
-benchmark programs of SPEC CPU 2017~\cite{bucek:2018}.
-\textbf{VANILLA}: unmodified guest has the configuration
-without our optimizations. \textbf{500}: perl scripts.
+\figw{intrate_barchart}{8.5}{
+Slowdown of integer computation benchmarks in the
+SPEC CPU 2017~\cite{bucek:2018} suite for VANILLA and 
+DID guests compared to the bare-metal performance. 
+The x-axis refers to the IDs for the following benchmarks:
+%\textbf{VANILLA}: unmodified guest has the configuration
+%without our optimizations. 
+\textbf{500}: perl scripts.
 \textbf{502}: GCC. \textbf{505}: route planning.
 \textbf{520}: OMNeT simulation. \textbf{523}: XML conversion.
 \textbf{525}: video compression. \textbf{531}: chess.
@@ -55,20 +60,26 @@ percentage slowdown less than 5\% except canneal and
 streamcluster. DID reduced the slowdown even further.
 Especially for Dedup, DID trimmed 11.45\% of slowdown to
 3.85\%. Although the performance of DID in Vips seemed to be
-worse than the one of vanilla, it actually fell within the
-0.1-second of error margin and was comparable.
-
-Canneal and streamcluster were the two cases that caught our
-attention. After analyzing the VM-exit reasons, we eliminated
-the two expensive VM exits: (1) I/O instructions and (2) EPT
-violations. For (1), the virtual floppy disk and CD-ROM issued
-about 20 I/O instructions per second. We removed them. For
-(2), VM touched almost all of its pages, which made the \na to
-populate as many EPTs as it could. After applying (1) and (2)
-to DID, the rate of VM exits was around 11 VM-exits per
-seconds. We re-ran the two benchmark programs and observed it
-had only marginal performnace improvement. We suspected that
-the degradation would be VT-x related architecture issues.
-This is under our current investigation.
+worse than Vanilla, the absolute values
+differed less than 0.1 seconds.
+For Canneal and Streamcluster,
+even after tracking and eliminating all VM exits triggered by EPT violations
+and I/O instructions from certain virtual devices
+(virtual floppy and CD-ROM), the performance of 
+Canneal and Stremcluster did not significantly improve.
+% After analyzing the VM Exit reasons, we eliminated
+%the two expensive VM exits: (1) I/O instructions and (2) EPT
+%violations. To eliminate VM exits triggered by I/O instructions, 
+%we removed the virtual devices for floppy disk and CD-ROM, 
+%which accounted for about 20 I/O instructions per second. 
+%To eliminate VM exits triggered by EPT violation, the HaaS agent in 
+%the VM touched almost all guest pages at initiaization time, 
+%which forced the \na to populate the corresponding EPT entries ahead of time. 
+%These two optimizations reduced the rate of VM exits to around 11 VM exits per
+%second. We re-ran the two benchmark programs and observed it
+%had only marginal performance improvement. 
+We suspect that the performance difference for these two cases 
+might be due to VTx-related architecture issues; we are
+further investigating the uderlying causes.
 
 
