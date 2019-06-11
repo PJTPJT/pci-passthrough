@@ -36,7 +36,7 @@ until an external interrupt occurs.
 However, since {\tt HLT} is a privileged instruction, it triggers a
 VM exit when executed by the guest.
 To emulate the {\tt HLT} instruction, currently, the KVM hypervisor
-polls (busy waits) for external events for a short time
+polls for external events for a short time
 (adaptively between 0-200ns). If no events occur during this
 polling period, the guest VCPU is blocked and the physical CPU
 is placed in the low-power state.
@@ -173,10 +173,9 @@ During normal execution, the pass-through NIC is the Active slave and the para-v
 so that a HaaS VM can make full use of the underlying physical NIC's capability.
 Before a HaaS VM is to be migrated, \na hot-unplugs the pass-through NIC so as to fail the current Active slave.
 Upon detecting the Active slave's failure, the bonding driver immediately switches network traffic to the Backup slave.
-
 From this point on, all network traffic goes through the para-virtual NIC.
 KVM captures the state of the para-virtual NIC, which is easier to migrate than the state of a pass-through NIC.
-Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its NIC-related state.
+Then \na kicks off a VM migration transaction for the HaaS VM, which includes the transfer its network state.
 
 After the migration transaction is completed, the HaaS VM is resumed on the destination server and still continues to use the para-virtual NIC.
 In the mean time, \na hot-plugs the pass-through NIC on the destination  server
@@ -211,7 +210,7 @@ and performs the third step after the HaaS VM is migrated and resumed.
 \vspace{-0.05in}
 
 To leverage the posted interrupt mechanism to directly deliver local APIC timer interrupts,
-\na allows a HaaS VM running on a CPU core to directly access the following device state:
+\na allows a HaaS VM to directly access the following device state:
 (1) setting the timer interrupt bit in the PIR associated with the CPU core's local APIC ,  (2)
 using a WRMSR to modify the initial counter register of the local APIC timer, and (3)
 computing the next timer expiration time from conversions between clock cycles and nano-seconds, the multiplication
@@ -226,10 +225,9 @@ Upon receiving this notification, the HaaS VM uses a different set of
 multiplication and shift parameters to compute the next timer value,
 and convey the resulting value to the hypervisor via the \texttt{hrtimer} object
 when control is transferred to the hypervisor upon a TMICT WRMSR VM exit.
-
 After a HaaS VM is successfully migrated and resumed, both the hypervisor and the VM restart
-the DTID mechanism, by running
-the aforementioned steps in reverse order.
+the DTID mechanism. 
+%by running the aforementioned steps in reverse order.
 
 
 

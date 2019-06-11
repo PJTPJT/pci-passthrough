@@ -99,7 +99,7 @@ The guest OS provides the address of a page in the guest physical address
 space to the hypervisor via a hypercall, and the hypervisor maps this address 
 to the host physical address of the PID page in QEMU's page table and 
 the Extended Page Table (EPT)~\cite{ept-wiki}, and updates the 
-PID page's reference count accordingly.
+PID page's reference count.
    
 \mycomment{
 and extended page table entry to the physical location of
