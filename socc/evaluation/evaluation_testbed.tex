@@ -85,10 +85,10 @@ transformed to the OPTI or DTID guest.
 }
 
 
-In our experiment, it is necessary to use two CPU cores to
-saturate a 40Gbps Infiniband link for all configurations. One
-core is handling the interrupts and soft IRQs, while the other
-is running the network performance testing workload. We use a third
-core to monitor the CPU utilization, which does not
-affect the network performance. In contrast, only one
-core is needed to saturate a 1 Gbps Ethernet link.
+We found it necessary to use two CPU cores to
+saturate a 40Gbps Infiniband link for all configurations 
+(as opposed to just one core for saturating a 1 Gbps link). 
+One core handles NIC interrupts and soft IRQs, while the other
+runs network performance testing workload. We use a third
+core to monitor CPU utilization, which does not
+affect network performance. 

@@ -8,21 +8,28 @@ I/O performance and with least overheads, \na implements
 the following overhead reduction mechanisms.
 
 %\figw{architecture}{8.75}{\na leverages VT-d passthrough I/O and posted interrupts to provide HaaS VM with direct access to PCIe I/O devices and direct delivery of I/O, timer, and inter-processor interrupts.}
-{\bf Dedicated CPUs:}
-First, the hypervisor is assigned one dedicated physical CPU core
+{\bf Dedicated Physical CPUs and Memory:}
+First, the \na is assigned one physical CPU core
 (CPU 0 in our implementation)
 where it executes all of VM management operations.
 The HaaS VM is assigned all the remaining physical
-CPU cores by pinning the guest VCPUs to
-dedicated physical cores one-to-one~\cite{amit:2015}.
+CPU cores by pinning its VCPUs to
+dedicated physical cores one-to-one.
 This prevents the hypervisor's threads
-from competing with the VM's VCPU threads and
-also reduces the need to re-route interrupts
+from competing with the VM's VCPUs and
+also removes the need to re-route interrupts
 from the VM's assigned devices.
 To avoid unnecessary VM exits on the HaaS VM's CPUs,
 all external interrupts which are not directly handled
-by the HaaS VM, are delivered to the hypervisor's physical
-CPU by the IOAPIC.
+by the HaaS VM are delivered to the \sna's physical
+CPU 0 by the IOAPIC.
+\na also pre-allocates physical memory to the HaaS VM
+to avoid the overhead of handling EPT faults during 
+application's execution.
+To eliminate VM exits triggered by EPT faults, a HaaS agent in 
+the guest kernel allocates and writes to all guest-physical pages 
+at initialization time. This triggers \na to populate the 
+corresponding EPT entries during initialization.
 
 {\bf Disabling  HLT-triggered VM exits:}
 The second optimization relates to reducing hypervisor's CPU utilization
@@ -88,7 +95,7 @@ Unlike an external interrupt, a local interrupt is delivered to a CPU core's loc
 Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
 In this section, we describe how to achieve direct delivery of two types of local interrupts, {\em timer interrupt} and {\em inter-processor interrupt} (IPI).
 
-{\bf Timer Interrupts:} To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
+{\bf Direct Timer Interrupt Delivery:} To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
 \na first leverages the {\em local vector table} in the local APIC to turn each timer interrupt into a PIN interrupt, and
 then programmatically sets a particular bit in the CPU core's PIR bitmap to indicate to the target VM that underlying the PIN interrupt is a timer interrupt.
 
@@ -112,27 +119,42 @@ After a timer interrupt handler services a timer interrupt, it may need to confi
 which would normally cause a VM exit. To avoid this VM exit, \na leverages VT-d's hardware-assisted APIC virtualization by properly configuring the MSR bitmap in the associated VMCS.
 As a result, the KVM's  intercept of any TMICT MSR update is disabled. When a VM writes to the TMICT, the change is written to the associated register directly without triggering any VM exit.
 
-Finally, from a security viewpoint, control over the timer interrupt is considered important for a hypervisor or OS to maintain control over all physical CPUs.
-In \na, although the HaaS VM can directly control the timer hardware on its assigned CPUs, the hypervisor can still regain
+{\bf Direct Inter-processor Interrupts (IPI) Delivery:}
+Just as with direct delivery of timer interrupts, the \na uses the posted interrupt mechanism 
+for direct delivery of IPIs among VCPUs of the HaaS VMs, i.e. without trapping to \na 
+for emulating IPI delivery.
+When a source CPU sends an IPI to a destination CPU, 
+the source configures the Interrupt Command Register (ICR) in its local APIC
+and, after the low double-word of the ICR is written to, triggers an IPI message 
+to be sent to the destination CPU's local APIC through an inter-APIC system bus.
+To enable an IPI to be delivered directly to the HaaS VM, \na 
+configures the source CPU core's ICR so that the resulting 
+interrupt message carries a PIN vector,
+and then sets a certain bit in the PIR of the destination CPU core 
+to indicate that the PIN interrupt corresponds to an IPI.
+The HaaS agent in the guest assists by retrieving the APIC ID of 
+the physical CPUs assigned to the HaaS VM; these retrieved APIC IDs are 
+to identify the target CPU core during direct IPI delivery.
+
+{\bf Security considerations:}
+Finally, from a security viewpoint, control over the timers and IPIs 
+is considered important for a hypervisor or OS to maintain control 
+over all physical CPUs.
+In \na, although the HaaS VM can directly control the local timer hardware on 
+its assigned CPUs, the hypervisor can still regain
 control over the CPUs when needed, such as before live migration.
 The hypervisor always controls the CPU0 and its local timer.
 To regain control over other physical CPUs assigned to the VM, the hypervisor
 simply disables direct timer access for the VM by reconfiguring the IOMMU and VMCS to
 disable PIN and trigger VM exits for timer interrupts; the hypervisor then delivers
 emulated virtual interrupts to the guest.
+To prevent the HaaS VM from sending unwanted IPIs to the \sna-controlled physical CPU 0,
+the \na does not expose the APIC ID of CPU 0 to the HaaS agent in the guest.
 
-Combining all the above techniques, \na is able to deliver local timer interrupts
-directly to a HaaS VM and have them properly serviced,
+Combining all the above techniques, a HaaS VM can directly receive  and service
+local timer interrupts and IPIs from processor hardware,
 all without causing any VM exits and while maintaining control over all physical CPUs.
 
-
-{\bf Inter-processor Interrupts (IPI):}
-Just as with direct delivery of timer interrupts, the posted interrupt mechanism can be used for direct delivery of inter-core IPIs.
-Here we describe the design of direct IPI delivery mechanism which is currently under development in our prototype.
-When a source CPU core sends an IPI to a destination CPU core, the source CPU core configures the Interrupt Command Register (ICR) in its local APIC,
-and, after the low double-word of the ICR is written to, triggers an interrupt message to be sent to the destination CPU core's local APIC through an inter-APIC system bus.
-To enable an IPI to be delivered directly to the HaaS VM, \na configures the source CPU core's ICR so that the resulting interrupt message carries a PIN vector,
-and then sets a certain bit in the PIR of the destination CPU core to indicate that the PIN interrupt corresponds to an IPI.
 
 
 

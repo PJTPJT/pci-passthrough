@@ -194,15 +194,19 @@ Other than during startup and live migration, the \na is not involved in the
 HaaS VM's normal execution.
 
 \end{itemize}
-
 %With such a hypervisor installed on each physical server, \na can monitor each 
 %server's internal user activities using VM introspection, and seamlessly migrate the user state 
 %on the server from one physical machine to another. 
-
-The rest of this paper is organized as follows.
-We first describe the design and implementation of \sna,
-specifically the detailed description of the above features.
-Next, we evaluate the performance of our \na prototype
-on the Linux and KVM/QEMU platform.
-Finally, we discuss related work followed by conclusions.
+\vspace{-0.1in}
+The rest of this paper describes the necessary background, followed
+by the design, implementation, and evaluation of \sna's support 
+for HaaS VMs.
+%The rest of this paper is organized as follows.
+%We first provide background on hardware support for 
+%pass-through I/O and posted interrupts.
+%Next we describe the design and implementation of \sna,
+%specifically the detailed description of the above features.
+%Next, we evaluate the performance of our \na prototype
+%on the Linux and KVM/QEMU platform.
+%Finally, we discuss related work followed by conclusions.
 

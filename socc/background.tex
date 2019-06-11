@@ -61,8 +61,6 @@ Typically, a PCIe device driver communicates with its device using programmed I/
 memory-mapped I/O (MMIO) operations against the memory areas associated with the device.
 Essentially, VFIO makes the configuration register space and the memory regions of
 each PCIe device accessible to user-space processes.
-
-
 Thus a user-space process can use DMA operations to move data directly between a PCIe device and
 a region of its virtual address space.
 The address of the source or destination buffer of a DMA operation resides in
@@ -74,7 +72,7 @@ which is used to access main memory.
 The key field of each IOMMU entry includes a PCIe device number and a device address.
 Therefore, a machine's IOMMU may map the same device address into different physical addresses when the device address is associated with different PCIe devices.
 By controlling which user-space programs can access which PCIe devices, VFIO is able to leverage IOMMU to effectively prevent a user-space program
-from using DMA operations to corrupt the physical memory areas owned by other user-space programs.
+from using DMA operations to corrupt the physical memory owned by other user-space programs.
 
 To KVM, a VM runs as part of a user-space process  called QEMU~\cite{qemu},
 specifically, as guest-mode threads within QEMU's virtual address space.
@@ -119,7 +117,7 @@ Then, it sets the IRT entry's PID address field to the PID address associated wi
 When an external interrupt arrives at the IOMMU and matches an IRT entry, the
 hardware first locates the PIR bitmap in the target CPU core's PID, then sets the bit in the PIR bitmap corresponding to the external interrupt's associated vector,
 converts this interrupt into an interrupt labeled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
-Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
+Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU processes them directly without any VM exits.
 
 %When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the
 %associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
