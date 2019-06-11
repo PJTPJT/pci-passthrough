@@ -121,7 +121,7 @@ hardware first locates the PIR bitmap in the target CPU core's PID, then sets th
 converts this interrupt into an interrupt labeled with the PIN vector, and finally delivers this PIN interrupt to the target CPU core's local APIC.
 Because the external interrupts ``pretend'' to be a PIN interrupt, the target CPU core processes them directly without causing any VM exit.
 
-When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the
-associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
-would normally requires a VM exit, which would add to the interrupt processing overhead.
-Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
+%When a VM completes the service of an interrupt, it needs to clear the EOI register to indicate to the
+%associated local APIC that it is done with the interrupt. Because the EOI register is a privileged resource, accessing the EOI register
+%would normally requires a VM exit, which would add to the interrupt processing overhead.
+%Hence, by default, when configuring a VM, KVM disables all EOI-triggered VM exits by setting the corresponding fields in the VM's VMCS.
