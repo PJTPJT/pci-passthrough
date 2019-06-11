@@ -71,7 +71,7 @@ in the form of a specialized hypervisor, called the {\em Single VM
 hypervisor (\sna)}.
 
 
-\figwtwocol{newarch}{14}{
+\figwtwocol{newarch}{13}{
 The \na runs as a thin shim layer
 to provide the HaaS VM with dedicated CPU cores, memory, and I/O devices.
 All hardware interrupts, including device, local timers, and IPIs
@@ -85,7 +85,6 @@ architecture of \sna, which runs as a thin hypervisor on each
 physical server. \na is optimized to run one VM, called the 
 {\em HaaS VM}\footnote{The \na could conceptually be an extension of a physical server's trusted BIOS.}, 
 on which  a user install a preferred OS and applications. 
-
 Unlike traditional hypervisors, which are designed to limit and control a VM's 
 access to physical resources, \na is designed to maximize the HaaS VM's 
 access to physical hardware.
@@ -171,7 +170,7 @@ latency-critical applications.
 %\item 
 {\bf Seamless live migration:}
 \na provides on-demand live migration of a HaaS VM having direct access to 
-physical network devices and local APIC timers. 
+I/O devices and local APIC timers. 
 %through coordinated switching to para-virtual I/O during migration.
 \na seamlessly disables the HaaS VM's physical hardware access at the 
 source machine before migration and 
@@ -192,8 +191,8 @@ during runtime and minimizing interference with HaaS VM's execution.
 CPU core and around 100MB of RAM, with room for further reductions.
 Even with passthrough I/O support~\cite{intelvtd-paper,intelvtd-manual}, 
 VM exits can still lower the I/O throughput and increase CPU usage of the host.
-\na includes mechanisms to systematically eliminate
-most VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilization.
+\na systematically eliminates
+most common VM exits for a HaaS VM to match bare-metal I/O performance and CPU utilization.
 Other than during startup and live migration, the \na is not involved in the
 HaaS VM's normal execution.
 
