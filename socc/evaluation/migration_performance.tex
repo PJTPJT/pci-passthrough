@@ -35,9 +35,9 @@ was shifted back to the VF. Importanly, the NIC hotplug halted
 the VM and stopped the network traffic. To minimize such
 network downtime, we made the VF available to the VM as soon
 as it could. We optimized the NIC-hotplug mechanism in QEMU
-and hidden the majority of hotplug steps in the phase of
-guest-state transfer. Thus, the destination was ready to
-configure the VF as soon as the VM was back online.
+to overlap the hotplug steps with
+guest-state transfer so that the destination was ready to
+configure the VF as soon as VM resumed.
 
 In this experiment, the number of UDP packets lost were measured
 during VF-to-VIRTIO switch-over and VF hotunplug at source, and 

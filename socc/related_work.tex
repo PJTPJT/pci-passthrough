@@ -25,9 +25,8 @@ direct device assignment~\cite{intelvtd-paper,intelvtd-manual}.
 However, doing so has meant sacrificing the ability 
 to live migrate VMs for load balancing and fault-tolerance
 due to the difficulty of migrating the state of physical I/O devices.
-\na aims to  support bare-metal server performance
-while retaining the benefits of virtualization via a 
-thin hypervisor.
+\na supports close-to-bare-metal performance
+while retaining the benefits of virtualized servers.
 
 %TODO container/process migration cannot migrate the OS state
 % and limit the type of processes that can be migrated, such as 
@@ -63,9 +62,8 @@ In contrast to the above approaches,
 device drivers in Haas VM do not need
 device-specific state capture and reconstruction code 
 and the \na does not need to intercept guest I/O state changes.
-Finally, unlike the above approaches,
-\na also supports live migration of guests accessing non-PCIe 
-hardware such as local timer and IPI hardware.
+Additionally, \na also supports live migration of guests 
+directly accessing local timer and IPI hardware.
 
 
 {\bf Reducing virtualization overheads:}
@@ -99,7 +97,7 @@ when a VM interacts with its local APIC timer hardware and nor do they
 support direct delivery of timer interrupts and inter-VCPU IPIs.
 \na provides these features for a HaaS VM through a novel 
 use of Intel VT-d posted interrupt mechanism and without 
-incurring VM Exit overheads.
+VM Exit overheads.
 
 % TODO: Single VM virtualization
 %   Unikernels
