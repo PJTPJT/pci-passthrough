@@ -11,8 +11,6 @@ Slowdown of floating point computation benchmarks in
 SPEC CPU 2017~\cite{bucek:2018} for VANILLA and 
 DID guests compared to bare-metal. 
 The x-axis refers to the IDs for the following benchmarks:
-%\textbf{VANILLA}: unmodified guest has the configuration
-%without our optimizations. 
 \textbf{603}: explosion modeling.  \textbf{607}: relativity.
 \textbf{619}: fluid dynamics.  \textbf{621}: weather
 forecasting.  \textbf{627}: atmosphere modeling.
@@ -67,7 +65,7 @@ CPU~\cite{bucek:2018} and PARSEC~\cite{lewis:1998} benchmark
 programs.
 
 For the cases of OpenMP~\cite{dagum:1998} in
-Figure~\ref{fpspeed_barchart}, the maximum performance
+Figure~\ref{fig:fpspeed_barchart}, the maximum performance
 slowdown was 3\%. DID improved the performance further and did
 not perform worse than the vanilla VM for the wide-scale ocean
 modeling. For the cases of Pthreads~\cite{lewis:1998} in
