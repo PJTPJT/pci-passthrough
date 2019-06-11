@@ -2,14 +2,14 @@
 
 \figw{parsec_barchart}{8.5}{
 Slowdown of PARSEC benchmark programs for VANILLA and DID guests
-compared to the bare-metal.
+compared to bare-metal.
 %\textbf{VANILLA}: unmodified guest has the configuration without our optimizations.
 }
 
 \figw{fpspeed_barchart}{8.5}{
-Slowdown of floating point computation benchmarks in the
-SPEC CPU 2017~\cite{bucek:2018} suite for VANILLA and 
-DID guests compared to the bare-metal. 
+Slowdown of floating point computation benchmarks in 
+SPEC CPU 2017~\cite{bucek:2018} for VANILLA and 
+DID guests compared to bare-metal. 
 The x-axis refers to the IDs for the following benchmarks:
 %\textbf{VANILLA}: unmodified guest has the configuration
 %without our optimizations. 
@@ -22,18 +22,22 @@ dynamics. \textbf{649}: electromagnetic. \textbf{654}:
 regional ocean modeling.}
 
 \figw{intrate_barchart}{8.5}{
-Slowdown of integer computation benchmarks in the
-SPEC CPU 2017~\cite{bucek:2018} suite for VANILLA and 
-DID guests compared to the bare-metal. 
+Slowdown of integer computation benchmarks in 
+SPEC CPU 2017~\cite{bucek:2018} for VANILLA and 
+DID guests compared to bare-metal. 
 The x-axis refers to the IDs for the following benchmarks:
 %\textbf{VANILLA}: unmodified guest has the configuration
 %without our optimizations. 
-\textbf{500}: perl scripts.
-\textbf{502}: GCC. \textbf{505}: route planning.
-\textbf{520}: OMNeT simulation. \textbf{523}: XML conversion.
-\textbf{525}: video compression. \textbf{531}: chess.
-\textbf{541}: GO. \textbf{548}: sudoku. \textbf{57}: data
-compression.}
+{500}: perl scripts.
+{502}: GCC. 
+{505}: route planning.
+{520}: OMNeT simulation. 
+{523}: XML conversion.
+{525}: video compression. 
+{531}: chess.
+{541}: GO. 
+{548}: sudoku. 
+{57}: data compression.}
 
 To evaluate how well a HaaS VM performed for the multi-tasked
 CPU-bound applications, we measured the percentage of

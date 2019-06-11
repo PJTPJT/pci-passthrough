@@ -177,10 +177,9 @@ the VFIO configuration was actually higher than that of the
 VHOST configuration. The main cause was the large number of VM
 exits due to HLT instructions as shown in
 Table~\ref{tab:vm_exit}. When KVM emulated the HLT
-instruction, it used a busy waiting loop. The CPU cycles
-burned by the busy waiting loops bumped up the host CPU
-utilization in \emph{Host System} and consequently the total
-CPU utilization.
+instruction, it used a busy waiting loop, which
+increased the CPU utilization in \emph{Host System}.
+%and thus the total CPU utilization.
 
 In the OPTI configuration, \emph{Host System} was close to
 0\%, indicating that the hypervisor was almost completely out

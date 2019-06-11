@@ -4,24 +4,6 @@
 %benchmark during live migration of HaaS VM using fail-over-mac
 %and hot-plug optimizations.}
 
-\begin{table}[]
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Operation}    & \multicolumn{1}{l|}{\textbf{\# of Lost UDP}} \\ \hline
-\textbf{VF to VIRTIO at source} & 25                                           \\ \hline
-\textbf{Unplug VF at source}    & 0                                            \\ \hline
-\textbf{Plug VF at destination}      & 0                                            \\ \hline
-\textbf{VIRTIO to VF at destination} & 17                                           \\ \hline
-\end{tabular}
-\end{center}
-\caption{Small number of packets are lost during various stages of 
-live migration when redirecting 
-network traffic between the passthrough NIC and VIRTIO network
-interface. \textbf{VF}: Virtual Function on Passthrough NIC. \textbf{VIRTIO}: Virtio interface.}
-\label{tab:udp_packet_lost}
-\end{table}
-
 To support the seamless live migration, the Linux ethernet
 bonding driver was used to assist the shift of network traffic
 between the virtual function (VF) or passthrough NIC and
@@ -51,6 +33,25 @@ The VM received 10K UDP packets per second, with each payload
 containing a unique 8-byte sequence number. 
 The {\tt tcpdump} tool~\cite{tcpdump} was used to
 measure the number of lost packets during various stages. 
+
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Operation}    & \multicolumn{1}{l|}{\textbf{\# of Lost UDP}} \\ \hline
+\textbf{VF to VIRTIO at source} & 25                                           \\ \hline
+\textbf{Unplug VF at source}    & 0                                            \\ \hline
+\textbf{Plug VF at destination}      & 0                                            \\ \hline
+\textbf{VIRTIO to VF at destination} & 17                                           \\ \hline
+\end{tabular}
+\end{center}
+\caption{Small number of packets are lost during various stages of 
+live migration when redirecting 
+network traffic between Virtual Function (VF) on passthrough NIC and VIRTIO NIC.
+%\textbf{VF}: Virtual Function on Passthrough NIC. \textbf{VIRTIO}: Virtio interface.
+}
+\label{tab:udp_packet_lost}
+\end{table}
 
 As seen from Table~\ref{tab:udp_packet_lost}, very few packets
 were dropped during the switch-over operations at the source and destination.

@@ -129,7 +129,7 @@ Here we describe the design of direct IPI delivery mechanism which is currently 
 When a source CPU core sends an IPI to a destination CPU core, the source CPU core configures the Interrupt Command Register (ICR) in its local APIC,
 and, after the low double-word of the ICR is written to, triggers an interrupt message to be sent to the destination CPU core's local APIC through an inter-APIC system bus.
 To enable an IPI to be delivered directly to the HaaS VM, \na configures the source CPU core's ICR so that the resulting interrupt message carries a PIN vector,
-and then sets a certain bit in the PIR of the destination CPU core to indicate that the interrupt behind the PIN interrupt is an IPI.
+and then sets a certain bit in the PIR of the destination CPU core to indicate that the PIN interrupt corresponds to an IPI.
 
 
 
