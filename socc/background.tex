@@ -22,38 +22,41 @@ support for direct and safe access to hardware I/O devices by
 VMs running in non-root mode.  Virtual function I/O
 (VFIO)~\cite{vfio} is a Linux software framework that enables
 user-space device drivers to interact with PCIe devices
-directly without involving the Linux kernel.  In general,
-there are four types of interactions between an OS and its
-PCIe I/O devices:
+directly without involving the Linux kernel.  
 
-\begin{enumerate}
-\parskip 0mm
-\itemsep 0mm
-%\setlength\itemsep{-0.04in}
-\item At the system start-up time, the OS probes and
-      enumerates the PCIe devices existing in the system, and
-      assigns a device number, configuration space address
-      range, and interrupt to each discovered device.
-
-\item The OS reads and writes a device's configuration
-      register space and the memory regions specified in its
-      base address registers (BAR), including setting up DMA
-      operations.
-
-\item A DMA engine moves data blocks between main memory and
-      PCIe devices according to the DMA commands set up by the
-      OS.
-
-\item A device interrupts the OS for its attention to certain
-      hardware events, such as new packet arrival or
-      transmission completion.
-
-\end{enumerate}
-Except the probe/enumeration operations, \na enables a guest
-OS to interact directly (without VM exits) with NICs and disk
-controllers for the other three types of device interactions.
-
+%In general,
+%there are four types of interactions between an OS and its
+%PCIe I/O devices:
+%
+%\begin{enumerate}
+%\parskip 0mm
+%\itemsep 0mm
+%%\setlength\itemsep{-0.04in}
+%\item At the system start-up time, the OS probes and
+%      enumerates the PCIe devices existing in the system, and
+%      assigns a device number, configuration space address
+%      range, and interrupt to each discovered device.
+%
+%\item The OS reads and writes a device's configuration
+%      register space and the memory regions specified in its
+%      base address registers (BAR), including setting up DMA
+%      operations.
+%
+%\item A DMA engine moves data blocks between main memory and
+%      PCIe devices according to the DMA commands set up by the
+%      OS.
+%
+%\item A device interrupts the OS for its attention to certain
+%      hardware events, such as new packet arrival or
+%      transmission completion.
+%
+%\end{enumerate}
+%Except the probe/enumeration operations, \na enables a guest
+%OS to interact directly (without VM exits) with NICs and disk
+%controllers for the other three types of device interactions.
+\vspace{-0.1in}
 \subsection{Direct Device Access}
+\vspace{-0.05in}
 Typically, a PCIe device driver communicates with its device using programmed I/O (PIO) or
 memory-mapped I/O (MMIO) operations against the memory areas associated with the device.
 Essentially, VFIO makes the configuration register space and the memory regions of
@@ -86,10 +89,11 @@ However, QEMU is still responsible for such control plane processing as setting 
 configuring, and negotiating features for an in-kernel virtio device.
 
 
+\vspace{-0.1in}
 \subsection{Posted Interrupts}
+\vspace{-0.05in}
 
 {\bf Conventional Interrupt Delivery:}
-
 A VM may experience two types of interrupts: {\em external} and {\em local} interrupts.
 External interrupts originate from external I/O devices, such as network card or disk controller.
 When these I/O devices generate a hardware interrupt, this signal first goes to an IOAPIC, which, through an {\em Interrupt Redirection Table},
