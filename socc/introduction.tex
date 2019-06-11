@@ -70,7 +70,7 @@ in the form of a specialized hypervisor, called the {\em Single VM
 hypervisor (\sna)}.
 
 
-\figwtwocol{newarch}{16}{
+\figwtwocol{newarch}{14}{
 The \na runs as a thin shim layer
 to provide the HaaS VM with dedicated CPU cores, memory, and I/O devices.
 All hardware interrupts, including device, local timers, and IPIs
@@ -179,7 +179,7 @@ I/O access, \na does not require device-specific state capture and migration cod
 nor does it require the hypervisor to trust the guest OS. 
 %Yet \na matches the liveness and performance of traditional live migration.
 
-\item {\bf Baremetal performance:}  
+\item {\bf Bare-metal performance:}  
 To match bare-metal performance, \na implements mechanisms
 for reducing the its CPU, I/O, and memory footprint
 during runtime and minimizing interference with HaaS VM's execution.
