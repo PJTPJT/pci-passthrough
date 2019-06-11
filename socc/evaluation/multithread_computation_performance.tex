@@ -13,13 +13,13 @@ DID guests compared to bare-metal.
 The x-axis refers to the IDs for the following benchmarks:
 %\textbf{VANILLA}: unmodified guest has the configuration
 %without our optimizations. 
-\textbf{603}: explosion modeling.
-\textbf{607}: relativity. \textbf{619}: fluid dynamics.
-\textbf{621}: weather forecasting. \textbf{627}: atmosphere
-modeling. \textbf{628}: wide-scale ocean modeling.
-\textbf{638}: image manipulation. \textbf{644}: molecular
-dynamics. \textbf{649}: electromagnetic. \textbf{654}:
-regional ocean modeling.}
+\textbf{603}: explosion modeling.  \textbf{607}: relativity.
+\textbf{619}: fluid dynamics.  \textbf{621}: weather
+forecasting.  \textbf{627}: atmosphere modeling.
+\textbf{628}: wide-scale ocean modeling.  \textbf{638}: image
+manipulation.  \textbf{644}: molecular dynamics.
+\textbf{649}: electromagnetic.  \textbf{654}: regional ocean
+modeling.}
 
 \figw{intrate_barchart}{8.5}{
 Slowdown of integer computation benchmarks in 
@@ -37,31 +37,44 @@ The x-axis refers to the IDs for the following benchmarks:
 {531}: chess.
 {541}: GO. 
 {548}: sudoku. 
-{57}: data compression.}
+{557}: data compression.}
 
 To evaluate how well a HaaS VM performed for the multi-tasked
-CPU-bound applications, we measured the percentage of
-performance slowdown by running SPEC CPU
-2017~\cite{bucek:2018} and PARSEC~\cite{bienia:2008}
-benchmark. In our experiment, the HaaS VM had 8 dedicated
-cores and 27GB RAM whereas \na had the two cores, including
-physical core 0, and the remaining 5GB RAM. Moreover, the
-topology of L1/L2/L3 CPU cache was exposed to the VM. The
-bare-metal was the baseline and had the same configuration as
-the VM. We compared the percent slowdown between the VMs of
-DID and vanilla configuration, which did not use our
-optimizations except the dedicated cores and cache
-information.
+CPU-bound applications, we measured the percentage of slowdown
+or throughput reduction. Two popular thread models were
+considered: Pthreads~\cite{lewis:1998} and
+OpenMP~\cite{dagum:1998}. Pthreads~\cite{lewis:1998} provided
+the finer-grained control over the thread management, while
+OpenMP~\cite{dagum:1998} was the industry standard and easier
+to scale than Pthreads~\cite{lewis:1998}. To measure the
+slowdown, we used SPECspeed 2017 Floating
+Point~\cite{bucek:2018} and PARSEC~\cite{lewis:1998}. To
+measure the throughput reduction, we used SPECrate 2017
+Integer~\cite{bucek:2018}.
 
-Two popular thread models were considered:
-Pthreads~\cite{lewis:1998} and OpenMP~\cite{dagum:1998}.
-Pthreads~\cite{lewis:1998} provided the finer-grained control
-over the thread management, while openMP~\cite{dagum:1998} was
-the industry standard and easier to scale than
-Pthreads~\cite{lewis:1998}. As shown in
+In our experiment, the HaaS VM had 8 dedicated cores and 27GB
+RAM whereas \na had the two cores, including physical core 0,
+and the remaining 5GB RAM. Moreover, the topology of L1/L2/L3
+CPU cache was exposed to the VM. The bare-metal was the
+baseline and had the same configuration as the VM. We compared
+the percent slowdown between the VMs of DID and vanilla
+configuration, which did not use our optimizations except the
+dedicated cores and cache information. To To measure the
+slowdown, we used 8 threads in each in SPEC
+CPU~\cite{bucek:2018} benchmark programs. To measure the
+throughput reduction, we used 8 processes in each SPEC
+CPU~\cite{bucek:2018} and PARSEC~\cite{lewis:1998} benchmark
+programs.
+
+For the cases of OpenMP~\cite{dagum:1998} in
+Figure~\ref{fpspeed_barchart}, the maximum performance
+slowdown was 3\%. DID improved the performance further and did
+not perform worse than the vanilla VM for the wide-scale ocean
+modeling. For the cases of Pthreads~\cite{lewis:1998} in
 Figure~\ref{fig:parsec_barchart}, most cases had the
 percentage slowdown less than 5\% except canneal and
 streamcluster. DID reduced the slowdown even further.
+
 Especially for Dedup, DID trimmed 11.45\% of slowdown to
 3.85\%. Although the performance of DID in Vips seemed to be
 worse than Vanilla, the absolute values
@@ -86,4 +99,6 @@ We suspect that the performance difference for these two cases
 might be due to VTx-related architecture issues; we are
 further investigating the uderlying causes.
 
-
+%As shown in Figure~\ref{fig:intrate_barchart}, DID improved
+%the CPU throughput in all cases which had less than 10\% of
+%throughput reductions. For 
