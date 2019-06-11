@@ -49,8 +49,8 @@ interval of 200$\mu$s for 10 million iterations.
 
 As shown in Figure~\ref{fig:cyclictest_in_kernel}, the median
 timer interrupt latency for the Bare-metal, DID, DTID and
-VANILLA configuration, which did not use our optimizations
-except the dedicated cores, were 1.51, 2.03, 2.04 and 9.20
+VANILLA configuration (which did not use our optimizations
+except the dedicated cores) were 1.51, 2.03, 2.04 and 9.20
 $\mu$s, respectively. Both the a DTID and DID HaaS VM came
 close to the bare-metal OS with the additional 0.52$\mu$s
 latency and reduced the median timer interrupt latency by
@@ -67,22 +67,21 @@ more than the bare-metal OS. Reducing this difference further
 by identifying the underlying VM exit reasons is part of our
 future work.
 
-Since both the NIC and timer-interrupt delivery used the
-posted-interrupt mechanism, it was possible that the timer
-interrupts was triggered by the network interrupts and arrived
+Since both the NIC and timer-interrupt delivery use the
+posted-interrupt mechanism, the timer
+interrupts are triggered by network interrupts and arrive
 earlier than the expected time. Then, the early timer
-interrupt was serviced and the timer was updated. Nonetheless,
-the more NIC interrupts occured, the more early timer
-interrupts needed to be handled. When the DTID HaaS VM
-performed the network I/O over the 40Gbps Infiniband link,
-spurious timer interrupts did not only reduce the network
-bandwidth performanc, but also kept CPU busy handling
-additional timer interrupts. The filtering mechansim was
-implemented to ignore early timer interrupts. Its
-effectiveness was determined by measuring the frequency of NIC
-and timer interrupts for the DTID haas VM, when it transmitted
-the TCP traffic over a 40Gbps Infiniband link by
-iPerf~\cite{iperf}.
+interrupt is serviced by the guest and the timer is updated. 
+As more NIC interrupts occur, more early timer
+interrupts need to be handled. When the DTID HaaS VM
+performs the network I/O over the 40Gbps Infiniband link,
+spurious timer interrupts not only reduced the network
+bandwidth performanc, but also kept the CPU busy handling
+additional timer interrupts. We implemented a filtering mechansim 
+to ignore early timer interrupts and determined its 
+effectiveness determined by measuring the frequency of NIC
+and timer interrupts for the DTID configuration, when the HaaS VM 
+transmitted iPerf~\cite{iperf} TCP traffic over a 40Gbps Infiniband link.
 
 In our experiment, the CPU core 0 was configured to process
 NIC interrupts and 250Hz local timer interrupts, whereas the
