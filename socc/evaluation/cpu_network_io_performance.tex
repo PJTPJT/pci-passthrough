@@ -1,22 +1,42 @@
 % CPU and network performance of assigned NIC
 
+\begin{table*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{}   & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
+                    & \textbf{User\%} & \textbf{System\%} & \textbf{User\%} & \textbf{System\%} &                                       &                                    & \textbf{\begin{tabular}[c]{@{}c@{}}Outbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Inbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Round-Trip Delay\\ ($\boldsymbol{\mu}$s)\end{tabular}} \\ \hline
+\textbf{BARE-METAL} & 0.68            & 90.59             & --              & --                & 91.27                                 & 2                                  & 37.39                                                              & 37.60                                                             & 11                                                              \\ \hline
+\textbf{VHOST}      & 79.32           & 172.74            & 0.31            & 35.19             & 208.24                                & 3                                  & 37.61                                                              & 34.36                                                             & 24                                                              \\ \hline
+\textbf{VFIO}       & 102.45          & 91.90             & 0.36            & 44.66             & 136.92                                & 2                                  & 37.59                                                              & 37.60                                                             & 12                                                              \\ \hline
+\textbf{OPTI}       & 199.58          & 0.42              & 0.85            & 99.97             & 101.24                                & 2                                  & 37.55                                                              & 37.58                                                             & 12                                                              \\ \hline
+\textbf{DTID}       & 199.58$^*$      & 0.42$^*$          & 0.89            & 90.55             & 91.86                                 & 2                                  & 37.59                                                              & 37.60                                                             & 12                                                              \\ \hline
+\textbf{DID}        & 199.58$^*$      & 0.42$^*$          & 0.86            & 90.74             & 92.02                                 & 2                                  & 37.56                                                              & 37.59                                                             & 13                                                              \\ \hline
+\end{tabular}%
+}
+\caption{TODO}
+\label{tab:cpu_network_io}
+\end{table*}
+
 \begin{table}
 \renewcommand{\arraystretch}{1.2}
 \small
 \begin{center}
 \begin{tabular}{|l|c|c|c|} \hline
 {\bf Configuration} & {\bf Outbound} & {\bf Inbound} & {\bf Round-Trip} \\
-                    & {\bf (Gbps)}   & {\bf (Gbps)}  & {\bf Delay ($\mu$s)} \\ \hline
+                    & {\bf (Gbps)}   & {\bf (Gbps)}  & {\bf Delay ($\boldsymbol{\mu}$s)} \\ \hline
 {\bf Bare-metal} & 37.39 & 37.52 & 12 \\ \hline
 {\bf VHOST}      & 37.39 & 19.02/37.10 & 24/18\\ \hline
 {\bf VFIO}       & 37.45 & 37.58 & 13 \\ \hline
 {\bf OPTI}       & 37.37 & 37.52 & 13 \\ \hline
 {\bf DTID}       & 37.35 & 37.50 & 12 \\ \hline
+{\bf DID}        & 37.61 & 37.58 & 13 \\ \hline
 \end{tabular}
 \end{center}
 \vspace{-0.1in}
 \caption{Comparison of network throughput and round-trip
-packet delay over a 40Gbps Infiniband link among the five
+packet delay over a 40Gbps Infiniband link among the six
 evaluated configurations}
 \label{tab:network_performance}
 \vspace{-0.1in}
