@@ -1,13 +1,15 @@
 % CPU and network performance of assigned NIC
 
 \begin{table*}[t]
+\renewcommand{\arraystretch}{1.2}
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
-\multirow{2}{*}{}   & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
-                    & \textbf{User\%} & \textbf{System\%} & \textbf{User\%} & \textbf{System\%} &                                       &                                    & \textbf{\begin{tabular}[c]{@{}c@{}}Outbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Inbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Round-Trip Delay\\ ($\boldsymbol{\mu}$s)\end{tabular}} \\ \hline
-\textbf{BARE-METAL} & 0.68            & 90.59             & --              & --                & 91.27                                 & 2                                  & 37.39                                                              & 37.60                                                             & 11                                                              \\ \hline
+%\multirow{2}{*}{}   & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
+                                          & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
+\diagbox{\textbf{Configuration}}{\textbf{Performance}} & \textbf{User\%} & \textbf{System\%} & \textbf{User\%} & \textbf{System\%} &                                       &                                    & \textbf{\begin{tabular}[c]{@{}c@{}}Outbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Inbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Round-Trip Delay\\ ($\boldsymbol{\mu}$s)\end{tabular}} \\ \hline
+\textbf{Bare-metal} & 0.68            & 90.59             & --              & --                & 91.27                                 & 2                                  & 37.39                                                              & 37.60                                                             & 11                                                              \\ \hline
 \textbf{VHOST}      & 79.32           & 172.74            & 0.31            & 35.19             & 208.24                                & 3                                  & 37.61                                                              & 34.36                                                             & 24                                                              \\ \hline
 \textbf{VFIO}       & 102.45          & 91.90             & 0.36            & 44.66             & 136.92                                & 2                                  & 37.59                                                              & 37.60                                                             & 12                                                              \\ \hline
 \textbf{OPTI}       & 199.58          & 0.42              & 0.85            & 99.97             & 101.24                                & 2                                  & 37.55                                                              & 37.58                                                             & 12                                                              \\ \hline
@@ -15,32 +17,35 @@
 \textbf{DID}        & 199.58$^*$      & 0.42$^*$          & 0.86            & 90.74             & 92.02                                 & 2                                  & 37.56                                                              & 37.59                                                             & 13                                                              \\ \hline
 \end{tabular}%
 }
-\caption{TODO}
+\caption{Comparison of CPU utilization, network throughput and
+round-trip packet delay over 40Gbps Infiniband link among the
+six evaluated configurations. $^*$: Since the LAPIC timers are
+passthroughed in DTID and DID, the host cannot measure the CPU
+utilization for the VM. We expect the host user\% and system\%
+of DTID and DID is comparable to OPTI and thus, reuse the OPTI
+values.}
 \label{tab:cpu_network_io}
 \end{table*}
 
-\begin{table}
+\begin{table*}[t]
 \renewcommand{\arraystretch}{1.2}
-\small
-\begin{center}
-\begin{tabular}{|l|c|c|c|} \hline
-{\bf Configuration} & {\bf Outbound} & {\bf Inbound} & {\bf Round-Trip} \\
-                    & {\bf (Gbps)}   & {\bf (Gbps)}  & {\bf Delay ($\boldsymbol{\mu}$s)} \\ \hline
-{\bf Bare-metal} & 37.39 & 37.52 & 12 \\ \hline
-{\bf VHOST}      & 37.39 & 19.02/37.10 & 24/18\\ \hline
-{\bf VFIO}       & 37.45 & 37.58 & 13 \\ \hline
-{\bf OPTI}       & 37.37 & 37.52 & 13 \\ \hline
-{\bf DTID}       & 37.35 & 37.50 & 12 \\ \hline
-{\bf DID}        & 37.61 & 37.58 & 13 \\ \hline
-\end{tabular}
-\end{center}
-\vspace{-0.1in}
-\caption{Comparison of network throughput and round-trip
-packet delay over a 40Gbps Infiniband link among the six
-evaluated configurations}
-\label{tab:network_performance}
-\vspace{-0.1in}
-\end{table}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\hline
+\diagbox{\textbf{Configuration}}{\textbf{VM Exit Reason}} & \textbf{EPT Fault} & \textbf{External Interrupt} & \textbf{HLT Instruction} & \textbf{MSR Write} & \textbf{PAUSE Instruction} & \textbf{Preemption Timer} & \textbf{MSR Read} & \textbf{Total} \\ \hline
+\textbf{VHOST} & 1638238            & 11798                       & 1254475                  & 127812             & 12478                      & 17382                     & 120               & 3062303        \\ \hline
+\textbf{VFIO}  & 5                  & 15083                       & 4400606                  & 170565             & 2338                       & 18108                     & 120               & 4606825        \\ \hline
+\textbf{OPTI}  & 8                  & 65650                       & 0                        & 173460             & 1                          & 0                         & 120               & 239257         \\ \hline
+\textbf{DTID}  & 12                 & 343                         & 0                        & 137662             & 1                          & 0                         & 119               & 138173         \\ \hline
+\textbf{DID}   & 8                  & 331                         & 0                        & 0                  & 0                          & 0                         & 120               & 459            \\ \hline
+\end{tabular}%
+}
+\caption{Comparison of number of VM exits when the evaluated
+configurations transmit TCP traffic over a 40Gbps Infiniband
+link using iPerf~\cite{iperf}.}
+\label{tab:vm_exit}
+\end{table*}
 
 In this experiment, with all the proposed optimizations
 applied, a HaaS VM performed essentially the same as a
@@ -53,7 +58,7 @@ link. iPerf~\cite{iperf} ran in uni-directional and used 2 TCP
 streams, which the packet size was 8KB. MTU was set to 1500
 with the jumbo frame enabled.
 
-As shown in Table~\ref{tab:network_performance}, for outgoing
+As shown in Table~\ref{tab:cpu_network_io}, for outgoing
 TCP traffic, all five evaluated configurations were able to
 saturate the Infiniband link and had almost identical network
 throughput. For incoming TCP traffic, all five configurations
@@ -66,32 +71,13 @@ only when three CPU cores were used.
 Ping~\cite{ping} tool was used to measure the round-trip
 delays over a 40Gbps Infiniband link. The packet size was 56
 bytes. The network latency of each configuration was shown in
-Table~\ref{tab:network_performance}. When two CPU cores were
+Table~\ref{tab:cpu_network_io}. When two CPU cores were
 used, the round-trip delay in the VHOST configuration was
 24$\mu$s. It was approximately twice as much as that of the
 other four configurations. The extra delay arised because of
 VM exits. When a HaaS VM ran in the VHOST configuration, VM
 exits occur whenever it accessed virtual I/O devices and
 receives interrupts from these devices.
-
-\begin{table}
-\renewcommand{\arraystretch}{1.2}
-\small
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|} \hline
-{\bf Exit Cause} & {\bf VHOST } & {\bf VFIO} & {\bf OPTI} & {\bf DTID} \\ \hline
-{\bf HLT Inst}   & 4362  & 79765 & 0    & 0    \\ \hline
-{\bf EPT Fault}  & 55071 & 0     & 0    & 0    \\ \hline
-{\bf Interrupt}  & 15702 & 219   & 498  & 1    \\ \hline
-\end{tabular}
-\end{center}
-\vspace{-0.1in}
-\caption{Comparison of number of VM exits per second when the
-evaluated configurations transmit TCP traffic over a 40Gbps
-Infiniband link using iPerf~\cite{iperf}.}
-\label{tab:vm_exit}
-\vspace{-0.1in}
-\end{table}
 
 Because the number of VM exits significantly impacted the CPU
 utilization during the network I/O activities, let's first
@@ -141,28 +127,6 @@ VM exit for a HaaS VM was IPI interrupt. Because IPIs did not
 occur frequently during our test, the resulting interrupt rate
 was very low, about 1 per second.
 
-\begin{table}[]
-\renewcommand{\arraystretch}{1.2}
-\small
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|c|}
-\hline
-                    & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \textbf{Total} \\ \cline{2-5}
-                    & \textbf{Usr\%} & \textbf{Sys\%}    & \textbf{Usr\%} & \textbf{Sys\%}    & \textbf{\%}    \\ \hline
-\textbf{Bare-metal} & 0.64            & 80.98             & NA              & NA                & 81.62          \\ \hline
-\textbf{VHOST}      & 68.32           & 83.85             & 0.23            & 31.20             & 115.28         \\ \hline
-\textbf{VFIO}       & 83.35           & 99.25             & 0.26            & 34.92             & 134.43         \\ \hline
-\textbf{OPTI}       & 199.76          & 0.24              & 0.65            & 81.62             & 82.51          \\ \hline
-\end{tabular}
-\end{center}
-\caption{Comparison of the total CPU utilization and its
-breakdown when the evaluated configurations send out TCP
-traffic over a 40Gbps Infiniband link at full speed using
-iPerf~\cite{iperf}. The total is 200\% because two isolated
-CPU cores are used. \textbf{Usr}: User. \textbf{Sys}: System.}
-\label{tab:cpu_utilization_40gbps}
-\end{table}
-
 Next we profiled the CPU utilization that a HaaS VM needed in
 both the host and VM, when the VM saturated the Infiniband
 link at full speed. It provided us how much CPU time that the
@@ -173,7 +137,7 @@ Previously two isolated CPU cores were used to saturate the
 Infiniband link. The CPU utilization was taken for the two
 cores as well. The total CPU utilization was 200\%.
 
-As shown in Table~\ref{tab:cpu_utilization_40gbps}, \emph{Host
+As shown in Table~\ref{tab:cpu_network_io}, \emph{Host
 User} and \emph{Host System} represented the total CPU time
 consumed in the user mode and system mode respectively and
 were measured from the host. \emph{Guest User} and \emph{Guest
@@ -199,7 +163,6 @@ exits due to HLT instructions as shown in
 Table~\ref{tab:vm_exit}. When KVM emulated the HLT
 instruction, it used a busy waiting loop, which
 increased the CPU utilization in \emph{Host System}.
-%and thus the total CPU utilization.
 
 In the OPTI configuration, \emph{Host System} was close to
 0\%, indicating that the hypervisor was almost completely out
@@ -214,10 +177,6 @@ in a lower power state but did not preempt the VM. From the
 host's point of view, the HaaS VM remains active because it
 occupies the CPU.
 
-%Thus, having the dedicated CPU core and passthrough NIC
-%suggests that \na was successful in enabling a Haas Server to
-%match the network performance and the CPU utilization of
-%bare-metal server.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mycomment{
@@ -382,3 +341,74 @@ iPerf. The total is 200\% because two CPU cores are used.}
 \label{tab:cpu_utilization_40gbps}
 \end{table}
 }
+
+\mycomment{
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|l|c|c|c|} \hline
+{\bf Configuration} & {\bf Outbound} & {\bf Inbound} & {\bf Round-Trip} \\
+                    & {\bf (Gbps)}   & {\bf (Gbps)}  & {\bf Delay ($\boldsymbol{\mu}$s)} \\ \hline
+{\bf Bare-metal} & 37.39 & 37.52 & 12 \\ \hline
+{\bf VHOST}      & 37.39 & 19.02/37.10 & 24/18\\ \hline
+{\bf VFIO}       & 37.45 & 37.58 & 13 \\ \hline
+{\bf OPTI}       & 37.37 & 37.52 & 13 \\ \hline
+{\bf DTID}       & 37.35 & 37.50 & 12 \\ \hline
+{\bf DID}        & 37.61 & 37.58 & 13 \\ \hline
+\end{tabular}
+\end{center}
+\vspace{-0.1in}
+\caption{Comparison of network throughput and round-trip
+packet delay over a 40Gbps Infiniband link among the six
+evaluated configurations}
+\label{tab:network_performance}
+\vspace{-0.1in}
+\end{table}
+}
+
+\mycomment{
+\begin{table}[]
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+                    & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \textbf{Total} \\ \cline{2-5}
+                    & \textbf{Usr\%} & \textbf{Sys\%}    & \textbf{Usr\%} & \textbf{Sys\%}    & \textbf{\%}    \\ \hline
+\textbf{Bare-metal} & 0.64            & 80.98             & NA              & NA                & 81.62          \\ \hline
+\textbf{VHOST}      & 68.32           & 83.85             & 0.23            & 31.20             & 115.28         \\ \hline
+\textbf{VFIO}       & 83.35           & 99.25             & 0.26            & 34.92             & 134.43         \\ \hline
+\textbf{OPTI}       & 199.76          & 0.24              & 0.65            & 81.62             & 82.51          \\ \hline
+\end{tabular}
+\end{center}
+\caption{Comparison of the total CPU utilization and its
+breakdown when the evaluated configurations send out TCP
+traffic over a 40Gbps Infiniband link at full speed using
+iPerf~\cite{iperf}. The total is 200\% because two isolated
+CPU cores are used. \textbf{Usr}: User. \textbf{Sys}: System.}
+\label{tab:cpu_utilization_40gbps}
+\end{table}
+}
+
+\mycomment{
+\begin{table}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|} \hline
+{\bf Exit Cause} & {\bf VHOST } & {\bf VFIO} & {\bf OPTI} & {\bf DTID} \\ \hline
+{\bf HLT Inst}   & 4362  & 79765 & 0    & 0    \\ \hline
+{\bf EPT Fault}  & 55071 & 0     & 0    & 0    \\ \hline
+{\bf Interrupt}  & 15702 & 219   & 498  & 1    \\ \hline
+\end{tabular}
+\end{center}
+\vspace{-0.1in}
+\caption{Comparison of number of VM exits per second when the
+evaluated configurations transmit TCP traffic over a 40Gbps
+Infiniband link using iPerf~\cite{iperf}.}
+\label{tab:vm_exit}
+\vspace{-0.1in}
+\end{table}
+}
+
