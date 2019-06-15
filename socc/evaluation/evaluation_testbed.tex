@@ -58,18 +58,20 @@ The following configurations are evaluated:
 
 \item {\bf OPTI}: A HaaS VM accessing I/O devices using the
                   VFIO interface without incurring VM exits
-                  due to network interrupts or HLT
-                  instructions.
+                  due to network interrupts, HLT
+                  instructions or VMX preemption timers.
 
 \item{\bf  DTID}: A HaaS VM accessing I/O devices using the
                   VFIO interface without incurring VM exits
-                  due to network interrupts, HLT instructions
-                  or local timer interrupts.
+                  due to network interrupts, HLT instructions,
+                  VMX preemption timers or local timer
+                  interrupts.
 
 \item{\bf  DID}: A HaaS VM accessing I/O devices using the
                  VFIO interface without incurring VM exits due
-                 to network interrupts, HLT instructions or
-                 local timer interrupts or IPIs.
+                 to network interrupts, HLT instructions, VMX
+                 preemption timers or local timer interrupts
+                 or IPIs.
 \end{itemize}
 
 

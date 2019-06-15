@@ -31,14 +31,14 @@ values.}
 \renewcommand{\arraystretch}{1.2}
 \centering
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
 \hline
-\diagbox{\textbf{Configuration}}{\textbf{Exit Reason}} & \textbf{EPT Fault} & \textbf{Interrupt} & \textbf{Halt Instruction} & \textbf{Pause Instruction} & \textbf{Preemption Timer} & \textbf{MSR Write} & \textbf{MSR Read} & \textbf{Total} \\ \hline
-\textbf{VHOST} & 27304              & 197                & 20908                    & 208                        & 290                       & 2130               & 2                 & 51039          \\ \hline
-\textbf{VFIO}  & 0                  & 251                & 73343                    & 39                         & 302                       & 2843               & 2                 & 76780          \\ \hline
-\textbf{OPTI}  & 0                  & 1094               & 0                        & 0                          & 0                         & 2891               & 2                 & 3987           \\ \hline
-\textbf{DTID}  & 0                  & 6                  & 0                        & 0                          & 0                         & 2294               & 2                 & 2302           \\ \hline
-\textbf{DID}   & 0                  & 6                  & 0                        & 0                          & 0                         & 0                  & 2                 & 8              \\ \hline
+\diagbox{\textbf{Configuration}}{\textbf{Exit Reason}} & \textbf{EPT Fault} & \textbf{Interrupt} & \textbf{HLT Instruction} & \textbf{PAUSE Instruction} & \textbf{Preemption Timer} & \textbf{MSR Write} & \textbf{Total} \\ \hline
+\textbf{VHOST} & 13652              & 98                 & 10454                    & 104                        & 145                       & 1065               & 25518          \\ \hline
+\textbf{VFIO}  & 0                  & 126                & 36672                    & 19                         & 151                       & 1421               & 38389          \\ \hline
+\textbf{OPTI}  & 0                  & 547                & 0                        & 0                          & 0                         & 1446               & 1993           \\ \hline
+\textbf{DTID}  & 0                  & 3                  & 0                        & 0                          & 0                         & 1147               & 1150           \\ \hline
+\textbf{DID}   & 0                  & 3                  & 0                        & 0                          & 0                         & 0                  & 3              \\ \hline
 %\diagbox{\textbf{Configuration}}{\textbf{Exit Reason}} & \textbf{EPT Fault} & \textbf{Interrupt} & \textbf{HLT} & \textbf{MSR Write} & \textbf{PAUSE} & \textbf{Preemption Timer} & \textbf{CPUID} & \textbf{MSR Read} & \textbf{Total} \\ \hline
 %\textbf{VHOST} & 1638238            & 11798                       & 1254475                  & 127812             & 12478                      & 17382                     & 0              & 120               & 3062303        \\ \hline
 %\textbf{VFIO}  & 5                  & 15083                       & 4400606                  & 170565             & 2338                       & 18108                     & 0              & 120               & 4606825        \\ \hline
@@ -47,9 +47,10 @@ values.}
 %\textbf{DID}   & 8                  & 331                         & 0                        & 0                  & 0                          & 0                         & 0              & 120               & 459            \\ \hline
 \end{tabular}%
 }
-\caption{Comparison of number of VM exits per second for 2
-VCPUs when the evaluated configurations transmit TCP traffic
-over a 40Gbps Infiniband link for 60 seconds.}
+\caption{Comparison of number of VM exits per second per VCPU
+when the evaluated configurations transmit TCP traffic over a
+40Gbps Infiniband link for 60 seconds. Physical interrupts
+include both the local and external interrupts.}
 \label{tab:vm_exit}
 \end{table*}
 
@@ -64,74 +65,85 @@ link. iPerf~\cite{iperf} ran in uni-directional and used 2 TCP
 streams, which the packet size was 8KB. MTU was set to 1500
 with the jumbo frame enabled.
 
-As shown in Table~\ref{tab:cpu_network_io}, for outgoing
-TCP traffic, all five evaluated configurations were able to
+As shown in Table~\ref{tab:cpu_network_io}, for outgoing TCP
+traffic, all six evaluated configurations were able to
 saturate the Infiniband link and had almost identical network
-throughput. For incoming TCP traffic, all five configurations
+throughput. For incoming TCP traffic, all six configurations
 except the VHOST configuration had roughly the same network
-throughput; however, the VHOST configuration's network
-throughput was about 52\% of that of the other four
-configurations when two CPU cores are used. It was comparable,
-only when three CPU cores were used.
+throughput. VHOST needed three CPU cores to reach 34.36 Gbps.
+If VHOST only used two CPU cores, its throughput was about
+52\% of that of the other five configurations.
 
-Ping~\cite{ping} tool was used to measure the round-trip
+We used the Ping~\cite{ping} tool to measure the round-trip
 delays over a 40Gbps Infiniband link. The packet size was 56
 bytes. The network latency of each configuration was shown in
-Table~\ref{tab:cpu_network_io}. When two CPU cores were
-used, the round-trip delay in the VHOST configuration was
-24$\mu$s. It was approximately twice as much as that of the
-other four configurations. The extra delay arised because of
-VM exits. When a HaaS VM ran in the VHOST configuration, VM
-exits occur whenever it accessed virtual I/O devices and
-receives interrupts from these devices.
+Table~\ref{tab:cpu_network_io}. The round-trip delay in the
+VHOST configuration was 24$\mu$s. It was approximately twice
+as much as that of the other five configurations. The extra
+delay arised because of VM exits. When a HaaS VM ran in the
+VHOST configuration, VM exits occur whenever it accessed or
+received interrrupts from the virtual NIC.
+
+% VM exits
+% - Access NIC and receive NIC interrupts: EPT and external
+%   interrupts.
+% - HLT: different idled time for each virtualization
+%   configuration.
+% - Local interrupt.
+% - Masked local interrupt, when the host controlled the
+%   interrupted CPU.
 
 Because the number of VM exits significantly impacted the CPU
 utilization during the network I/O activities, let's first
-examine the number of VM exits per second for each of the four
-virtualization configurations. Table \ref{tab:vm_exit} listed
-the number of VM exists per second a HaaS VM experiences the
-most, while the VM transmitted TCP traffic over an Infiniband
-link in one of the four configurations. The VHOST
-configuration incurred a VM exit whenever a HaaS VM executed
-the HLT instruction, accessed a NIC and triggered an EPT
-fault, or was interrupted.
+examine the number of VM exits per second per VCPU for each
+virtualization configurations. We profiled the VM exits for
+the 2 active VCPUs by perf~\cite{perf}, when the HaaS VM
+transmitted the TCP traffic over an Infiniband link. In
+Table~\ref{tab:vm_exit}, the VHOST configuration suffered the
+highest VM-exit overhead among all configurations. It incurred
+a VM exit whenever a HaaS VM executed the HLT instruction,
+accessed a NIC and triggered an EPT fault, was interrupted or
+had an expired VMX timer.
 
 In contrast, a HaaS VM running in the VFIO configuration did
 not trigger any VM exit when accessing a NIC or receiving a
-NIC interrupt. The only interrupts that caused a VM exit for
-were internal interrupts, such as timer and IPI interrupts.
-This was the reason why the numbers of VM exits per second due
-to EPT faults and interrupts for the VFIO configuration were
-significantly lower than those of the VHOST configuration. On
-the other hand, the number of VM exits per second due to HLT
-instructions for the VFIO configuration was drastically larger
-than that of the VHOST instruction. This behavior depended on
-the amount of time that a VM idled on its CPUs. The idling
-time in the non-root mode for the VFIO configuration is longer
-than that in the VHOST configuration. When a HaaS VM occupied
-the CPU longer and waited for its next network I/O, it was
-idled and issued the HLT instructions.
+NIC interrupt. The only interrupts that caused a VM exit were
+internal interrupts, such as timer and IPI interrupts. On the
+other hand, the rate of VM exits due to HLT instructions for
+the VFIO configuration was drastically larger than that of the
+VHOST instruction. This behavior depended on the amount of
+time that a VM was idled on its CPUs. The idling time in the
+non-root mode for the VFIO configuration was longer than that
+in the VHOST configuration. When a HaaS VM occupied the CPU
+longer and waited for its next network I/O, it was idled often
+and issued the HLT instructions.
 
 Compared with the VFIO configuration, the OPTI configuration
 further eliminated VM exits due to HLT instructions but
-experienced 498 VM exits per seconds from the local
+experienced 547 VM exits per second per VCPU due to the local
 interrupts. In our test, both the hypervisor and the HaaS VM
-set a timer resolution of 4 msec or 250Hz. Their expiration
-times were not synchronized. Together there were about 500
-hardware timer interrupts every second. Therefore, the OPTI
-configuration encountered roughly 498 VM exits per second.
-Most of which were attributed to timer interrupts. In the VFIO
-configuration, the rate of VM exit due to the local interrupts
-was substantially less than what we have observed in the OPTI
-configuration. Because of the large number of HLT-related VM
-exits, a timer interrupt could arrive, when the hypervisor is
-in control of the interrupted CPU. Such interrupt did not
-contribute an additional VM exit.
+set a timer resolution of 4ms or 250Hz. Their expiration time
+was not synchronized. Together there were at most 500 hardware
+timer interrupts every second. In addition, iPerf~\cite{iperf}
+threads set up its down timer and there were also rescheduling
+IPIs that woke up iPerf~\cite{iperf} threads. Therefore, the
+OPTI configuration encountered roughly 547 VM exits per second
+per VCPU due to local interrupts. Most of which were
+attributed to timer interrupts.
+
+In the VFIO configuration, the rate of VM exit due to the
+local interrupts was substantially less than what we have
+observed in the OPTI configuration. Because of the large
+number of HLT-related VM exits, a timer interrupt could
+arrive, when the hypervisor was in control of the interrupted
+CPU. Such interrupt did not contribute an additional VM exit.
 
 In the DTID configuration, the only interrupt that triggered a
-VM exit for a HaaS VM was IPI interrupt. Because IPIs did not
-occur frequently during our test, the resulting interrupt rate
-was very low, about 1 per second.
+VM exit for a HaaS VM was IPI interrupt. The HaaS VM
+experienced the VM exits due to IPI, when it recevied the
+reschduling or function call IPIs from the \na 
+or issued IPIs to another VCPU by writing to the interrupt
+command register.
 
 Next we profiled the CPU utilization that a HaaS VM needed in
 both the host and VM, when the VM saturated the Infiniband
