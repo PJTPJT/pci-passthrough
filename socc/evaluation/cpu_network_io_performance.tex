@@ -6,8 +6,8 @@
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline
-%\multirow{2}{*}{}   & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
-                                          & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10} 
+%\multirow{2}{*}{}   & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{No. CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10}
+                                          & \multicolumn{2}{c|}{\textbf{Host}}  & \multicolumn{2}{c|}{\textbf{Guest}} & \multirow{2}{*}{\textbf{Total CPU\%}} & \multirow{2}{*}{\textbf{Active CPUs}} & \multicolumn{3}{c|}{\textbf{Network}}                                                                                                                                                                    \\ \cline{2-5} \cline{8-10}
 \diagbox{\textbf{Configuration}}{\textbf{Performance}} & \textbf{User\%} & \textbf{System\%} & \textbf{User\%} & \textbf{System\%} &                                       &                                    & \textbf{\begin{tabular}[c]{@{}c@{}}Outbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Inbound\\ (Gbps)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Round-Trip Delay\\ ($\boldsymbol{\mu}$s)\end{tabular}} \\ \hline
 \textbf{Bare-metal} & 0.68            & 90.59             & --              & --                & 91.27                                 & 2                                  & 37.39                                                              & 37.60                                                             & 11                                                              \\ \hline
 \textbf{VHOST}      & 79.32           & 172.74            & 0.31            & 35.19             & 208.24                                & 3                                  & 37.61                                                              & 34.36                                                             & 24                                                              \\ \hline
@@ -33,17 +33,23 @@ values.}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|}
 \hline
-\diagbox{\textbf{Configuration}}{\textbf{VM Exit Reason}} & \textbf{EPT Fault} & \textbf{External Interrupt} & \textbf{HLT Instruction} & \textbf{MSR Write} & \textbf{PAUSE Instruction} & \textbf{Preemption Timer} & \textbf{MSR Read} & \textbf{Total} \\ \hline
-\textbf{VHOST} & 1638238            & 11798                       & 1254475                  & 127812             & 12478                      & 17382                     & 120               & 3062303        \\ \hline
-\textbf{VFIO}  & 5                  & 15083                       & 4400606                  & 170565             & 2338                       & 18108                     & 120               & 4606825        \\ \hline
-\textbf{OPTI}  & 8                  & 65650                       & 0                        & 173460             & 1                          & 0                         & 120               & 239257         \\ \hline
-\textbf{DTID}  & 12                 & 343                         & 0                        & 137662             & 1                          & 0                         & 119               & 138173         \\ \hline
-\textbf{DID}   & 8                  & 331                         & 0                        & 0                  & 0                          & 0                         & 120               & 459            \\ \hline
+\diagbox{\textbf{Configuration}}{\textbf{Exit Reason}} & \textbf{EPT Fault} & \textbf{Interrupt} & \textbf{Halt Instruction} & \textbf{Pause Instruction} & \textbf{Preemption Timer} & \textbf{MSR Write} & \textbf{MSR Read} & \textbf{Total} \\ \hline
+\textbf{VHOST} & 27304              & 197                & 20908                    & 208                        & 290                       & 2130               & 2                 & 51039          \\ \hline
+\textbf{VFIO}  & 0                  & 251                & 73343                    & 39                         & 302                       & 2843               & 2                 & 76780          \\ \hline
+\textbf{OPTI}  & 0                  & 1094               & 0                        & 0                          & 0                         & 2891               & 2                 & 3987           \\ \hline
+\textbf{DTID}  & 0                  & 6                  & 0                        & 0                          & 0                         & 2294               & 2                 & 2302           \\ \hline
+\textbf{DID}   & 0                  & 6                  & 0                        & 0                          & 0                         & 0                  & 2                 & 8              \\ \hline
+%\diagbox{\textbf{Configuration}}{\textbf{Exit Reason}} & \textbf{EPT Fault} & \textbf{Interrupt} & \textbf{HLT} & \textbf{MSR Write} & \textbf{PAUSE} & \textbf{Preemption Timer} & \textbf{CPUID} & \textbf{MSR Read} & \textbf{Total} \\ \hline
+%\textbf{VHOST} & 1638238            & 11798                       & 1254475                  & 127812             & 12478                      & 17382                     & 0              & 120               & 3062303        \\ \hline
+%\textbf{VFIO}  & 5                  & 15083                       & 4400606                  & 170565             & 2338                       & 18108                     & 0              & 120               & 4606825        \\ \hline
+%\textbf{OPTI}  & 8                  & 65650                       & 0                        & 173460             & 1                          & 0                         & 18             & 120               & 239257         \\ \hline
+%\textbf{DTID}  & 12                 & 343                         & 0                        & 137662             & 1                          & 0                         & 36             & 119               & 138173         \\ \hline
+%\textbf{DID}   & 8                  & 331                         & 0                        & 0                  & 0                          & 0                         & 0              & 120               & 459            \\ \hline
 \end{tabular}%
 }
-\caption{Comparison of number of VM exits when the evaluated
-configurations transmit TCP traffic over a 40Gbps Infiniband
-link using iPerf~\cite{iperf}.}
+\caption{Comparison of number of VM exits per second for 2
+VCPUs when the evaluated configurations transmit TCP traffic
+over a 40Gbps Infiniband link for 60 seconds.}
 \label{tab:vm_exit}
 \end{table*}
 
