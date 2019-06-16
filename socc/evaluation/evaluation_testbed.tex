@@ -1,9 +1,23 @@
 % Describe the tested including the following items.
-% - Hardware configuration: CPU, memory and network cards.
-% - Guest: CPU, memory, bonding driver, assigned and virtual devices.
-% - QEMU
-% - KVM
-%\figw{cpu_state_diagram}{8}{CPU State Diagram}
+
+\begin{table*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+                    & \multicolumn{6}{c|}{\textbf{VM Exit Happens When}}                                                                                                \\ \cline{2-7}
+\diagbox{\textbf{Configuration}}{\textbf{Feature}} & \textbf{Access NIC} & \textbf{NIC Interrupt} & \textbf{HLT Instruction} & \textbf{VMX Preemption Timer} & \textbf{Timer Interrupt} & \textbf{IPI} \\ \hline
+\textbf{Bare-metal} & --                         & --                            & --                        & --                            & --                        & --                        \\ \hline
+\textbf{VHOST}      & Yes                        & Yes                           & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
+\textbf{VFIO}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
+\textbf{OPTI}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & Yes                       & Yes                       \\ \hline
+\textbf{DTID}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & Yes                       \\ \hline
+\textbf{DID}        & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No} \\ \hline
+\end{tabular}%
+}
+\caption{TODO}
+\label{tab:configuration}
+\end{table*}
 
 The experiments are run on machines equipped with the 10-core
 Intel Xeon CPU E4 v4 of 2.2GHz, 32GB memory, 40Gbps Mellanox
@@ -22,11 +36,34 @@ round-trip delay. Atopsar 2.3.0~\cite{atopsar} measures the
 CPU utilization. Free 3.3.10~\cite{free} measures the memory
 consumption. Perf 4.10.1~\cite{perf} measures the number of VM
 exits. Cyclictest 0.93~\cite{cyclictest} benchmarks the timer
-interrupt latency.
-%Kernbench 0.42~\cite{kernbench} benchmarks the CPU throughput.
-The following configurations are evaluated:
-%depending on the physical or virtual network device, CPU
-%optimization and DTID.
+interrupt latency. The configurations in
+Table~\ref{tab:configuration} are evaluated. In contrast to
+the VHOST configurations, other configurations uses the
+passthroughed network card.
+
+We found it necessary to use two CPU cores to saturate a
+40Gbps Infiniband link for all configurations except the VHOST
+configuration (as opposed to just one core for saturating a 1
+Gbps link). One core handled the NIC interrupts, while another
+handled the soft IRQs and ran network performance testing
+workload. We used the third core to monitor CPU utilization,
+which did not affect the network performance. For the VHOST
+configuration, we used one addition core for the VHOST worker
+thread.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mycomment{
+In Figure~\ref{fig:cpu_state_diagram}, it shows the transition
+among host and different guest configurations. The control is
+transferred to the host upon a VM exit. After the host has
+done it emulation, the control is return back to the guest. In
+the case of live migration, OPTI or DTID guest are reverted
+back to the unmodified guest before the migration starts.
+After the migration ends, the unmodified guest is again
+transformed to the OPTI or DTID guest.
+
+}
 \mycomment{
 \begin{enumerate}[(a)]
  \item The guest uses the Virtio network device backed by the
@@ -44,6 +81,7 @@ The following configurations are evaluated:
 \end{enumerate}
 }
 
+\mycomment{
 \begin{itemize}
 \parskip 0mm
 \itemsep 0mm
@@ -73,24 +111,4 @@ The following configurations are evaluated:
                  preemption timers or local timer interrupts
                  or IPIs.
 \end{itemize}
-
-
-\mycomment{
-In Figure~\ref{fig:cpu_state_diagram}, it shows the transition
-among host and different guest configurations. The control is
-transferred to the host upon a VM exit. After the host has
-done it emulation, the control is return back to the guest. In
-the case of live migration, OPTI or DTID guest are reverted
-back to the unmodified guest before the migration starts.
-After the migration ends, the unmodified guest is again
-transformed to the OPTI or DTID guest.
 }
-
-
-We found it necessary to use two CPU cores to
-saturate a 40Gbps Infiniband link for all configurations 
-(as opposed to just one core for saturating a 1 Gbps link). 
-One core handles NIC interrupts and soft IRQs, while the other
-runs network performance testing workload. We use a third
-core to monitor CPU utilization, which does not
-affect network performance. 
