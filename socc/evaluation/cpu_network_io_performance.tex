@@ -85,15 +85,6 @@ delay arised because of VM exits. When a HaaS VM ran in the
 VHOST configuration, VM exits occur whenever it accessed or
 received interrrupts from the virtual NIC.
 
-% VM exits
-% - Access NIC and receive NIC interrupts: EPT and external
-%   interrupts.
-% - HLT: different idled time for each virtualization
-%   configuration.
-% - Local interrupt.
-% - Masked local interrupt, when the host controlled the
-%   interrupted CPU.
-
 Because the number of VM exits significantly impacted the CPU
 utilization during the network I/O activities, let's first
 examine the number of VM exits per second per VCPU for each
@@ -138,13 +129,12 @@ observed in the OPTI configuration. Because of the large
 number of HLT-related VM exits, a timer interrupt could
 arrive, when the hypervisor was in control of the interrupted
 CPU. Such interrupt did not contribute an additional VM exit.
-
-In the DTID configuration, the only interrupt that triggered a
-VM exit for a HaaS VM was IPI interrupt. The HaaS VM
-experienced the VM exits due to IPI, when it recevied the
-reschduling or function call IPIs from the \na 
-or issued IPIs to another VCPU by writing to the interrupt
-command register.
+In the DTID configuration, the HaaS VM experienced the VM
+exits due to IPIs, when it recevied the IPIs from the \na, or
+issued IPIs to another VCPU by writing the IPI vectors to the
+interrupt command register. Then, \na used the
+posted-interrupt mechanism to delivered the IPIs for the VM
+without inducing the VM exits.
 
 Next we profiled the CPU utilization that a HaaS VM needed in
 both the host and VM, when the VM saturated the Infiniband
@@ -152,49 +142,43 @@ link at full speed. It provided us how much CPU time that the
 VM consumed from both the host's and guest's point of view. We
 used such information to compute and compare the CPU resource
 consumption between the host and guest of each configuration.
-Previously two isolated CPU cores were used to saturate the
-Infiniband link. The CPU utilization was taken for the two
-cores as well. The total CPU utilization was 200\%.
+We computed the CPU utilization based on the number of active
+CPUs. The total CPU utilization of all except the VHOST
+configuration was 200\%.
 
-As shown in Table~\ref{tab:cpu_network_io}, \emph{Host
-User} and \emph{Host System} represented the total CPU time
-consumed in the user mode and system mode respectively and
-were measured from the host. \emph{Guest User} and \emph{Guest
-System} were the total CPU time consumed in the user and
-system mode respectively by the guest and are part of
-\emph{Host User}. For example, the user-mode CPU utlization of
-guest was measured as $0.67/200$ whereas the user-mode CPU
-utilization of host was $68.32/200$. Thus, \emph{Guest User}
-is $0.23/200$. The total CPU utilization due to the work done
-by the VM was the sum of \emph{Guest User}, \emph{Guest
-System} and \emph{Host System}.
+In Table~\ref{tab:cpu_network_io}, \emph{Host User} and
+\emph{Host System} represented the total CPU time consumed in
+the user mode and system mode, respectively and were measured
+by the host. \emph{Guest User} and \emph{Guest System} were
+the total CPU time consumed in the user and system mode,
+respectively by the guest and were part of \emph{Host User}.
+Take VFIO as an example, the user-mode CPU utlization from the
+guest's point of view was measured as $0.70/200$, which was
+part of $102.45/200$ of the user-mode CPU utilization in the
+host. Thus, \emph{Guest User} was $0.36/200$. The total CPU
+utilization to saturate the outgoing bandwidth was the sum of
+\emph{Guest User}, \emph{Guest System} and \emph{Host System}.
 
 The Bare-metal configuration consumed the least CPU resource.
-The OPTI configuration came very close to the Bare-metal
-performance. Both the VHOST and VFIO configuration consumed at
-least 40\% of additional CPU resource in comparison.
-
-Although the VFIO configuration enabled direct NIC access and
-interrupt delivery, surprisingly, the total CPU utilization of
-the VFIO configuration was actually higher than that of the
-VHOST configuration. The main cause was the large number of VM
-exits due to HLT instructions as shown in
-Table~\ref{tab:vm_exit}. When KVM emulated the HLT
-instruction, it used a busy waiting loop, which
-increased the CPU utilization in \emph{Host System}.
+The DTID and DID configuration came very close to the
+Bare-metal performance, while the OPTI configuration needed
+another 10\% of CPU resource. The VFIO configuration consumed
+at least additional 40\% of CPU resource. The VHOST
+configuration required an additional CPU core for the VHOST
+worker thread.
 
 In the OPTI configuration, \emph{Host System} was close to
 0\%, indicating that the hypervisor was almost completely out
-of the picture. Although \emph{Host User}is 199.76\%, the sum
-of \emph{Guest User} and \emph{Guest System} was only 82.27\%.
+of the picture. Although \emph{Host User}is 199.58\%, the sum
+of \emph{Guest User} and \emph{Guest System} was 100.82\%.
 The gap between the two was due to that the VM was waiting for
 its next network I/O. After disabling the VM exit due to the
 HLT instructions, it transformed the privileged HLT
 instruction to the user-space HLT instruction. When a HaaS VM
-became idle and issued HLT instruction, it put the guest CPU
+became idled and issued HLT instruction, it put the guest CPU
 in a lower power state but did not preempt the VM. From the
-host's point of view, the HaaS VM remains active because it
-occupies the CPU.
+host's point of view, the HaaS VM remained active because it
+occupied the CPU.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -430,4 +414,16 @@ Infiniband link using iPerf~\cite{iperf}.}
 \vspace{-0.1in}
 \end{table}
 }
+
+\mycomment{
+Although the VFIO configuration enabled direct NIC access and
+interrupt delivery, surprisingly, the total CPU utilization of
+the VFIO configuration was actually higher than that of the
+VHOST configuration. The main cause was the large number of VM
+exits due to HLT instructions as shown in
+Table~\ref{tab:vm_exit}. When KVM emulated the HLT
+instruction, it used a busy waiting loop, which
+increased the CPU utilization in \emph{Host System}.
+}
+
 
