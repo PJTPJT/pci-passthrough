@@ -7,7 +7,7 @@
 \hline
                     & \multicolumn{6}{c|}{\textbf{VM Exit Happens When}}                                                                                                \\ \cline{2-7}
 \diagbox{\textbf{Configuration}}{\textbf{Feature}} & \textbf{Access NIC} & \textbf{NIC Interrupt} & \textbf{HLT Instruction} & \textbf{VMX Preemption Timer} & \textbf{Timer Interrupt} & \textbf{IPI} \\ \hline
-\textbf{Bare-metal} & --                         & --                            & --                        & --                            & --                        & --                        \\ \hline
+%\textbf{Bare-metal} & --                         & --                            & --                        & --                            & --                        & --                        \\ \hline
 \textbf{VHOST}      & Yes                        & Yes                           & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
 \textbf{VFIO}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
 \textbf{OPTI}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & Yes                       & Yes                       \\ \hline
@@ -15,7 +15,9 @@
 \textbf{DID}        & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No} \\ \hline
 \end{tabular}%
 }
-\caption{TODO}
+\caption{Comparison of additional features other than the
+existing KVM optimizations for each virtualization
+configuration.}
 \label{tab:configuration}
 \end{table*}
 
@@ -36,7 +38,7 @@ round-trip delay. Atopsar 2.3.0~\cite{atopsar} measures the
 CPU utilization. Free 3.3.10~\cite{free} measures the memory
 consumption. Perf 4.10.1~\cite{perf} measures the number of VM
 exits. Cyclictest 0.93~\cite{cyclictest} benchmarks the timer
-interrupt latency. The configurations in
+interrupt latency. The virtualization configurations in
 Table~\ref{tab:configuration} are evaluated. In contrast to
 the VHOST configurations, other configurations uses the
 passthroughed network card.
