@@ -57,10 +57,10 @@ from the polling loop as soon as the next network packet
 or interrupt arrives for the VM, without ever entering the low-power mode.
 
 Although peak network throughput is not reduced when
-using VFIO (see Table~\ref{tab:network_performance}),
+using VFIO (see Table~\ref{tab:cpu_network_io}),
 both VM exits and polling loop cause significant
 CPU utilization by the hypervisor
-(see Table~\ref{tab:cpu_utilization_40gbps}).
+(see Table~\ref{tab:cpu_network_io}).
 Ironically, this overhead occurs even when using pass-through I/O and
 posted interrupts which were meant to reduce hypervisor overheads.
 Eliminating this event polling alone is insufficient because {\tt HLT}-triggered VM exits
