@@ -1,18 +1,15 @@
 % Multi-threaded Computation Performance
 
-\figw{parsec_barchart}{8.5}{
-Slowdown of PARSEC benchmark programs for VANILLA and DID
-guests compared to bare-metal.}
+\figw{parsec_barchart}{8.5}{Slowdown of PARSEC benchmark
+programs for VANILLA and DID guests compared to bare-metal.}
 
-\figw{fpspeed_barchart}{8.5}{
-Slowdown of floating point computation benchmarks in SPEC CPU
-2017~\cite{bucek:2018} for VANILLA and DID guests compared to
-bare-metal.}
+\figw{fpspeed_barchart}{8.5}{Slowdown of floating point
+computation benchmarks in SPEC CPU 2017~\cite{bucek:2018} for
+VANILLA and DID guests compared to bare-metal.}
 
-\figw{intrate_barchart}{8.5}{
-Throughput reduction of integer computation benchmarks in SPEC
-CPU 2017~\cite{bucek:2018} for VANILLA and DID guests compared
-to bare-metal.}
+\figw{intrate_barchart}{8.5}{Throughput reduction of integer
+computation benchmarks in SPEC CPU 2017~\cite{bucek:2018} for
+VANILLA and DID guests compared to bare-metal.}
 
 To evaluate how well a HaaS VM performed for concurrent
 CPU-bound applications, we measured the percentage of slowdown
@@ -47,32 +44,33 @@ slowdown was 3\%. DID improved the performance further and did
 not perform worse than the vanilla VM for the wide-scale ocean
 modeling. For the cases of Pthreads~\cite{lewis:1998} in
 Figure~\ref{fig:parsec_barchart}, most cases had the
-percentage slowdown less than 5\% except canneal and
-streamcluster. DID reduced the slowdown even further.
+percentage slowdown less than 5\% except Canneal and
+Streamcluster. DID reduced the slowdown even further.
 
 Especially for Dedup, DID trimmed 11.45\% of slowdown to
 3.85\%. Although the performance of DID in Vips seemed to be
-worse than Vanilla, the absolute values
-differed less than 0.1 seconds.
-For Canneal and Streamcluster,
-even after tracking and eliminating all VM exits triggered by EPT violations
-and I/O instructions from certain virtual devices
-(virtual floppy and CD-ROM), the performance of 
-Canneal and Stremcluster did not significantly improve.
+worse than Vanilla, the absolute values differed less than 0.1
+seconds. For Canneal and Streamcluster, even after tracking
+and eliminating all VM exits triggered by EPT violations and
+I/O instructions from certain virtual devices (virtual floppy
+and CD-ROM), the performance of Canneal and Streamcluster did
+not significantly improve. We suspect that the performance
+difference for these two cases might be due to VTx-related
+architecture issues; we are further investigating the
+underlying causes.
+
 % After analyzing the VM Exit reasons, we eliminated
 %the two expensive VM exits: (1) I/O instructions and (2) EPT
-%violations. To eliminate VM exits triggered by I/O instructions, 
-%we removed the virtual devices for floppy disk and CD-ROM, 
-%which accounted for about 20 I/O instructions per second. 
-%To eliminate VM exits triggered by EPT violation, the HaaS agent in 
-%the VM touched almost all guest pages at initiaization time, 
-%which forced the \na to populate the corresponding EPT entries ahead of time. 
-%These two optimizations reduced the rate of VM exits to around 11 VM exits per
-%second. We re-ran the two benchmark programs and observed it
-%had only marginal performance improvement. 
-We suspect that the performance difference for these two cases 
-might be due to VTx-related architecture issues; we are
-further investigating the uderlying causes.
+%violations. To eliminate VM exits triggered by I/O
+%instructions, we removed the virtual devices for floppy disk
+%and CD-ROM, which accounted for about 20 I/O instructions per
+%second. To eliminate VM exits triggered by EPT violation, the
+%HaaS agent in the VM touched almost all guest pages at
+%initialization time, which forced the \na to populate the
+%corresponding EPT entries ahead of time. These two
+%optimizations reduced the rate of VM exits to around 11 VM
+%exits per second. We re-ran the two benchmark programs and
+%observed it had only marginal performance improvement. 
 
 %As shown in Figure~\ref{fig:intrate_barchart}, DID improved
 %the CPU throughput in all cases which had less than 10\% of
