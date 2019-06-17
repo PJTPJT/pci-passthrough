@@ -9,11 +9,11 @@
                     & \multicolumn{6}{c|}{\textbf{VM Exit Happens When}}        \\ \cline{2-7}
 \diagbox{\textbf{Configuration}}{\textbf{Optimization}} & \textbf{Access NIC} & \textbf{NIC Interrupt} & \textbf{HLT Instruction} & \textbf{VMX Preemption Timer} & \textbf{Timer Interrupt} & \textbf{IPI} \\ \hline
 %\textbf{Bare-metal} & --                         & --                            & --                        & --                            & --                        & --                        \\ \hline
-\textbf{VHOST}      & Yes                        & Yes                           & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
-\textbf{VFIO}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
-\textbf{OPTI}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & Yes                       & Yes                       \\ \hline
-\textbf{DTID}       & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & Yes                       \\ \hline
-\textbf{DID}        & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No} \\ \hline
+\textbf{VHOST}          & Yes                        & Yes                           & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
+\textbf{VFIO/VANILLA}   & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & Yes                       & Yes                           & Yes                       & Yes                       \\ \hline
+\textbf{OPTI}           & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & Yes                       & Yes                       \\ \hline
+\textbf{DTID}           & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & Yes                       \\ \hline
+\textbf{DID}            & {\color[HTML]{FE0000} No}  & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No}     & {\color[HTML]{FE0000} No} & {\color[HTML]{FE0000} No} \\ \hline
 \end{tabular}%
 }
 \caption{Comparison of features for each virtualization
