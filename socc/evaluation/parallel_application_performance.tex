@@ -1,41 +1,18 @@
 % Multi-threaded Computation Performance
 
-\figw{parsec_barchart}{8.4}{
-Slowdown of PARSEC benchmark programs for VANILLA and DID guests
-compared to bare-metal.
-%\textbf{VANILLA}: unmodified guest has the configuration without our optimizations.
-}
+\figw{parsec_barchart}{8.5}{
+Slowdown of PARSEC benchmark programs for VANILLA and DID
+guests compared to bare-metal.}
 
 \figw{fpspeed_barchart}{8.5}{
-Slowdown of floating point computation benchmarks in 
-SPEC CPU 2017~\cite{bucek:2018} for VANILLA and 
-DID guests compared to bare-metal. 
-The x-axis refers to the IDs for the following benchmarks:
-\textbf{603}: explosion modeling.  \textbf{607}: relativity.
-\textbf{619}: fluid dynamics.  \textbf{621}: weather
-forecasting.  \textbf{627}: atmosphere modeling.
-\textbf{628}: wide-scale ocean modeling.  \textbf{638}: image
-manipulation.  \textbf{644}: molecular dynamics.
-\textbf{649}: electromagnetic.  \textbf{654}: regional ocean
-modeling.}
+Slowdown of floating point computation benchmarks in SPEC CPU
+2017~\cite{bucek:2018} for VANILLA and DID guests compared to
+bare-metal.}
 
 \figw{intrate_barchart}{8.5}{
-Slowdown of integer computation benchmarks in 
-SPEC CPU 2017~\cite{bucek:2018} for VANILLA and 
-DID guests compared to bare-metal. 
-The x-axis refers to the IDs for the following benchmarks:
-%\textbf{VANILLA}: unmodified guest has the configuration
-%without our optimizations. 
-{500}: perl scripts.
-{502}: GCC. 
-{505}: route planning.
-{520}: OMNeT simulation. 
-{523}: XML conversion.
-{525}: video compression. 
-{531}: chess.
-{541}: GO. 
-{548}: sudoku. 
-{557}: data compression.}
+Throughput reduction of integer computation benchmarks in SPEC
+CPU 2017~\cite{bucek:2018} for VANILLA and DID guests compared
+to bare-metal.}
 
 To evaluate how well a HaaS VM performed for concurrent
 CPU-bound applications, we measured the percentage of slowdown
