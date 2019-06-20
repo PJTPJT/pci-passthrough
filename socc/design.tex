@@ -86,35 +86,39 @@ the hardware, similar to the behavior on a bare-metal OS.
 Besides eliminating EPT faults and HLT-triggered VM exits, we 
 also eliminate other common sources of VM exits for a HaaS VM.
 We remove all unnecessary para-virtual and emulated I/O devices 
-(such as emulatedfloppy disks and CD-ROMs); these
+(such as emulated floppy disks and CD-ROMs); these
 tend to communicate with QEMU by trapping on programmed I/O instructions
 that result in VM exits.
-For accessing local APIC timer (as detailed later), 
-we also disable the VM exits due to MSR
-writes to local APIC's initial count and divide configuration
-registers. For IPIs, we disable VM exits due to MSR writes to
+For accessing local APIC timer (as explained later), 
+we also disable VM exits due to {\em MSR
+write} operations to local APIC's initial count and divide configuration
+registers. For sending IPIs between VCPUs, 
+we disable VM exits due to MSR writes to
 the interrupt command register.  Finally, external device interrupts
 from any I/O devices that are not assigned to the HaaS VM
 are delivered to CPU0 where the \na handles them without
-interrupting the HaaS VM.
+interrupting the HaaS VM on other CPUs.
 
+
+\figw{dtid}{8.5}{Direct delivery of timer interrupts in \sna.
+%TODO: mention disabling WRMSR VM Exits.
+The hypervisor configures each guest LAPIC to transform the local timer
+interrupt into a PIN interrupt and allows the HaaS VM to directly update the PID page.}
 
 \vspace{-0.1in}
 \section{Direct Local Interrupt Delivery}
 \vspace{-0.05in}
 \label{sec:shared_pid_dtid}
-\figw{dtid}{8.5}{Direct delivery of timer interrupts in \sna.
-%TODO: mention disabling WRMSR VM Exits.
-The hypervisor configures each guest LAPIC to transform the local timer
-interrupt into a PIN interrupt and allows guest OS to directly update the PID page.}
-
-Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
-Therefore, such local interrupts cannot be delivered to a VM via the posted interrupt mechanism.
 In this section, we describe how to achieve direct delivery of two types of local interrupts, {\em timer interrupt} and {\em inter-processor interrupt} (IPI).
+Unlike an external interrupt, a local interrupt is delivered to a CPU core's local APIC without going through the IOMMU's Interrupt Remapping Table.
+Therefore, such local interrupts cannot be delivered to a VM via the traditional posted interrupt mechanism.
 
-{\bf Direct Timer Interrupt Delivery:} To enable a timer interrupt to be delivered directly to a HaaS VM running on a CPU core,
-\na first leverages the {\em local vector table} in the local APIC to turn each timer interrupt into a PIN interrupt, and
-then programmatically sets a particular bit in the CPU core's PIR bitmap to indicate to the target VM that underlying the PIN interrupt is a timer interrupt.
+%TODO: The following description of direct interrupt delivery seems too short. Could use more explanation.
+{\bf Direct Timer Interrupt Delivery:} 
+To enable a timer interrupt to be delivered directly to a HaaS VM's VCPU running on a CPU core,
+\na first configures the {\em local vector table} in the local APIC to turn each timer interrupt into a PIN interrupt. 
+Next, it programmatically sets a particular bit in the CPU core's PIR bitmap to indicate to the HaaS VM that underlying the 
+PIN interrupt is in fact a timer interrupt. Thus, when the local APIC on the CPU core delivers a timer interrupt,
 
 If the PIR bit associated with a timer interrupt is set way ahead of the interrupt's next expiration time,
 the interrupt's target VM may receive spurious timer interrupts.
